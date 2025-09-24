@@ -279,7 +279,9 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           
           .content-image {
             max-width: 100%;
+            max-height: 4.5in;
             height: auto;
+            object-fit: contain;
             margin: 0 auto;
             display: block;
             border-radius: 8px;
