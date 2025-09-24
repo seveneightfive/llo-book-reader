@@ -19,7 +19,9 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
   const [currentImage, setCurrentImage] = useState<string | null>(chapter.chapter_image);
   const [currentCaption, setCurrentCaption] = useState<string | null>(null);
   const [isNavOpen, setIsNavOpen] = useState(false);
+  const [showBottomNav, setShowBottomNav] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+  const lastContentElementRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -119,6 +121,27 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
     }
   }, [pages, currentImage]);
 
+  // Set up IntersectionObserver to detect when last content is at top of viewport
+  useEffect(() => {
+    if (!contentRef.current || !lastContentElementRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        // Show bottom nav when the last content element reaches the top of the viewport
+        setShowBottomNav(entry.boundingClientRect.top <= 0);
+      },
+      {
+        root: contentRef.current,
+        rootMargin: '0px',
+        threshold: 0
+      }
+    );
+
+    observer.observe(lastContentElementRef.current);
+
+    return () => observer.disconnect();
+  }, [pages]);
 
   if (loading) {
     return (
@@ -204,6 +227,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
           <div className="p-12 lg:p-16 max-w-3xl mx-auto">
             {groupedPages.map((group, groupIndex) => (
               <motion.div
+                ref={groupIndex === groupedPages.length - 1 ? lastContentElementRef : undefined}
                 key={group.subheading?.id || `group-${groupIndex}`}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -286,26 +310,43 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
               </motion.div>
             ))}
             
-            <div className="pt-12 border-t border-slate-200">
-              <div className="flex justify-between items-center">
-                <button
-                  onClick={onPrev}
-                  className="px-6 py-3 font-avenir text-slate-600 hover:text-slate-800 transition-colors"
-                >
-                  ← Previous
-                </button>
-                
-                <button
-                  onClick={onNext}
-                  className="px-8 py-3 bg-slate-800 text-white rounded-full font-avenir hover:bg-slate-900 transition-colors"
-                >
-                  Next Chapter →
-                </button>
-              </div>
-            </div>
+            {/* Spacer to allow last content to scroll to top on desktop */}
+            <div className="hidden lg:block" style={{ height: 'calc(100vh - 80px)' }} />
           </div>
         </div>
       </div>
+
+      {/* Fixed Bottom Navigation - Desktop Only */}
+      <AnimatePresence>
+        {showBottomNav && (
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed bottom-0 left-0 right-0 bg-white p-4 border-t border-slate-200 hidden lg:flex justify-between items-center z-40 shadow-lg"
+          >
+            <button
+              onClick={onPrev}
+              className="px-6 py-3 font-avenir text-slate-600 hover:text-slate-800 transition-colors"
+            >
+              ← Previous
+            </button>
+            
+            <div className="text-center">
+              <p className="text-sm text-slate-500">{bookTitle}</p>
+              <p className="font-avenir text-slate-800">{chapter.title}</p>
+            </div>
+            
+            <button
+              onClick={onNext}
+              className="px-8 py-3 bg-slate-800 text-white rounded-full font-avenir hover:bg-slate-900 transition-colors"
+            >
+              Next Chapter →
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Off-canvas Navigation */}
       <AnimatePresence>
