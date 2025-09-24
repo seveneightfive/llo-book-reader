@@ -125,11 +125,46 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
             color: #1e293b;
           }
           
-          .toc-item {
+          .chapter-entry {
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
+            align-items: flex-start;
+            margin-bottom: 15px;
+          }
+          
+          .chapter-circle {
+            width: 24px;
+            height: 24px;
+            background-color: #1e293b;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10pt;
+            font-weight: 500;
+            margin-right: 12px;
+            flex-shrink: 0;
+            margin-top: 2px;
+          }
+          
+          .chapter-text {
+            flex: 1;
+          }
+          
+          .chapter-title-toc {
+            font-family: 'Avenir Next', 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
             font-size: 12pt;
+            font-weight: 500;
+            color: #1e293b;
+            margin-bottom: 4px;
+            line-height: 1.3;
+          }
+          
+          .chapter-lede-toc {
+            font-size: 12pt;
+            color: #64748b;
+            font-style: italic;
+            line-height: 1.4;
           }
           
           .chapter-title-page {
@@ -175,11 +210,12 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           
           .chapter-intro {
             font-style: italic;
-            font-size: 12pt;
+            font-size: 10pt;
             color: #64748b;
             max-width: 300px;
             margin: 0 auto;
             line-height: 1.7;
+            text-align: center;
           }
           
           .chapter-content {
@@ -338,9 +374,12 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
         <div class="toc-page">
           <h2 class="toc-title">Table of Contents</h2>
           ${chaptersWithPages.filter(chapter => chapter.pages.length > 0).map(chapter => `
-            <div class="toc-item">
-              <span>Chapter ${chapter.chapter_number}: ${sanitizeContent(chapter.title)}</span>
-              <span>${chapter.pages.length} sections</span>
+            <div class="chapter-entry">
+              <div class="chapter-circle">${chapter.chapter_number}</div>
+              <div class="chapter-text">
+                <div class="chapter-title-toc">${sanitizeContent(chapter.title)}</div>
+                ${chapter.lede ? `<div class="chapter-lede-toc">${sanitizeContent(chapter.lede)}</div>` : ''}
+              </div>
             </div>
           `).join('')}
         </div>
@@ -351,7 +390,6 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           <div class="chapter-title-page">
             ${chapter.chapter_image ? `<img src="${chapter.chapter_image}" alt="${chapter.title}" class="chapter-image">` : ''}
             <div class="chapter-number">${chapter.chapter_number}</div>
-            <div class="chapter-label">Chapter</div>
             <h1 class="chapter-title">${sanitizeContent(chapter.title)}</h1>
             ${chapter.intro || chapter.lede ? `
               <div class="chapter-intro">
