@@ -56,32 +56,63 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           }
           
           .cover-page {
-            text-align: center;
-            padding: 60px 0;
+            position: relative;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             page-break-after: always;
           }
           
           .cover-image {
-            max-width: 150px;
-            max-height: 200px;
-            margin: 0 auto 30px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+          }
+          
+          .cover-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0.5in;
+            z-index: 2;
+          }
+          
+          .book-title-box {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 15px 25px;
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            backdrop-filter: blur(5px);
           }
           
           .book-title {
             font-family: 'Avenir Next', 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
             font-size: 18pt;
             font-weight: 500;
-            color: #1e293b;
-            margin-bottom: 15px;
+            color: white;
+            margin: 0;
             letter-spacing: 0.025em;
           }
           
           .book-author {
-            font-size: 12pt;
-            color: #64748b;
-            margin-bottom: 20px;
+            font-size: 10pt;
+            color: rgba(255, 255, 255, 0.8);
+            font-style: italic;
+            margin: 0;
           }
           
           .dedication-page, .intro-page {
@@ -128,7 +159,7 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           .chapter-entry {
             display: flex;
             align-items: flex-start;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
           }
           
           .chapter-circle {
@@ -156,15 +187,34 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
             font-size: 12pt;
             font-weight: 500;
             color: #1e293b;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
             line-height: 1.3;
           }
           
           .chapter-lede-toc {
-            font-size: 12pt;
+            font-size: 10pt;
             color: #64748b;
             font-style: italic;
             line-height: 1.4;
+          }
+          
+          .chapter-image-page {
+            page-break-before: always;
+            page-break-after: always;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            padding: 0;
+            margin: 0;
+          }
+          
+          .chapter-image-full {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
           }
           
           .chapter-title-page {
@@ -172,14 +222,6 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
             padding: 80px 0;
             page-break-before: always;
             page-break-after: always;
-          }
-          
-          .chapter-image {
-            max-width: 200px;
-            max-height: 150px;
-            margin: 0 auto 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
           }
           
           .chapter-number {
@@ -196,6 +238,7 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
             letter-spacing: 0.2em;
             text-transform: uppercase;
             color: #64748b;
+            margin-top: 10px;
             margin-bottom: 30px;
           }
           
@@ -209,27 +252,35 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           }
           
           .chapter-intro {
+            text-align: center;
             font-style: italic;
             font-size: 10pt;
             color: #64748b;
             max-width: 300px;
             margin: 0 auto;
             line-height: 1.7;
-            text-align: center;
           }
           
           .chapter-content {
+            page-break-before: always;
             padding: 0;
           }
           
           .content-block {
+            page-break-inside: avoid;
             margin-bottom: 20px;
+          }
+          
+          .content-image-container {
+            page-break-inside: avoid;
+            display: block;
+            margin: 20px auto;
           }
           
           .content-image {
             max-width: 100%;
             height: auto;
-            margin: 20px auto;
+            margin: 0 auto;
             display: block;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -241,7 +292,7 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
             text-align: center;
             color: #64748b;
             margin-top: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 0;
           }
           
           .subheading {
@@ -345,9 +396,12 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
         <!-- Cover Page -->
         <div class="cover-page">
           ${book.cover_image ? `<img src="${book.cover_image}" alt="${book.title}" class="cover-image">` : ''}
-          <h1 class="book-title">${sanitizeContent(book.title)}</h1>
-          <p class="book-author">by ${sanitizeContent(book.author)}</p>
-          ${book.description ? `<div class="book-description">${sanitizeContent(book.description)}</div>` : ''}
+          <div class="cover-overlay">
+            <div class="book-title-box">
+              <h1 class="book-title">${sanitizeContent(book.title)}</h1>
+            </div>
+            <p class="book-author">by ${sanitizeContent(book.author)}</p>
+          </div>
         </div>
 
         <!-- Dedication Page -->
@@ -386,10 +440,17 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
 
         <!-- Chapters -->
         ${chaptersWithPages.filter(chapter => chapter.pages.length > 0).map(chapter => `
+          <!-- Chapter Image Page -->
+          ${chapter.chapter_image ? `
+          <div class="chapter-image-page">
+            <img src="${chapter.chapter_image}" alt="${chapter.title}" class="chapter-image-full">
+          </div>
+          ` : ''}
+
           <!-- Chapter Title Page -->
           <div class="chapter-title-page">
-            ${chapter.chapter_image ? `<img src="${chapter.chapter_image}" alt="${chapter.title}" class="chapter-image">` : ''}
             <div class="chapter-number">${chapter.chapter_number}</div>
+            <div class="chapter-label">Chapter</div>
             <h1 class="chapter-title">${sanitizeContent(chapter.title)}</h1>
             ${chapter.intro || chapter.lede ? `
               <div class="chapter-intro">
@@ -403,8 +464,10 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
             ${chapter.pages.map(page => `
               <div class="content-block">
                 ${page.image_url ? `
-                  <img src="${page.image_url}" alt="" class="content-image">
-                  ${page.image_caption ? `<div class="image-caption">${sanitizeContent(page.image_caption)}</div>` : ''}
+                  <div class="content-image-container">
+                    <img src="${page.image_url}" alt="" class="content-image">
+                    ${page.image_caption ? `<div class="image-caption">${sanitizeContent(page.image_caption)}</div>` : ''}
+                  </div>
                 ` : ''}
                 
                 ${page.subheading ? `<h3 class="subheading">${sanitizeContent(page.subheading)}</h3>` : ''}
