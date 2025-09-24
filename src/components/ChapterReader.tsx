@@ -324,19 +324,15 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed bottom-0 left-0 right-0 bg-white p-4 border-t border-slate-200 hidden lg:flex justify-between items-center z-40 shadow-lg"
+            className="fixed bottom-0 right-0 bg-white p-4 border-t border-l border-slate-200 hidden lg:flex justify-between items-center z-40 shadow-lg"
+            style={{ width: '50%' }}
           >
             <button
               onClick={onPrev}
-              className="px-6 py-3 font-avenir text-slate-600 hover:text-slate-800 transition-colors"
+              className="px-8 py-3 bg-slate-100 text-slate-700 rounded-full font-avenir hover:bg-slate-200 transition-colors"
             >
-              ← Previous
+              ← Previous Chapter
             </button>
-            
-            <div className="text-center">
-              <p className="text-sm text-slate-500">{bookTitle}</p>
-              <p className="font-avenir text-slate-800">{chapter.title}</p>
-            </div>
             
             <button
               onClick={onNext}
