@@ -60,9 +60,6 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
             height: 100%;
             width: 100%;
             overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             page-break-after: always;
           }
           
@@ -72,7 +69,7 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: cover;
             z-index: 1;
           }
           
@@ -84,33 +81,36 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
             bottom: 0;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
             text-align: center;
             padding: 0.5in;
+            padding-top: 1in;
+            background-color: rgba(0, 0, 0, 0.6);
             z-index: 2;
           }
           
-          .book-title-box {
-            background-color: rgba(0, 0, 0, 0.7);
+          .cover-title-box {
+            background-color: rgba(255, 255, 255, 0.9);
             padding: 15px 25px;
             border-radius: 8px;
             margin-bottom: 20px;
-            backdrop-filter: blur(5px);
+            max-width: 80%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
           }
           
           .book-title {
             font-family: 'Avenir Next', 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
             font-size: 18pt;
             font-weight: 500;
-            color: white;
+            color: #1e293b;
             margin: 0;
             letter-spacing: 0.025em;
           }
           
           .book-author {
             font-size: 10pt;
-            color: rgba(255, 255, 255, 0.8);
+            color: #64748b;
             font-style: italic;
             margin: 0;
           }
@@ -399,10 +399,10 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
         <div class="cover-page">
           ${book.cover_image ? `<img src="${book.cover_image}" alt="${book.title}" class="cover-image">` : ''}
           <div class="cover-overlay">
-            <div class="book-title-box">
-              <h1 class="book-title">${sanitizeContent(book.title)}</h1>
+            <div class="cover-title-box">
+              <h1 class="book-title">The Journey of A Life</h1>
+              <p class="book-author">by ${sanitizeContent(book.author)}</p>
             </div>
-            <p class="book-author">by ${sanitizeContent(book.author)}</p>
           </div>
         </div>
 
