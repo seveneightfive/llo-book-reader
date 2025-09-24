@@ -273,9 +273,15 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                   <div key={page.id} data-page-id={page.id} className="mb-6">
                     {page.content && (
                       <div className="max-w-none mb-8">
-                        <p className="text-body-large font-lora leading-body-relaxed">
-                          {page.content}
-                        </p>
+                        {page.content.split('\n\n').map((paragraph, index) => (
+                          <p 
+                            key={index}
+                            className="text-body-large font-lora leading-body-relaxed mb-4"
+                            dangerouslySetInnerHTML={{
+                              __html: paragraph.trim().replace(/\n/g, '<br />')
+                            }}
+                          />
+                        ))}
                       </div>
                     )}
                     
@@ -293,9 +299,15 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                 {group.subheading?.content && (
                   <div data-page-id={group.subheading.id} className="mb-6">
                     <div className="max-w-none mb-8">
-                      <p className="text-body-large font-lora leading-body-relaxed">
-                        {group.subheading.content}
-                      </p>
+                      {group.subheading.content.split('\n\n').map((paragraph, index) => (
+                        <p 
+                          key={index}
+                          className="text-body-large font-lora leading-body-relaxed mb-4"
+                          dangerouslySetInnerHTML={{
+                            __html: paragraph.trim().replace(/\n/g, '<br />')
+                          }}
+                        />
+                      ))}
                     </div>
                   </div>
                 )}
