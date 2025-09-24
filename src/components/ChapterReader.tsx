@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, ArrowLeft, ArrowRight, X } from 'lucide-react';
+import { marked } from 'marked';
 import { Chapter, Page } from '../lib/supabase';
 import { useChapterPages } from '../hooks/useBook';
 
@@ -272,24 +273,22 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                 {group.content.map((page) => (
                   <div key={page.id} data-page-id={page.id} className="mb-6">
                     {page.content && (
-                      <div className="max-w-none mb-8">
-                        {page.content.split('\n\n').map((paragraph, index) => (
-                          <p 
-                            key={index}
-                            className="text-body-large font-lora leading-body-relaxed mb-4"
-                            dangerouslySetInnerHTML={{
-                              __html: paragraph.trim().replace(/\n/g, '<br />')
-                            }}
-                          />
-                        ))}
-                      </div>
+                      <div 
+                        className="max-w-none mb-8 markdown-body"
+                        dangerouslySetInnerHTML={{
+                          __html: marked.parse(page.content)
+                        }}
+                      />
                     )}
                     
                     {page.quote && (
                       <blockquote className="border-l-4 border-slate-300 pl-8 py-6 bg-slate-50/70 rounded-r-lg my-8 mx-4">
-                        <p className="text-body-large font-lora italic leading-body-relaxed quote-tracking">
-                          {page.quote}
-                        </p>
+                        <div 
+                          className="text-body-large font-lora italic leading-body-relaxed quote-tracking"
+                          dangerouslySetInnerHTML={{
+                            __html: marked.parse(page.quote)
+                          }}
+                        />
                       </blockquote>
                     )}
                   </div>
@@ -298,25 +297,23 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                 {/* Handle subheading content if it exists */}
                 {group.subheading?.content && (
                   <div data-page-id={group.subheading.id} className="mb-6">
-                    <div className="max-w-none mb-8">
-                      {group.subheading.content.split('\n\n').map((paragraph, index) => (
-                        <p 
-                          key={index}
-                          className="text-body-large font-lora leading-body-relaxed mb-4"
-                          dangerouslySetInnerHTML={{
-                            __html: paragraph.trim().replace(/\n/g, '<br />')
-                          }}
-                        />
-                      ))}
-                    </div>
+                    <div 
+                      className="max-w-none mb-8 markdown-body"
+                      dangerouslySetInnerHTML={{
+                        __html: marked.parse(group.subheading.content)
+                      }}
+                    />
                   </div>
                 )}
                 
                 {group.subheading?.quote && (
                   <blockquote className="border-l-4 border-slate-300 pl-8 py-6 bg-slate-50/70 rounded-r-lg my-8 mx-4">
-                    <p className="text-body-large font-lora italic leading-body-relaxed quote-tracking">
-                      {group.subheading.quote}
-                    </p>
+                    <div 
+                      className="text-body-large font-lora italic leading-body-relaxed quote-tracking"
+                      dangerouslySetInnerHTML={{
+                        __html: marked.parse(group.subheading.quote)
+                      }}
+                    />
                   </blockquote>
                 )}
               </motion.div>
