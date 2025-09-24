@@ -49,6 +49,17 @@ export function BookCover({ book, onNext }: BookCoverProps) {
           by {book.author}
         </motion.p>
         
+        {book.view_count > 0 && (
+          <motion.p
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.8, duration: 0.8 }}
+            className="text-sm font-avenir text-slate-400 mb-8"
+          >
+            {book.view_count.toLocaleString()} {book.view_count === 1 ? 'view' : 'views'}
+          </motion.p>
+        )}
+        
         <motion.button
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}

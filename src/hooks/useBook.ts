@@ -24,6 +24,17 @@ export function useBook(slug: string) {
 
         // Only fetch chapters if book exists
         if (bookData) {
+          // Increment view count (non-blocking)
+          supabase
+            .from('books')
+            .update({ view_count: (bookData.view_count || 0) + 1 })
+            .eq('id', bookData.id)
+            .then(({ error }) => {
+              if (error) {
+                console.warn('Failed to increment view count:', error);
+              }
+            });
+
           const { data: chaptersData, error: chaptersError } = await supabase
             .from('chapters')
             .select('*')

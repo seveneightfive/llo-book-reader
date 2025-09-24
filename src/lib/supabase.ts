@@ -17,6 +17,7 @@ export type Book = {
   dedication: string | null;
   intro: string | null;
   User: string | null;
+  view_count: number;
   created_at: string;
   updated_at: string;
 };
