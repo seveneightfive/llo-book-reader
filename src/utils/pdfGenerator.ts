@@ -21,7 +21,8 @@ const addImageToPdf = async (
   currentY: number, 
   maxWidth: number, 
   pageHeight: number, 
-  margin: number
+  margin: number,
+  caption?: string | null
 ): Promise<number> => {
   try {
     const img = await loadImage(imageUrl);
@@ -31,15 +32,23 @@ const addImageToPdf = async (
     let imgWidth = Math.min(maxWidth, maxWidth);
     let imgHeight = imgWidth / imgAspectRatio;
     
+    // Calculate caption height if caption exists
+    let captionHeight = 0;
+    if (caption) {
+      pdf.setFontSize(9);
+      const captionLines = pdf.splitTextToSize(caption, maxWidth);
+      captionHeight = captionLines.length * (9 * 0.35) + 5; // font size * line height + spacing
+    }
+    
     // If image is too tall for remaining space, scale it down
-    const remainingSpace = pageHeight - currentY - margin;
+    const remainingSpace = pageHeight - currentY - margin - captionHeight;
     if (imgHeight > remainingSpace - 20) { // Leave some space for text
       imgHeight = Math.min(imgHeight, remainingSpace - 20);
       imgWidth = imgHeight * imgAspectRatio;
     }
     
-    // Check if we need a new page
-    if (currentY + imgHeight > pageHeight - margin) {
+    // Check if we need a new page (considering both image and caption)
+    if (currentY + imgHeight + captionHeight > pageHeight - margin) {
       pdf.addPage();
       currentY = margin;
     }
@@ -50,7 +59,23 @@ const addImageToPdf = async (
     // Add image to PDF
     pdf.addImage(img, 'JPEG', imgX, currentY, imgWidth, imgHeight);
     
-    return currentY + imgHeight + 10; // Add some space after image
+    let newY = currentY + imgHeight + 10;
+    
+    // Add caption if it exists
+    if (caption) {
+      pdf.setFontSize(9);
+      pdf.setFont('helvetica', 'italic');
+      const captionLines = pdf.splitTextToSize(caption, maxWidth);
+      const lineHeight = 9 * 0.35;
+      
+      captionLines.forEach((line: string, index: number) => {
+        pdf.text(line, x + (maxWidth / 2), newY + (index * lineHeight), { align: 'center' });
+      });
+      
+      newY += captionLines.length * lineHeight + 5;
+    }
+    
+    return newY;
   } catch (error) {
     console.warn(`Failed to add image to PDF: ${imageUrl}`, error);
     return currentY; // Return original position if image fails
@@ -223,16 +248,7 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
 
         // Add page image if exists
         if (page.image_url) {
-          yPosition = await addImageToPdf(pdf, page.image_url, margin, yPosition, contentWidth, pageHeight, margin);
-          
-          // Add image caption if exists
-          if (page.image_caption) {
-            yPosition = checkNewPage(15);
-            pdf.setFontSize(9);
-            pdf.setFont('helvetica', 'italic');
-            yPosition = addWrappedText(page.image_caption, margin, yPosition, contentWidth, 9, 'italic');
-            yPosition += 5;
-          }
+          yPosition = await addImageToPdf(pdf, page.image_url, margin, yPosition, contentWidth, pageHeight, margin, page.image_caption);
         }
 
         // Subheading
