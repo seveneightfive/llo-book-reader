@@ -62,8 +62,8 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           }
           
           .cover-image {
-            max-width: 300px;
-            max-height: 400px;
+            max-width: 150px;
+            max-height: 200px;
             margin: 0 auto 30px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
@@ -71,7 +71,7 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           
           .book-title {
             font-family: 'Avenir Next', 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            font-size: 28pt;
+            font-size: 18pt;
             font-weight: 500;
             color: #1e293b;
             margin-bottom: 15px;
@@ -79,7 +79,7 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           }
           
           .book-author {
-            font-size: 16pt;
+            font-size: 12pt;
             color: #64748b;
             margin-bottom: 20px;
           }
@@ -91,7 +91,7 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           
           .dedication-title, .intro-title {
             font-family: 'Avenir Next', 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            font-size: 18pt;
+            font-size: 14pt;
             font-weight: 500;
             text-align: center;
             margin-bottom: 30px;
@@ -105,7 +105,7 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
             text-align: center;
             font-size: 12pt;
             line-height: 1.7;
-            max-width: 600px;
+            max-width: 300px;
             margin: 0 auto;
             padding: 30px;
             background: #f8fafc;
@@ -119,7 +119,7 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           
           .toc-title {
             font-family: 'Avenir Next', 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            font-size: 18pt;
+            font-size: 14pt;
             font-weight: 500;
             margin-bottom: 30px;
             color: #1e293b;
@@ -140,8 +140,8 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           }
           
           .chapter-image {
-            max-width: 400px;
-            max-height: 300px;
+            max-width: 200px;
+            max-height: 150px;
             margin: 0 auto 40px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
@@ -149,7 +149,7 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           
           .chapter-number {
             font-family: 'Avenir Next', 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            font-size: 48pt;
+            font-size: 24pt;
             font-weight: bold;
             color: #1e293b;
             margin-bottom: 10px;
@@ -166,7 +166,7 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           
           .chapter-title {
             font-family: 'Avenir Next', 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            font-size: 20pt;
+            font-size: 16pt;
             font-weight: 500;
             color: #1e293b;
             margin-bottom: 20px;
@@ -177,7 +177,7 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
             font-style: italic;
             font-size: 12pt;
             color: #64748b;
-            max-width: 600px;
+            max-width: 300px;
             margin: 0 auto;
             line-height: 1.7;
           }
@@ -245,12 +245,12 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
             letter-spacing: 0.025em;
           }
           
-          h1 { font-size: 18pt; }
-          h2 { font-size: 16pt; }
-          h3 { font-size: 14pt; }
-          h4 { font-size: 12pt; }
-          h5 { font-size: 11pt; }
-          h6 { font-size: 10pt; }
+          h1 { font-size: 14pt; }
+          h2 { font-size: 13pt; }
+          h3 { font-size: 12pt; }
+          h4 { font-size: 11pt; }
+          h5 { font-size: 10pt; }
+          h6 { font-size: 9pt; }
           
           p {
             margin-bottom: 12px;
@@ -384,7 +384,7 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
 
     // Configure html2pdf options
     const options = {
-      margin: [15, 15, 15, 15], // top, right, bottom, left in mm
+      margin: [0.5, 0.5, 0.5, 0.5], // top, right, bottom, left in inches
       filename: `${book.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`,
       image: { 
         type: 'jpeg', 
@@ -397,8 +397,8 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
         letterRendering: true
       },
       jsPDF: { 
-        unit: 'mm', 
-        format: 'a4', 
+        unit: 'in', 
+        format: [4.25, 5.5], 
         orientation: 'portrait',
         compress: true
       },
