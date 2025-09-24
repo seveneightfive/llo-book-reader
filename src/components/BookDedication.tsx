@@ -53,3 +53,5 @@ export function BookDedication({ book, onNext, onPrev }: BookDedicationProps) {
     </motion.div>
   );
 }
+  )
+}
