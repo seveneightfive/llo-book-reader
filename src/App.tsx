@@ -47,18 +47,16 @@ function HomePage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-8">
       <div className="max-w-4xl mx-auto text-center">
         <h1 
-          className="text-6xl font-light text-white mb-8"
-          style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}
+          className="text-6xl font-avenir text-white mb-8 heading-tracking"
         >
           Lasting Legacy Online
         </h1>
-        <p className="text-xl text-slate-300 mb-8">
+        <p className="text-xl font-lora text-slate-300 mb-8 leading-body-relaxed">
           Immersive digital storytelling experiences
         </p>
         <a
           href="/book/lasting-legacy-online"
-          className="inline-block px-8 py-3 bg-white text-slate-900 rounded-full font-medium text-lg hover:bg-slate-100 transition-colors"
-          style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}
+          className="inline-block px-8 py-3 bg-white text-slate-900 rounded-full font-avenir text-lg hover:bg-slate-100 transition-colors"
         >
           Read Now
         </a>

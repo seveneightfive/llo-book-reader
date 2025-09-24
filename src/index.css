@@ -1,3 +1,40 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400;1,500&display=swap');
+
+/* Custom font face for Avenir Next - fallback to system fonts if not available */
+@layer base {
+  .font-avenir {
+    font-family: 'Avenir Next', 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-weight: 500;
+  }
+  
+  .font-lora {
+    font-family: 'Lora', Georgia, 'Times New Roman', serif;
+  }
+  
+  /* Typography utilities */
+  .text-body {
+    font-size: 18px;
+    line-height: 1.6;
+  }
+  
+  .text-body-large {
+    font-size: 20px;
+    line-height: 1.7;
+  }
+  
+  .heading-tracking {
+    letter-spacing: 0.025em;
+  }
+  
+  .dedication-tracking {
+    letter-spacing: 0.15em;
+  }
+  
+  .quote-tracking {
+    letter-spacing: 0.01em;
+  }
+}

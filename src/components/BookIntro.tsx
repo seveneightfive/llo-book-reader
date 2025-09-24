@@ -23,14 +23,13 @@ export function BookIntro({ book, onNext, onPrev }: BookIntroProps) {
           transition={{ delay: 0.3, duration: 0.8 }}
         >
           <h2
-            className="text-3xl text-slate-800 mb-8 text-center"
-            style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}
+            className="text-3xl font-avenir text-slate-800 mb-8 text-center heading-tracking"
           >
             Introduction
           </h2>
           
-          <div className="prose prose-lg max-w-none mb-12">
-            <p className="text-lg leading-relaxed text-slate-700">
+          <div className="max-w-none mb-12 px-8">
+            <p className="text-body-large font-lora text-slate-700 leading-body-relaxed">
               {book.intro}
             </p>
           </div>
@@ -38,16 +37,14 @@ export function BookIntro({ book, onNext, onPrev }: BookIntroProps) {
           <div className="flex justify-between">
             <button
               onClick={onPrev}
-              className="px-6 py-2 text-slate-600 hover:text-slate-800 transition-colors"
-              style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}
+              className="px-6 py-2 font-avenir text-slate-600 hover:text-slate-800 transition-colors"
             >
               ← Back
             </button>
             
             <button
               onClick={onNext}
-              className="px-8 py-3 bg-slate-800 text-white rounded-full hover:bg-slate-900 transition-colors"
-              style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}
+              className="px-8 py-3 bg-slate-800 text-white rounded-full font-avenir hover:bg-slate-900 transition-colors"
             >
               Start Chapter 1 →
             </button>

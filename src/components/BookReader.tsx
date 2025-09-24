@@ -127,8 +127,7 @@ export function BookReader({ book, chapters }: BookReaderProps) {
         <button
           onClick={handleDownloadPdf}
           disabled={isGeneratingPdf}
-          className="hidden lg:block fixed top-4 right-4 z-50 px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
-          style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}
+          className="hidden lg:block fixed top-4 right-4 z-50 px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg font-avenir"
         >
           {isGeneratingPdf ? (
             <span className="flex items-center">
@@ -146,10 +145,10 @@ export function BookReader({ book, chapters }: BookReaderProps) {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-40">
           <div className="bg-white p-8 rounded-lg shadow-xl text-center max-w-md">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800 mx-auto mb-4"></div>
-            <h3 className="text-lg font-medium text-slate-800 mb-2">
+            <h3 className="text-lg font-avenir text-slate-800 mb-2">
               Generating PDF
             </h3>
-            <p className="text-slate-600">
+            <p className="font-lora text-slate-600">
               Please wait while we create your book PDF. This may take a few moments...
             </p>
           </div>

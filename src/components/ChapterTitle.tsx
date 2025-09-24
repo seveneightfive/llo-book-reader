@@ -49,30 +49,27 @@ export function ChapterTitle({ chapter, onNext, onPrev }: ChapterTitleProps) {
       >
         <div className="max-w-lg">
           <p
-            className="text-sm tracking-wider text-slate-500 uppercase mb-4"
-            style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}
+            className="text-sm font-avenir tracking-wider text-slate-500 uppercase mb-4"
           >
             Chapter {chapter.chapter_number}
           </p>
           
           <h1
-            className="text-4xl md:text-5xl lg:text-6xl font-light text-slate-800 mb-6"
-            style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}
+            className="text-4xl md:text-5xl lg:text-6xl font-avenir text-slate-800 mb-6 heading-tracking"
           >
             {chapter.title}
           </h1>
           
           {chapter.intro && (
             <h2
-              className="text-xl text-slate-600 mb-4"
-              style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}
+              className="text-xl font-avenir text-slate-600 mb-4 heading-tracking"
             >
               {chapter.intro}
             </h2>
           )}
           
           {chapter.lede && (
-            <p className="text-lg leading-relaxed text-slate-700 mb-12">
+            <p className="text-body-large font-lora text-slate-700 mb-12 leading-body-relaxed px-4">
               {chapter.lede}
             </p>
           )}
@@ -80,16 +77,14 @@ export function ChapterTitle({ chapter, onNext, onPrev }: ChapterTitleProps) {
           <div className="flex justify-between items-center w-full max-w-xs mt-8">
             <button
               onClick={onPrev}
-              className="px-6 py-2 text-slate-600 hover:text-slate-800 transition-colors"
-              style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}
+              className="px-6 py-2 font-avenir text-slate-600 hover:text-slate-800 transition-colors"
             >
               ← Back
             </button>
             
             <button
               onClick={onNext}
-              className="px-8 py-3 bg-slate-800 text-white rounded-full hover:bg-slate-900 transition-colors"
-              style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}
+              className="px-8 py-3 bg-slate-800 text-white rounded-full font-avenir hover:bg-slate-900 transition-colors"
             >
               Read Chapter →
             </button>

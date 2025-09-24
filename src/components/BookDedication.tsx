@@ -23,29 +23,26 @@ export function BookDedication({ book, onNext, onPrev }: BookDedicationProps) {
           transition={{ delay: 0.3, duration: 0.8 }}
         >
           <h2
-            className="text-2xl text-slate-600 mb-8"
-            style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}
+            className="text-2xl font-avenir text-slate-600 mb-8 dedication-tracking uppercase"
           >
             Dedication
           </h2>
           
-          <blockquote className="text-xl leading-relaxed text-slate-800 mb-12 italic">
+          <blockquote className="text-xl font-lora italic text-slate-800 mb-12 leading-body-relaxed quote-tracking border-l-4 border-slate-300 pl-8 py-6 bg-slate-50/50 rounded-r-lg mx-4">
             {book.dedication}
           </blockquote>
           
           <div className="flex justify-between">
             <button
               onClick={onPrev}
-              className="px-6 py-2 text-slate-600 hover:text-slate-800 transition-colors"
-              style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}
+              className="px-6 py-2 font-avenir text-slate-600 hover:text-slate-800 transition-colors"
             >
               ← Back
             </button>
             
             <button
               onClick={onNext}
-              className="px-6 py-2 bg-slate-800 text-white rounded-full hover:bg-slate-900 transition-colors"
-              style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}
+              className="px-6 py-2 bg-slate-800 text-white rounded-full font-avenir hover:bg-slate-900 transition-colors"
             >
               Continue →
             </button>

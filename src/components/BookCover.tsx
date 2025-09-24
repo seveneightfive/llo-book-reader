@@ -35,8 +35,7 @@ export function BookCover({ book, onNext }: BookCoverProps) {
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.8 }}
-          className="text-5xl md:text-7xl font-light text-white mb-4"
-          style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}
+          className="text-5xl md:text-7xl font-avenir text-white mb-4 heading-tracking"
         >
           {book.title}
         </motion.h1>
@@ -45,8 +44,7 @@ export function BookCover({ book, onNext }: BookCoverProps) {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.7, duration: 0.8 }}
-          className="text-xl text-slate-300 mb-12"
-          style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}
+          className="text-xl font-lora text-slate-300 mb-12 leading-body-relaxed"
         >
           by {book.author}
         </motion.p>
@@ -58,8 +56,7 @@ export function BookCover({ book, onNext }: BookCoverProps) {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={onNext}
-          className="px-8 py-3 bg-white text-slate-900 rounded-full font-medium text-lg hover:bg-slate-100 transition-colors"
-          style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}
+          className="px-8 py-3 bg-white text-slate-900 rounded-full font-avenir text-lg hover:bg-slate-100 transition-colors"
         >
           Begin Reading
         </motion.button>

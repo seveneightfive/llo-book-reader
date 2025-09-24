@@ -141,7 +141,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
         
         <div className="text-center">
           <p className="text-sm text-slate-500">{bookTitle}</p>
-          <p className="font-medium" style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}>
+          <p className="font-avenir">
             {chapter.title}
           </p>
         </div>
@@ -198,10 +198,10 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
         {/* Text Content */}
         <div 
           ref={contentRef}
-          className="w-full lg:w-1/2 overflow-y-auto"
+          className="w-full lg:w-1/2 overflow-y-auto px-4 lg:px-0"
           style={{ height: 'calc(100vh - 80px)' }}
         >
-          <div className="p-8 lg:p-12 max-w-2xl mx-auto">
+          <div className="p-12 lg:p-16 max-w-3xl mx-auto">
             {groupedPages.map((group, groupIndex) => (
               <motion.div
                 key={group.subheading?.id || `group-${groupIndex}`}
@@ -238,8 +238,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                 {group.subheading?.subheading && (
                   <h3 
                     data-subheading-id={group.subheading.id}
-                    className="text-2xl lg:text-3xl font-light text-slate-800 mb-6"
-                    style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}
+                    className="text-2xl lg:text-3xl font-avenir text-slate-800 mb-8 heading-tracking"
                   >
                     {group.subheading.subheading}
                   </h3>
@@ -249,16 +248,16 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                 {group.content.map((page) => (
                   <div key={page.id} data-page-id={page.id} className="mb-6">
                     {page.content && (
-                      <div className="prose prose-lg max-w-none">
-                        <p className="text-lg leading-relaxed text-slate-700">
+                      <div className="max-w-none mb-8">
+                        <p className="text-body-large font-lora text-slate-700 leading-body-relaxed">
                           {page.content}
                         </p>
                       </div>
                     )}
                     
                     {page.quote && (
-                      <blockquote className="border-l-4 border-slate-800 pl-6 py-4 bg-slate-50 rounded-r-lg">
-                        <p className="text-lg italic text-slate-700 leading-relaxed">
+                      <blockquote className="border-l-4 border-slate-300 pl-8 py-6 bg-slate-50/70 rounded-r-lg my-8 mx-4">
+                        <p className="text-body-large font-lora italic text-slate-700 leading-body-relaxed quote-tracking">
                           {page.quote}
                         </p>
                       </blockquote>
@@ -269,8 +268,8 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                 {/* Handle subheading content if it exists */}
                 {group.subheading?.content && (
                   <div data-page-id={group.subheading.id} className="mb-6">
-                    <div className="prose prose-lg max-w-none">
-                      <p className="text-lg leading-relaxed text-slate-700">
+                    <div className="max-w-none mb-8">
+                      <p className="text-body-large font-lora text-slate-700 leading-body-relaxed">
                         {group.subheading.content}
                       </p>
                     </div>
@@ -278,8 +277,8 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                 )}
                 
                 {group.subheading?.quote && (
-                  <blockquote className="border-l-4 border-slate-800 pl-6 py-4 bg-slate-50 rounded-r-lg">
-                    <p className="text-lg italic text-slate-700 leading-relaxed">
+                  <blockquote className="border-l-4 border-slate-300 pl-8 py-6 bg-slate-50/70 rounded-r-lg my-8 mx-4">
+                    <p className="text-body-large font-lora italic text-slate-700 leading-body-relaxed quote-tracking">
                       {group.subheading.quote}
                     </p>
                   </blockquote>
@@ -291,16 +290,14 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
               <div className="flex justify-between items-center">
                 <button
                   onClick={onPrev}
-                  className="px-6 py-3 text-slate-600 hover:text-slate-800 transition-colors"
-                  style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}
+                  className="px-6 py-3 font-avenir text-slate-600 hover:text-slate-800 transition-colors"
                 >
                   ← Previous
                 </button>
                 
                 <button
                   onClick={onNext}
-                  className="px-8 py-3 bg-slate-800 text-white rounded-full hover:bg-slate-900 transition-colors"
-                  style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}
+                  className="px-8 py-3 bg-slate-800 text-white rounded-full font-avenir hover:bg-slate-900 transition-colors"
                 >
                   Next Chapter →
                 </button>
@@ -333,8 +330,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <h2 
-                      className="text-sm text-slate-500 mb-1"
-                      style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}
+                      className="text-sm font-avenir text-slate-500 mb-1"
                     >
                       {bookTitle}
                     </h2>
@@ -366,8 +362,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                       Chapter {chap.chapter_number}
                     </div>
                     <div 
-                      className="font-medium text-sm"
-                      style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}
+                      className="font-avenir text-sm"
                     >
                       {chap.lede || chap.title}
                     </div>
@@ -382,8 +377,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                     onDownloadPdf();
                     setIsNavOpen(false);
                   }}
-                  className="w-full px-4 py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition-colors flex items-center justify-center"
-                  style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}
+                  className="w-full px-4 py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition-colors flex items-center justify-center font-avenir"
                 >
                   Download PDF
                 </button>
