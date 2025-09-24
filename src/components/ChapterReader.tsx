@@ -197,22 +197,22 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.6 }}
-                className="absolute inset-0 flex flex-col"
+                className="absolute inset-0 flex items-center justify-center"
               >
-                <div className="flex-1 flex items-center justify-center p-12">
+                <div className="relative w-full h-full flex items-center justify-center p-12">
                   <img
                     src={currentImage}
                     alt=""
                     className="max-w-full max-h-full object-contain rounded-lg shadow-lg"
                   />
+                  {currentCaption && (
+                    <div className="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-3">
+                      <p className="text-xs text-slate-600 italic text-center leading-relaxed">
+                        {currentCaption}
+                      </p>
+                    </div>
+                  )}
                 </div>
-                {currentCaption && (
-                  <div className="p-8 bg-white/90 backdrop-blur-sm">
-                    <p className="text-sm text-slate-600 italic text-center">
-                      {currentCaption}
-                    </p>
-                  </div>
-                )}
               </motion.div>
             )}
           </AnimatePresence>
