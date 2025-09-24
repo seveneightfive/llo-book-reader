@@ -1,0 +1,59 @@
+import { motion } from 'framer-motion';
+import { Book } from '../lib/supabase';
+
+interface BookIntroProps {
+  book: Book;
+  onNext: () => void;
+  onPrev: () => void;
+}
+
+export function BookIntro({ book, onNext, onPrev }: BookIntroProps) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: 100 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -100 }}
+      transition={{ duration: 0.6 }}
+      className="min-h-screen bg-slate-50 flex items-center justify-center p-8"
+    >
+      <div className="max-w-3xl mx-auto">
+        <motion.div
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.8 }}
+        >
+          <h2
+            className="text-3xl text-slate-800 mb-8 text-center"
+            style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}
+          >
+            Introduction
+          </h2>
+          
+          <div className="prose prose-lg max-w-none mb-12">
+            <p className="text-lg leading-relaxed text-slate-700">
+              {book.intro}
+            </p>
+          </div>
+          
+          <div className="flex justify-between">
+            <button
+              onClick={onPrev}
+              className="px-6 py-2 text-slate-600 hover:text-slate-800 transition-colors"
+              style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}
+            >
+              ← Back
+            </button>
+            
+            <button
+              onClick={onNext}
+              className="px-8 py-3 bg-slate-800 text-white rounded-full hover:bg-slate-900 transition-colors"
+              style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}
+            >
+              Start Chapter 1 →
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+}
