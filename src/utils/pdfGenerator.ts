@@ -57,8 +57,8 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           
           .cover-page {
             position: relative;
-            height: 100vh;
-            width: 100vw;
+            height: 100%;
+            width: 100%;
             overflow: hidden;
             display: flex;
             align-items: center;
@@ -72,7 +72,7 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
             z-index: 1;
           }
           
@@ -201,8 +201,8 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           .chapter-image-page {
             page-break-before: always;
             page-break-after: always;
-            height: 100vh;
-            width: 100vw;
+            height: 100%;
+            width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -279,7 +279,7 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           
           .content-image {
             max-width: 100%;
-            max-height: 4.5in;
+            max-height: 4.0in;
             height: auto;
             object-fit: contain;
             margin: 0 auto;
