@@ -61,6 +61,9 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
             width: 100%;
             overflow: hidden;
             page-break-after: always;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
           }
           
           .cover-image {
@@ -396,8 +399,7 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
       </head>
       <body>
         <!-- Cover Page -->
-        <div class="cover-page">
-          ${book.cover_image ? `<img src="${book.cover_image}" alt="${book.title}" class="cover-image">` : ''}
+        <div class="cover-page" ${book.cover_image ? `style="background-image: url('${book.cover_image}')"` : ''}>
           <div class="cover-overlay">
             <div class="cover-title-box">
               <h1 class="book-title">The Journey of A Life</h1>
