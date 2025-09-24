@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import html2pdf from 'html2pdf.js';
 import { Book, Chapter } from '../lib/supabase';
 import { fetchAllPagesForChapters } from '../lib/pdfUtils';
+import { downloadBookPDF } from '../utils/pdfGenerator';
 import { BookCover } from './BookCover';
 import { BookDedication } from './BookDedication';
 import { BookIntro } from './BookIntro';
 import { ChapterTitle } from './ChapterTitle';
 import { ChapterReader } from './ChapterReader';
-import { PdfBookContent } from './PdfBookContent';
 
 interface BookReaderProps {
   book: Book;
@@ -110,53 +109,8 @@ export function BookReader({ book, chapters }: BookReaderProps) {
       // Fetch all pages for all chapters
       const chaptersWithPages = await fetchAllPagesForChapters(chapters);
       
-      // Create a temporary container for the PDF content
-      const tempContainer = document.createElement('div');
-      tempContainer.style.position = 'absolute';
-      tempContainer.style.left = '-9999px';
-      tempContainer.style.top = '0';
-      tempContainer.style.width = '210mm'; // A4 width
-      document.body.appendChild(tempContainer);
-      
-      // Create React element and render it
-      const { createRoot } = await import('react-dom/client');
-      const root = createRoot(tempContainer);
-      
-      // Render the PDF content
-      await new Promise<void>((resolve) => {
-        root.render(
-          <PdfBookContent book={book} chaptersWithPages={chaptersWithPages} />
-        );
-        // Give React time to render
-        setTimeout(resolve, 3000);
-      });
-      
-      // Configure PDF options
-      const opt = {
-        margin: [0.5, 0.5, 0.5, 0.5],
-        filename: `${book.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          letterRendering: true
-        },
-        jsPDF: { 
-          unit: 'in', 
-          format: 'a4', 
-          orientation: 'portrait',
-          putOnlyUsedFonts: true,
-          floatPrecision: 16
-        }
-      };
-      
-      // Generate and download PDF
-      await html2pdf().set(opt).from(tempContainer).save();
-      
-      // Cleanup
-      root.unmount();
-      document.body.removeChild(tempContainer);
+      // Generate and download PDF using the new generator
+      await downloadBookPDF(book, chaptersWithPages);
       
     } catch (error) {
       console.error('Error generating PDF:', error);
