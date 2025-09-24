@@ -69,7 +69,7 @@ export function ChapterTitle({ chapter, onNext, onPrev }: ChapterTitleProps) {
           )}
           
           {chapter.lede && (
-            <p className="text-body-large font-lora text-slate-700 mb-12 leading-body-relaxed px-4">
+            <p className="text-body-large font-lora mb-12 leading-body-relaxed px-4">
               {chapter.lede}
             </p>
           )}

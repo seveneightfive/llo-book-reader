@@ -249,7 +249,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                   <div key={page.id} data-page-id={page.id} className="mb-6">
                     {page.content && (
                       <div className="max-w-none mb-8">
-                        <p className="text-body-large font-lora text-slate-700 leading-body-relaxed">
+                        <p className="text-body-large font-lora leading-body-relaxed">
                           {page.content}
                         </p>
                       </div>
@@ -257,7 +257,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                     
                     {page.quote && (
                       <blockquote className="border-l-4 border-slate-300 pl-8 py-6 bg-slate-50/70 rounded-r-lg my-8 mx-4">
-                        <p className="text-body-large font-lora italic text-slate-700 leading-body-relaxed quote-tracking">
+                        <p className="text-body-large font-lora italic leading-body-relaxed quote-tracking">
                           {page.quote}
                         </p>
                       </blockquote>
@@ -269,7 +269,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                 {group.subheading?.content && (
                   <div data-page-id={group.subheading.id} className="mb-6">
                     <div className="max-w-none mb-8">
-                      <p className="text-body-large font-lora text-slate-700 leading-body-relaxed">
+                      <p className="text-body-large font-lora leading-body-relaxed">
                         {group.subheading.content}
                       </p>
                     </div>
@@ -278,7 +278,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                 
                 {group.subheading?.quote && (
                   <blockquote className="border-l-4 border-slate-300 pl-8 py-6 bg-slate-50/70 rounded-r-lg my-8 mx-4">
-                    <p className="text-body-large font-lora italic text-slate-700 leading-body-relaxed quote-tracking">
+                    <p className="text-body-large font-lora italic leading-body-relaxed quote-tracking">
                       {group.subheading.quote}
                     </p>
                   </blockquote>

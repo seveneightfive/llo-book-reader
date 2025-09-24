@@ -29,7 +29,7 @@ export function BookIntro({ book, onNext, onPrev }: BookIntroProps) {
           </h2>
           
           <div className="max-w-none mb-12 px-8">
-            <p className="text-body-large font-lora text-slate-700 leading-body-relaxed">
+            <p className="text-body-large font-lora leading-body-relaxed">
               {book.intro}
             </p>
           </div>
