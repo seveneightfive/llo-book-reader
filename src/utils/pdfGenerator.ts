@@ -1,310 +1,419 @@
-import jsPDF from 'jspdf';
+import html2pdf from 'html2pdf.js';
+import { marked } from 'marked';
 import { Book } from '../lib/supabase';
 import { ChapterWithPages } from '../lib/pdfUtils';
 
-// Helper function to load images asynchronously
-const loadImage = (url: string): Promise<HTMLImageElement> => {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.crossOrigin = 'anonymous'; // Handle CORS for external images
-    img.onload = () => resolve(img);
-    img.onerror = (error) => reject(new Error(`Failed to load image: ${url}`));
-    img.src = url;
-  });
+// Configure marked options for better HTML output
+marked.setOptions({
+  breaks: true, // Convert single line breaks to <br>
+  gfm: true, // Enable GitHub Flavored Markdown
+});
+
+// Helper function to safely parse markdown content
+const parseMarkdown = (content: string | null): string => {
+  if (!content) return '';
+  return marked.parse(content);
 };
 
-// Helper function to add image to PDF
-const addImageToPdf = async (
-  pdf: jsPDF, 
-  imageUrl: string, 
-  x: number, 
-  currentY: number, 
-  maxWidth: number, 
-  pageHeight: number, 
-  margin: number,
-  caption?: string | null
-): Promise<number> => {
-  try {
-    const img = await loadImage(imageUrl);
-    
-    // Calculate dimensions to fit within content area while maintaining aspect ratio
-    const imgAspectRatio = img.width / img.height;
-    let imgWidth = Math.min(maxWidth, maxWidth);
-    let imgHeight = imgWidth / imgAspectRatio;
-    
-    // Calculate caption height if caption exists
-    let captionHeight = 0;
-    if (caption) {
-      pdf.setFontSize(9);
-      const captionLines = pdf.splitTextToSize(caption, maxWidth);
-      captionHeight = captionLines.length * (9 * 0.35) + 5; // font size * line height + spacing
-    }
-    
-    // If image is too tall for remaining space, scale it down
-    const remainingSpace = pageHeight - currentY - margin - captionHeight;
-    if (imgHeight > remainingSpace - 20) { // Leave some space for text
-      imgHeight = Math.min(imgHeight, remainingSpace - 20);
-      imgWidth = imgHeight * imgAspectRatio;
-    }
-    
-    // Check if we need a new page (considering both image and caption)
-    if (currentY + imgHeight + captionHeight > pageHeight - margin) {
-      pdf.addPage();
-      currentY = margin;
-    }
-    
-    // Center the image horizontally
-    const imgX = x + (maxWidth - imgWidth) / 2;
-    
-    // Add image to PDF
-    pdf.addImage(img, 'JPEG', imgX, currentY, imgWidth, imgHeight);
-    
-    let newY = currentY + imgHeight + 10;
-    
-    // Add caption if it exists
-    if (caption) {
-      pdf.setFontSize(9);
-      pdf.setFont('helvetica', 'italic');
-      const captionLines = pdf.splitTextToSize(caption, maxWidth);
-      const lineHeight = 9 * 0.35;
-      
-      captionLines.forEach((line: string, index: number) => {
-        pdf.text(line, x + (maxWidth / 2), newY + (index * lineHeight), { align: 'center' });
-      });
-      
-      newY += captionLines.length * lineHeight + 5;
-    }
-    
-    return newY;
-  } catch (error) {
-    console.warn(`Failed to add image to PDF: ${imageUrl}`, error);
-    return currentY; // Return original position if image fails
-  }
+// Helper function to escape HTML but preserve markdown
+const sanitizeContent = (content: string | null): string => {
+  if (!content) return '';
+  // Let marked handle the markdown parsing and HTML generation
+  return parseMarkdown(content);
 };
 
 export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWithPages[]): Promise<void> => {
   try {
-    // Create a new jsPDF instance
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4'
-    });
-
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-    const margin = 20;
-    const contentWidth = pageWidth - (margin * 2);
-    let yPosition = margin;
-
-    // Helper function to add text with word wrapping
-    const addWrappedText = (text: string, x: number, y: number, maxWidth: number, fontSize: number = 12, fontStyle: string = 'normal'): number => {
-      pdf.setFontSize(fontSize);
-      pdf.setFont('helvetica', fontStyle);
-      
-      const lines = pdf.splitTextToSize(text, maxWidth);
-      const lineHeight = fontSize * 0.35; // Convert pt to mm
-      
-      lines.forEach((line: string, index: number) => {
-        if (y + (index * lineHeight) > pageHeight - margin) {
-          pdf.addPage();
-          y = margin;
-        }
-        pdf.text(line, x, y + (index * lineHeight));
-      });
-      
-      return y + (lines.length * lineHeight);
-    };
-
-    // Helper function to check if we need a new page
-    const checkNewPage = (requiredSpace: number): number => {
-      if (yPosition + requiredSpace > pageHeight - margin) {
-        pdf.addPage();
-        return margin;
-      }
-      return yPosition;
-    };
-
-    // Title Page
-    pdf.setFontSize(24);
-    pdf.setFont('helvetica', 'bold');
-    const titleLines = pdf.splitTextToSize(book.title, contentWidth);
-    titleLines.forEach((line: string, index: number) => {
-      pdf.text(line, pageWidth / 2, 60 + (index * 10), { align: 'center' });
-    });
-
-    pdf.setFontSize(16);
-    pdf.setFont('helvetica', 'normal');
-    pdf.text(`by ${book.author}`, pageWidth / 2, 80 + (titleLines.length * 10), { align: 'center' });
-
-    // Add cover image
-    if (book.cover_image) {
-      yPosition = 100 + (titleLines.length * 10);
-      yPosition = await addImageToPdf(pdf, book.cover_image, margin, yPosition, contentWidth, pageHeight, margin);
-    }
-
-    // Description
-    if (book.description) {
-      yPosition = checkNewPage(30);
-      yPosition += 10;
-      pdf.setFontSize(12);
-      pdf.setFont('helvetica', 'italic');
-      yPosition = addWrappedText(book.description, margin, yPosition, contentWidth, 12, 'italic');
-    }
-
-    // Dedication
-    if (book.dedication) {
-      yPosition = checkNewPage(30);
-      yPosition += 20;
-      pdf.setFontSize(14);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('Dedication', margin, yPosition);
-      yPosition += 10;
-      yPosition = addWrappedText(book.dedication, margin, yPosition, contentWidth, 11, 'italic');
-    }
-
-    // Introduction
-    if (book.intro) {
-      pdf.addPage();
-      yPosition = margin;
-      pdf.setFontSize(18);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text('Introduction', margin, yPosition);
-      yPosition += 15;
-      yPosition = addWrappedText(book.intro, margin, yPosition, contentWidth, 11);
-    }
-
-    // Table of Contents
-    pdf.addPage();
-    yPosition = margin;
-    pdf.setFontSize(18);
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('Table of Contents', margin, yPosition);
-    yPosition += 15;
-
-    // Filter chapters with pages for TOC
-    const validChapters = chaptersWithPages.filter(chapter => chapter.pages.length > 0);
-    
-    for (const chapter of validChapters) {
-      yPosition = checkNewPage(10);
-      pdf.setFontSize(12);
-      pdf.setFont('helvetica', 'normal');
-      pdf.text(`Chapter ${chapter.chapter_number}: ${chapter.title}`, margin, yPosition);
-      pdf.text(`${chapter.pages.length} pages`, pageWidth - margin - 30, yPosition);
-      yPosition += 8;
-    }
-
-    // Chapters and Pages
-    for (const chapter of validChapters) {
-      // Chapter title page
-      pdf.addPage();
-      yPosition = margin + 40;
-      
-      // Add chapter image if exists
-      if (chapter.chapter_image) {
-        yPosition = await addImageToPdf(pdf, chapter.chapter_image, margin, yPosition, contentWidth, pageHeight, margin);
-        yPosition += 10;
-      }
-      
-      // Chapter number
-      pdf.setFontSize(48);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text(`${chapter.chapter_number}`, pageWidth / 2, yPosition, { align: 'center' });
-      
-      yPosition += 20;
-      pdf.setFontSize(8);
-      pdf.setFont('helvetica', 'normal');
-      pdf.text('CHAPTER', pageWidth / 2, yPosition, { align: 'center' });
-      
-      yPosition += 20;
-      pdf.setFontSize(20);
-      pdf.setFont('helvetica', 'bold');
-      const chapterTitleLines = pdf.splitTextToSize(chapter.title, contentWidth);
-      chapterTitleLines.forEach((line: string, index: number) => {
-        pdf.text(line, pageWidth / 2, yPosition + (index * 8), { align: 'center' });
-      });
-
-      // Chapter intro/lede
-      if (chapter.intro || chapter.lede) {
-        yPosition += (chapterTitleLines.length * 8) + 15;
-        pdf.setFontSize(12);
-        pdf.setFont('helvetica', 'italic');
-        const introText = chapter.intro || chapter.lede;
-        yPosition = addWrappedText(introText!, margin, yPosition, contentWidth, 12, 'italic');
-      }
-
-      // Chapter content - reflowable pages
-      const blockSpacing = 10;
-      let isFirstContentBlock = true;
-      
-      for (const page of chapter.pages) {
-        // Check if we need spacing before this content block
-        if (!isFirstContentBlock) {
-          yPosition = checkNewPage(blockSpacing);
-          yPosition += blockSpacing;
-        }
-        isFirstContentBlock = false;
-
-        // Add page image if exists
-        if (page.image_url) {
-          yPosition = checkNewPage(100); // Ensure space for image
-          yPosition = await addImageToPdf(pdf, page.image_url, margin, yPosition, contentWidth, pageHeight, margin, page.image_caption);
-          yPosition += blockSpacing;
-        }
-
-        // Subheading
-        if (page.subheading) {
-          yPosition = checkNewPage(20);
-          pdf.setFontSize(14);
-          pdf.setFont('helvetica', 'bold');
-          yPosition = addWrappedText(page.subheading, margin, yPosition, contentWidth, 14, 'bold');
-          yPosition += blockSpacing;
-        }
-
-        // Quote
-        if (page.quote) {
-          yPosition = checkNewPage(30);
-          pdf.setFontSize(16);
-          pdf.setFont('helvetica', 'italic');
+    // Generate complete HTML document
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>${book.title}</title>
+        <style>
+          @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400;1,500&display=swap');
           
-          // Add quote marks and center the quote
-          const quoteText = `"${page.quote}"`;
-          yPosition = addWrappedText(quoteText, margin, yPosition, contentWidth, 16, 'italic');
-          yPosition += blockSpacing;
-        }
-
-        // Page content
-        if (page.content) {
-          const paragraphs = page.content.split('\n\n');
-          for (let i = 0; i < paragraphs.length; i++) {
-            const paragraph = paragraphs[i];
-            if (paragraph.trim()) {
-              yPosition = checkNewPage(20);
-              pdf.setFontSize(11);
-              pdf.setFont('helvetica', 'normal');
-              yPosition = addWrappedText(paragraph.trim(), margin, yPosition, contentWidth, 11);
-              // Add spacing between paragraphs, but not after the last one
-              if (i < paragraphs.length - 1) {
-                yPosition += 8;
-              }
-            }
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
           }
-        }
+          
+          body {
+            font-family: 'Lora', Georgia, 'Times New Roman', serif;
+            font-size: 11pt;
+            line-height: 1.6;
+            color: #212121;
+            max-width: 100%;
+            margin: 0;
+            padding: 20px;
+          }
+          
+          .page-break {
+            page-break-before: always;
+          }
+          
+          .cover-page {
+            text-align: center;
+            padding: 60px 0;
+            page-break-after: always;
+          }
+          
+          .cover-image {
+            max-width: 300px;
+            max-height: 400px;
+            margin: 0 auto 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+          }
+          
+          .book-title {
+            font-family: 'Avenir Next', 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            font-size: 28pt;
+            font-weight: 500;
+            color: #1e293b;
+            margin-bottom: 15px;
+            letter-spacing: 0.025em;
+          }
+          
+          .book-author {
+            font-size: 16pt;
+            color: #64748b;
+            margin-bottom: 20px;
+          }
+          
+          .dedication-page, .intro-page {
+            padding: 40px 0;
+            page-break-after: always;
+          }
+          
+          .dedication-title, .intro-title {
+            font-family: 'Avenir Next', 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            font-size: 18pt;
+            font-weight: 500;
+            text-align: center;
+            margin-bottom: 30px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: #64748b;
+          }
+          
+          .dedication-content {
+            font-style: italic;
+            text-align: center;
+            font-size: 12pt;
+            line-height: 1.7;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 30px;
+            background: #f8fafc;
+            border-radius: 8px;
+          }
+          
+          .toc-page {
+            page-break-after: always;
+            padding: 40px 0;
+          }
+          
+          .toc-title {
+            font-family: 'Avenir Next', 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            font-size: 18pt;
+            font-weight: 500;
+            margin-bottom: 30px;
+            color: #1e293b;
+          }
+          
+          .toc-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 12pt;
+          }
+          
+          .chapter-title-page {
+            text-align: center;
+            padding: 80px 0;
+            page-break-before: always;
+            page-break-after: always;
+          }
+          
+          .chapter-image {
+            max-width: 400px;
+            max-height: 300px;
+            margin: 0 auto 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+          }
+          
+          .chapter-number {
+            font-family: 'Avenir Next', 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            font-size: 48pt;
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 10px;
+          }
+          
+          .chapter-label {
+            font-family: 'Avenir Next', 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            font-size: 8pt;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: #64748b;
+            margin-bottom: 30px;
+          }
+          
+          .chapter-title {
+            font-family: 'Avenir Next', 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            font-size: 20pt;
+            font-weight: 500;
+            color: #1e293b;
+            margin-bottom: 20px;
+            letter-spacing: 0.025em;
+          }
+          
+          .chapter-intro {
+            font-style: italic;
+            font-size: 12pt;
+            color: #64748b;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.7;
+          }
+          
+          .chapter-content {
+            padding: 0;
+          }
+          
+          .content-block {
+            margin-bottom: 20px;
+          }
+          
+          .content-image {
+            max-width: 100%;
+            height: auto;
+            margin: 20px auto;
+            display: block;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          }
+          
+          .image-caption {
+            font-size: 9pt;
+            font-style: italic;
+            text-align: center;
+            color: #64748b;
+            margin-top: 8px;
+            margin-bottom: 20px;
+          }
+          
+          .subheading {
+            font-family: 'Avenir Next', 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            font-size: 14pt;
+            font-weight: 500;
+            color: #1e293b;
+            margin: 30px 0 15px 0;
+            letter-spacing: 0.025em;
+          }
+          
+          .content-text {
+            font-size: 11pt;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            text-align: justify;
+          }
+          
+          .content-quote {
+            font-size: 12pt;
+            font-style: italic;
+            line-height: 1.7;
+            margin: 25px 0;
+            padding: 20px 30px;
+            border-left: 4px solid #cbd5e1;
+            background: #f8fafc;
+            border-radius: 0 8px 8px 0;
+            letter-spacing: 0.01em;
+          }
+          
+          /* Markdown styling */
+          h1, h2, h3, h4, h5, h6 {
+            font-family: 'Avenir Next', 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            font-weight: 500;
+            color: #1e293b;
+            margin: 20px 0 10px 0;
+            letter-spacing: 0.025em;
+          }
+          
+          h1 { font-size: 18pt; }
+          h2 { font-size: 16pt; }
+          h3 { font-size: 14pt; }
+          h4 { font-size: 12pt; }
+          h5 { font-size: 11pt; }
+          h6 { font-size: 10pt; }
+          
+          p {
+            margin-bottom: 12px;
+            text-align: justify;
+          }
+          
+          strong, b {
+            font-weight: 500;
+            color: #1e293b;
+          }
+          
+          em, i {
+            font-style: italic;
+          }
+          
+          ul, ol {
+            margin: 12px 0;
+            padding-left: 20px;
+          }
+          
+          li {
+            margin-bottom: 6px;
+          }
+          
+          blockquote {
+            margin: 20px 0;
+            padding: 15px 25px;
+            border-left: 4px solid #cbd5e1;
+            background: #f8fafc;
+            font-style: italic;
+          }
+          
+          code {
+            font-family: 'Courier New', monospace;
+            background: #f1f5f9;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-size: 10pt;
+          }
+          
+          pre {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+          }
+          
+          pre code {
+            background: none;
+            padding: 0;
+          }
+        </style>
+      </head>
+      <body>
+        <!-- Cover Page -->
+        <div class="cover-page">
+          ${book.cover_image ? `<img src="${book.cover_image}" alt="${book.title}" class="cover-image">` : ''}
+          <h1 class="book-title">${sanitizeContent(book.title)}</h1>
+          <p class="book-author">by ${sanitizeContent(book.author)}</p>
+          ${book.description ? `<div class="book-description">${sanitizeContent(book.description)}</div>` : ''}
+        </div>
+
+        <!-- Dedication Page -->
+        ${book.dedication ? `
+        <div class="dedication-page">
+          <h2 class="dedication-title">Dedication</h2>
+          <div class="dedication-content">
+            ${sanitizeContent(book.dedication)}
+          </div>
+        </div>
+        ` : ''}
+
+        <!-- Introduction Page -->
+        ${book.intro ? `
+        <div class="intro-page">
+          <h2 class="intro-title">Introduction</h2>
+          <div class="intro-content">
+            ${sanitizeContent(book.intro)}
+          </div>
+        </div>
+        ` : ''}
+
+        <!-- Table of Contents -->
+        <div class="toc-page">
+          <h2 class="toc-title">Table of Contents</h2>
+          ${chaptersWithPages.filter(chapter => chapter.pages.length > 0).map(chapter => `
+            <div class="toc-item">
+              <span>Chapter ${chapter.chapter_number}: ${sanitizeContent(chapter.title)}</span>
+              <span>${chapter.pages.length} sections</span>
+            </div>
+          `).join('')}
+        </div>
+
+        <!-- Chapters -->
+        ${chaptersWithPages.filter(chapter => chapter.pages.length > 0).map(chapter => `
+          <!-- Chapter Title Page -->
+          <div class="chapter-title-page">
+            ${chapter.chapter_image ? `<img src="${chapter.chapter_image}" alt="${chapter.title}" class="chapter-image">` : ''}
+            <div class="chapter-number">${chapter.chapter_number}</div>
+            <div class="chapter-label">Chapter</div>
+            <h1 class="chapter-title">${sanitizeContent(chapter.title)}</h1>
+            ${chapter.intro || chapter.lede ? `
+              <div class="chapter-intro">
+                ${sanitizeContent(chapter.intro || chapter.lede || '')}
+              </div>
+            ` : ''}
+          </div>
+
+          <!-- Chapter Content -->
+          <div class="chapter-content">
+            ${chapter.pages.map(page => `
+              <div class="content-block">
+                ${page.image_url ? `
+                  <img src="${page.image_url}" alt="" class="content-image">
+                  ${page.image_caption ? `<div class="image-caption">${sanitizeContent(page.image_caption)}</div>` : ''}
+                ` : ''}
+                
+                ${page.subheading ? `<h3 class="subheading">${sanitizeContent(page.subheading)}</h3>` : ''}
+                
+                ${page.quote ? `<div class="content-quote">${sanitizeContent(page.quote)}</div>` : ''}
+                
+                ${page.content ? `<div class="content-text">${sanitizeContent(page.content)}</div>` : ''}
+              </div>
+            `).join('')}
+          </div>
+        `).join('')}
+      </body>
+      </html>
+    `;
+
+    // Configure html2pdf options
+    const options = {
+      margin: [15, 15, 15, 15], // top, right, bottom, left in mm
+      filename: `${book.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`,
+      image: { 
+        type: 'jpeg', 
+        quality: 0.85 
+      },
+      html2canvas: { 
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        letterRendering: true
+      },
+      jsPDF: { 
+        unit: 'mm', 
+        format: 'a4', 
+        orientation: 'portrait',
+        compress: true
+      },
+      pagebreak: { 
+        mode: ['avoid-all', 'css', 'legacy'],
+        before: '.page-break',
+        after: '.chapter-title-page'
       }
-    }
+    };
 
-    // Footer on all pages
-    const totalPages = pdf.getNumberOfPages();
-    for (let i = 1; i <= totalPages; i++) {
-      pdf.setPage(i);
-      pdf.setFontSize(8);
-      pdf.setFont('helvetica', 'normal');
-      pdf.text(`Page ${i} of ${totalPages}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
-    }
-
-    // Save the PDF
-    const fileName = `${book.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`;
-    pdf.save(fileName);
+    // Generate and download PDF
+    await html2pdf()
+      .set(options)
+      .from(htmlContent)
+      .save();
 
   } catch (error) {
     console.error('Error generating PDF:', error);
