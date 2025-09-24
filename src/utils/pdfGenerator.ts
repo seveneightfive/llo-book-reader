@@ -233,22 +233,23 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
         yPosition = addWrappedText(introText!, margin, yPosition, contentWidth, 12, 'italic');
       }
 
-      // Chapter pages
-      for (let pageIndex = 0; pageIndex < chapter.pages.length; pageIndex++) {
-        const page = chapter.pages[pageIndex];
-        pdf.addPage();
-        yPosition = margin;
-
-        // Page header
-        pdf.setFontSize(10);
-        pdf.setFont('helvetica', 'normal');
-        pdf.text(`Chapter ${chapter.chapter_number} - Page ${pageIndex + 1}`, margin, yPosition);
-        pdf.text(book.title, pageWidth - margin, yPosition, { align: 'right' });
-        yPosition += 15;
+      // Chapter content - reflowable pages
+      const blockSpacing = 10;
+      let isFirstContentBlock = true;
+      
+      for (const page of chapter.pages) {
+        // Check if we need spacing before this content block
+        if (!isFirstContentBlock) {
+          yPosition = checkNewPage(blockSpacing);
+          yPosition += blockSpacing;
+        }
+        isFirstContentBlock = false;
 
         // Add page image if exists
         if (page.image_url) {
+          yPosition = checkNewPage(100); // Ensure space for image
           yPosition = await addImageToPdf(pdf, page.image_url, margin, yPosition, contentWidth, pageHeight, margin, page.image_caption);
+          yPosition += blockSpacing;
         }
 
         // Subheading
@@ -257,29 +258,35 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           pdf.setFontSize(14);
           pdf.setFont('helvetica', 'bold');
           yPosition = addWrappedText(page.subheading, margin, yPosition, contentWidth, 14, 'bold');
-          yPosition += 8;
+          yPosition += blockSpacing;
         }
 
         // Quote
         if (page.quote) {
-          yPosition = checkNewPage(40);
+          yPosition = checkNewPage(30);
           pdf.setFontSize(16);
           pdf.setFont('helvetica', 'italic');
           
           // Add quote marks and center the quote
           const quoteText = `"${page.quote}"`;
           yPosition = addWrappedText(quoteText, margin, yPosition, contentWidth, 16, 'italic');
-          yPosition += 10;
+          yPosition += blockSpacing;
         }
 
         // Page content
         if (page.content) {
           const paragraphs = page.content.split('\n\n');
-          for (const paragraph of paragraphs) {
+          for (let i = 0; i < paragraphs.length; i++) {
+            const paragraph = paragraphs[i];
             if (paragraph.trim()) {
               yPosition = checkNewPage(20);
+              pdf.setFontSize(11);
+              pdf.setFont('helvetica', 'normal');
               yPosition = addWrappedText(paragraph.trim(), margin, yPosition, contentWidth, 11);
-              yPosition += 8; // Space between paragraphs
+              // Add spacing between paragraphs, but not after the last one
+              if (i < paragraphs.length - 1) {
+                yPosition += 8;
+              }
             }
           }
         }
