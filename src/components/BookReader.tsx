@@ -127,7 +127,7 @@ export function BookReader({ book, chapters }: BookReaderProps) {
         <button
           onClick={handleDownloadPdf}
           disabled={isGeneratingPdf}
-          className="fixed top-4 right-4 z-50 px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+          className="hidden lg:block fixed top-4 right-4 z-50 px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
           style={{ fontFamily: 'Avenir, system-ui, sans-serif' }}
         >
           {isGeneratingPdf ? (
