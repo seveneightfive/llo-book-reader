@@ -28,7 +28,6 @@ export function BookDedication({ book, onNext, onPrev }: BookDedicationProps) {
             Dedication
           </h2>
           
-          <blockquote className="text-xl font-lora italic text-slate-800 mb-12 leading-body-relaxed quote-tracking border-l-4 border-slate-300 pl-8 py-6 bg-slate-50/50 rounded-r-lg mx-4">
           <blockquote className="text-xl font-lora italic text-slate-800 mb-12 leading-body-relaxed quote-tracking py-6 bg-slate-50/50 rounded-lg mx-4 px-8">
             {book.dedication}
           </blockquote>
@@ -52,6 +51,3 @@ export function BookDedication({ book, onNext, onPrev }: BookDedicationProps) {
       </div>
     </motion.div>
   );
-}
-  )
-}
