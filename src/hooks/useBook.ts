@@ -126,3 +126,36 @@ export function useChapterGallery(chapterId: string) {
 
   return { galleryItems, loading, error };
 }
+
+export function useChapterGallery(chapterId: string) {
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchGalleryItems() {
+      try {
+        setLoading(true);
+        
+        const { data, error } = await supabase
+          .from('gallery_items')
+          .select('*')
+          .eq('chapter_id', chapterId)
+          .order('sort_order');
+
+        if (error) throw error;
+        setGalleryItems(data || []);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch gallery items');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (chapterId) {
+      fetchGalleryItems();
+    }
+  }, [chapterId]);
+
+  return { galleryItems, loading, error };
+}

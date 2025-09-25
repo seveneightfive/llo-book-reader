@@ -5,6 +5,7 @@ import { marked } from 'marked';
 import { Chapter, Page, supabase } from '../lib/supabase';
 import { useChapterPages, useChapterGallery } from '../hooks/useBook';
 import { ChapterGallery } from './ChapterGallery';
+import { ChapterGallery } from './ChapterGallery';
 
 interface ChapterReaderProps {
   chapter: Chapter;
@@ -18,6 +19,7 @@ interface ChapterReaderProps {
 
 export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, onChapterChange, onDownloadPdf }: ChapterReaderProps) {
   const { pages, loading } = useChapterPages(chapter.id);
+  const { galleryItems, loading: galleryLoading } = useChapterGallery(chapter.id);
   const { galleryItems, loading: galleryLoading } = useChapterGallery(chapter.id);
   
   // Get chapter image with fallback to default
@@ -338,6 +340,14 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
             
             {/* Spacer to allow last content to scroll to top on desktop */}
             <div className="hidden lg:block" style={{ height: 'calc(100vh - 80px)' }} />
+            
+            {/* Chapter Gallery */}
+            {!galleryLoading && galleryItems.length > 0 && (
+              <ChapterGallery 
+                galleryItems={galleryItems} 
+                chapterTitle={chapter.title}
+              />
+            )}
             
             {/* Chapter Gallery */}
             {!galleryLoading && galleryItems.length > 0 && (
