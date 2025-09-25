@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, ArrowLeft, ArrowRight, X } from 'lucide-react';
 import { marked } from 'marked';
-import { Chapter, Page } from '../lib/supabase';
+import { Chapter, Page, supabase } from '../lib/supabase';
 import { useChapterPages } from '../hooks/useBook';
 
 interface ChapterReaderProps {
@@ -17,7 +17,22 @@ interface ChapterReaderProps {
 
 export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, onChapterChange, onDownloadPdf }: ChapterReaderProps) {
   const { pages, loading } = useChapterPages(chapter.id);
-  const [currentImage, setCurrentImage] = useState<string | null>(chapter.chapter_image);
+  
+  // Get chapter image with fallback to default
+  const getChapterImageUrl = () => {
+    if (chapter.chapter_image) {
+      return chapter.chapter_image;
+    }
+    
+    // Generate default image URL from Supabase Storage
+    const { data } = supabase.storage
+      .from('chapter-images')
+      .getPublicUrl(`Chapter-${chapter.chapter_number}.jpg`);
+    
+    return data.publicUrl;
+  };
+  
+  const [currentImage, setCurrentImage] = useState<string | null>(getChapterImageUrl());
   const [currentCaption, setCurrentCaption] = useState<string | null>(null);
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [showBottomNav, setShowBottomNav] = useState(false);
