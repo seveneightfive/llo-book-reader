@@ -4,6 +4,7 @@ import { Menu, ArrowLeft, ArrowRight, X } from 'lucide-react';
 import { marked } from 'marked';
 import { Chapter, Page } from '../lib/supabase';
 import { useChapterPages } from '../hooks/useBook';
+import { getProxiedImageUrl } from '../utils/imageUtils';
 
 interface ChapterReaderProps {
   chapter: Chapter;
@@ -202,7 +203,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
               >
                 <div className="relative w-full h-full flex items-center justify-center p-12">
                   <img
-                    src={currentImage}
+                    src={getProxiedImageUrl(currentImage) || currentImage}
                     alt=""
                     className="max-w-full max-h-full object-contain rounded-lg shadow-lg"
                   />
@@ -244,7 +245,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                       return imageContent?.image_url ? (
                         <div>
                           <img
-                            src={imageContent.image_url}
+                            src={getProxiedImageUrl(imageContent.image_url) || imageContent.image_url}
                             alt=""
                             className="w-full rounded-lg shadow-md"
                           />

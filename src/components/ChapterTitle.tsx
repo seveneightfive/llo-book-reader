@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Chapter, supabaseUrl } from '../lib/supabase';
+import { getProxiedImageUrl } from '../utils/imageUtils';
 
 interface ChapterTitleProps {
   chapter: Chapter;
@@ -11,7 +12,7 @@ export function ChapterTitle({ chapter, onNext, onPrev }: ChapterTitleProps) {
   // Use Supabase storage bucket for fallback images
   const storageBucketBaseUrl = `${supabaseUrl}/storage/v1/object/public/chapter-images`;
   const fallbackImageSrc = `${storageBucketBaseUrl}/Chapter-${chapter.chapter_number}.jpg`;
-  const imageSrc = chapter.chapter_image || fallbackImageSrc;
+  const imageSrc = getProxiedImageUrl(chapter.chapter_image) || chapter.chapter_image || fallbackImageSrc;
 
   return (
     <motion.div

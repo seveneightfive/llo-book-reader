@@ -2,6 +2,7 @@ import html2pdf from 'html2pdf.js';
 import { marked } from 'marked';
 import { Book } from '../lib/supabase';
 import { ChapterWithPages } from '../lib/pdfUtils';
+import { getProxiedImageUrl } from './imageUtils';
 
 // Configure marked options for better HTML output
 marked.setOptions({
@@ -400,10 +401,10 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
       <body>
         <!-- Cover Page -->
         <div class="cover-page">
-          ${book.cover_image ? `<img src="${book.cover_image}" alt="${book.title} cover" class="cover-image">` : ''}
+          ${book.cover_image ? `<img src="${getProxiedImageUrl(book.cover_image) || book.cover_image}" alt="${book.title} cover" class="cover-image">` : ''}
           <div class="cover-overlay">
             <div class="cover-title-box">
-              <h1 class="book-title">The Journey of A Life</h1>
+              <h1 class="book-title">${sanitizeContent(book.title)}</h1>
               <p class="book-author">by ${sanitizeContent(book.author)}</p>
             </div>
           </div>
@@ -448,7 +449,7 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           <!-- Chapter Image Page -->
           ${chapter.chapter_image ? `
           <div class="chapter-image-page">
-            <img src="${chapter.chapter_image}" alt="${chapter.title}" class="chapter-image-full">
+            <img src="${getProxiedImageUrl(chapter.chapter_image) || chapter.chapter_image}" alt="${chapter.title}" class="chapter-image-full">
           </div>
           ` : ''}
 
@@ -470,7 +471,7 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
               <div class="content-block">
                 ${page.image_url ? `
                   <div class="content-image-container">
-                    <img src="${page.image_url}" alt="" class="content-image">
+                    <img src="${getProxiedImageUrl(page.image_url) || page.image_url}" alt="" class="content-image">
                     ${page.image_caption ? `<div class="image-caption">${sanitizeContent(page.image_caption)}</div>` : ''}
                   </div>
                 ` : ''}
