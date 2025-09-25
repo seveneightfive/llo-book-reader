@@ -92,12 +92,7 @@ export function ChapterTitle({ chapter, onNext, onPrev }: ChapterTitleProps) {
           )}
           
           <div className="flex justify-between items-center w-full max-w-xs mt-8">
-            <button
-              onClick={onPrev}
-              className="px-6 py-2 font-avenir text-slate-600 hover:text-slate-800 transition-colors"
-            >
-              ← Back
-            </button>
+            <div></div>
             
             <button
               onClick={onNext}
