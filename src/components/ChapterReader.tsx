@@ -19,7 +19,6 @@ interface ChapterReaderProps {
 export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, onChapterChange, onDownloadPdf }: ChapterReaderProps) {
   const { pages, loading } = useChapterPages(chapter.id);
   const { galleryItems, loading: galleryLoading } = useChapterGallery(chapter.id);
-  const { galleryItems, loading: galleryLoading } = useChapterGallery(chapter.id);
   
   // Get chapter image with fallback to default
   const getChapterImageUrl = () => {
