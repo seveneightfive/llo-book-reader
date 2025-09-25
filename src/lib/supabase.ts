@@ -48,3 +48,14 @@ export type Page = {
   created_at: string;
   updated_at: string;
 };
+
+export type GalleryItem = {
+  id: string;
+  book_id: string;
+  chapter_id: string;
+  image: string;
+  caption: string | null;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+};
