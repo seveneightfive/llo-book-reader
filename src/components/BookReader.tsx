@@ -53,7 +53,11 @@ export function BookReader({ book, chapters }: BookReaderProps) {
         setState({ type: 'dedication' });
         break;
       case 'dedication':
-        setState({ type: 'intro' });
+        if (book.intro) {
+          setState({ type: 'intro' });
+        } else {
+          setState({ type: 'chapter-title', chapter: 1 });
+        }
         break;
       case 'intro':
         setState({ type: 'chapter-title', chapter: 1 });
@@ -81,7 +85,11 @@ export function BookReader({ book, chapters }: BookReaderProps) {
       case 'chapter-title':
         const validNumbers = getValidChapterNumbers();
         if (state.chapter === validNumbers[0]) {
-          setState({ type: 'intro' });
+          if (book.intro) {
+            setState({ type: 'intro' });
+          } else {
+            setState({ type: 'dedication' });
+          }
         } else {
           const prevChapterNumber = getPrevValidChapterNumber(state.chapter);
           if (prevChapterNumber !== null) {
@@ -169,7 +177,7 @@ export function BookReader({ book, chapters }: BookReaderProps) {
           />
         )}
         
-        {state.type === 'intro' && (
+        {state.type === 'intro' && book.intro && (
           <BookIntro 
             key="intro" 
             book={book} 

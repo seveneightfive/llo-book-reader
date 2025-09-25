@@ -92,7 +92,7 @@ export function ChapterTitle({ chapter, onNext, onPrev }: ChapterTitleProps) {
           )}
           
           <div className="flex justify-between items-center w-full max-w-xs mt-8">
-            <div></div>
+            <div className="flex-1"></div>
             
             <button
               onClick={onNext}
@@ -100,6 +100,8 @@ export function ChapterTitle({ chapter, onNext, onPrev }: ChapterTitleProps) {
             >
               Read Chapter →
             </button>
+            
+            <div className="flex-1"></div>
           </div>
         </div>
       </motion.div>
