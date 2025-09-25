@@ -67,7 +67,7 @@ export function ChapterGallery({ galleryItems, chapterTitle }: ChapterGalleryPro
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
                 </div>
                 {item.caption && (
-                  <p className="mt-3 text-sm font-lora text-slate-600 leading-relaxed">
+                  <p className="mt-3 font-lora text-slate-600 leading-relaxed" style={{ fontSize: '0.975rem' }}>
                     {item.caption}
                   </p>
                 )}

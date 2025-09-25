@@ -250,7 +250,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                   />
                   {currentCaption && (
                     <div className="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-3">
-                      <p className="text-xs text-slate-600 italic text-center leading-relaxed">
+                      <p className="text-slate-600 italic text-center leading-relaxed" style={{ fontSize: '0.975rem' }}>
                         {currentCaption}
                       </p>
                     </div>
@@ -291,7 +291,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                             className="w-full rounded-lg shadow-md"
                           />
                           {imageContent.image_caption && (
-                            <p className="text-sm text-slate-600 italic mt-2 text-center">
+                            <p className="text-slate-600 italic mt-2 text-center" style={{ fontSize: '0.975rem' }}>
                               {imageContent.image_caption}
                             </p>
                           )}
