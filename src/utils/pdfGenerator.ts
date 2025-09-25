@@ -399,7 +399,8 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
       </head>
       <body>
         <!-- Cover Page -->
-        <div class="cover-page" ${book.cover_image ? `style="background-image: url('${book.cover_image}')"` : ''}>
+        <div class="cover-page">
+          ${book.cover_image ? `<img src="${book.cover_image}" alt="${book.title} cover" class="cover-image">` : ''}
           <div class="cover-overlay">
             <div class="cover-title-box">
               <h1 class="book-title">The Journey of A Life</h1>
