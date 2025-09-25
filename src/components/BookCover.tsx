@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
 import { Book } from '../lib/supabase';
-import { getProxiedImageUrl } from '../utils/imageUtils';
 
 interface BookCoverProps {
   book: Book;
@@ -25,7 +24,7 @@ export function BookCover({ book, onNext }: BookCoverProps) {
         >
           {book.cover_image && (
             <img
-              src={getProxiedImageUrl(book.cover_image) || book.cover_image}
+              src={book.cover_image}
               alt={book.title}
               className="w-64 h-96 object-cover mx-auto rounded-lg shadow-2xl mb-8"
             />

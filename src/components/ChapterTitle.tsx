@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
-import { Chapter, supabaseUrl } from '../lib/supabase';
-import { getProxiedImageUrl } from '../utils/imageUtils';
+import { Chapter } from '../lib/supabase';
 
 interface ChapterTitleProps {
   chapter: Chapter;
@@ -9,10 +8,7 @@ interface ChapterTitleProps {
 }
 
 export function ChapterTitle({ chapter, onNext, onPrev }: ChapterTitleProps) {
-  // Use Supabase storage bucket for fallback images
-  const storageBucketBaseUrl = `${supabaseUrl}/storage/v1/object/public/chapter-images`;
-  const fallbackImageSrc = `${storageBucketBaseUrl}/Chapter-${chapter.chapter_number}.jpg`;
-  const imageSrc = getProxiedImageUrl(chapter.chapter_image) || chapter.chapter_image || fallbackImageSrc;
+  const imageSrc = chapter.chapter_image;
 
   return (
     <motion.div
@@ -32,12 +28,14 @@ export function ChapterTitle({ chapter, onNext, onPrev }: ChapterTitleProps) {
         style={{ perspective: '1000px' }}
       >
         <div className="relative w-full max-w-xl h-[450px] lg:h-[650px]">
-          <img
-            src={imageSrc}
-            alt={chapter.title}
-            className="absolute inset-0 w-full h-full object-cover rounded-lg shadow-2xl"
-            style={{ backfaceVisibility: 'hidden' }}
-          />
+          {imageSrc && (
+            <img
+              src={imageSrc}
+              alt={chapter.title}
+              className="absolute inset-0 w-full h-full object-cover rounded-lg shadow-2xl"
+              style={{ backfaceVisibility: 'hidden' }}
+            />
+          )}
         </div>
       </motion.div>
 
