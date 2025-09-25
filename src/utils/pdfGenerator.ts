@@ -61,19 +61,15 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
             width: 100%;
             overflow: hidden;
             page-break-after: always;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
           }
           
           .cover-image {
-            position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
-            z-index: 1;
           }
           
           .cover-overlay {
@@ -89,8 +85,8 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
             text-align: center;
             padding: 0.5in;
             padding-top: 1in;
-            background-color: rgba(0, 0, 0, 0.6);
-            z-index: 2;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 10;
           }
           
           .cover-title-box {
@@ -270,19 +266,22 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           }
           
           .content-block {
-            page-break-inside: avoid;
+            page-break-before: always;
             margin-bottom: 20px;
+            min-height: 200px;
           }
           
           .content-image-container {
-            page-break-inside: avoid;
+            page-break-before: always;
+            page-break-after: always;
             display: block;
             margin: 20px auto;
+            text-align: center;
           }
           
           .content-image {
             max-width: 100%;
-            max-height: 4.0in;
+            max-height: 6in;
             height: auto;
             object-fit: contain;
             margin: 0 auto;
@@ -314,6 +313,7 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
             line-height: 1.6;
             margin-bottom: 12px;
             text-align: justify;
+            page-break-inside: avoid;
           }
           
           .content-quote {
@@ -326,6 +326,8 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
             background: #f8fafc;
             border-radius: 0 8px 8px 0;
             letter-spacing: 0.01em;
+            page-break-before: always;
+            page-break-inside: avoid;
           }
           
           /* Markdown styling */
@@ -467,20 +469,26 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           <!-- Chapter Content -->
           <div class="chapter-content">
             ${chapter.pages.map(page => `
-              <div class="content-block">
-                ${page.image_url ? `
-                  <div class="content-image-container">
-                    <img src="${page.image_url}" alt="" class="content-image">
-                    ${page.image_caption ? `<div class="image-caption">${sanitizeContent(page.image_caption)}</div>` : ''}
-                  </div>
-                ` : ''}
-                
-                ${page.subheading ? `<h3 class="subheading">${sanitizeContent(page.subheading)}</h3>` : ''}
-                
-                ${page.quote ? `<div class="content-quote">${sanitizeContent(page.quote)}</div>` : ''}
-                
-                ${page.content ? `<div class="content-text">${sanitizeContent(page.content)}</div>` : ''}
-              </div>
+              ${page.image_url ? `
+                <div class="content-image-container">
+                  <img src="${page.image_url}" alt="" class="content-image">
+                  ${page.image_caption ? `<div class="image-caption">${sanitizeContent(page.image_caption)}</div>` : ''}
+                </div>
+              ` : ''}
+              
+              ${page.subheading ? `
+                <div class="content-block">
+                  <h3 class="subheading">${sanitizeContent(page.subheading)}</h3>
+                </div>
+              ` : ''}
+              
+              ${page.quote ? `<div class="content-quote">${sanitizeContent(page.quote)}</div>` : ''}
+              
+              ${page.content ? `
+                <div class="content-block">
+                  <div class="content-text">${sanitizeContent(page.content)}</div>
+                </div>
+              ` : ''}
             `).join('')}
           </div>
         `).join('')}
