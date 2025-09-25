@@ -5,7 +5,6 @@ import { marked } from 'marked';
 import { Chapter, Page, supabase } from '../lib/supabase';
 import { useChapterPages, useChapterGallery } from '../hooks/useBook';
 import { ChapterGallery } from './ChapterGallery';
-import { ChapterGallery } from './ChapterGallery';
 
 interface ChapterReaderProps {
   chapter: Chapter;
