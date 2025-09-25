@@ -20,6 +20,11 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
   const { pages, loading } = useChapterPages(chapter.id);
   const { galleryItems, loading: galleryLoading } = useChapterGallery(chapter.id);
   
+  // Debug logging
+  console.log('Chapter ID:', chapter.id);
+  console.log('Gallery Items:', galleryItems);
+  console.log('Gallery Loading:', galleryLoading);
+  
   // Get chapter image with fallback to default
   const getChapterImageUrl = () => {
     if (chapter.chapter_image) {
@@ -338,14 +343,6 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
             
             {/* Spacer to allow last content to scroll to top on desktop */}
             <div className="hidden lg:block" style={{ height: 'calc(100vh - 80px)' }} />
-            
-            {/* Chapter Gallery */}
-            {!galleryLoading && galleryItems.length > 0 && (
-              <ChapterGallery 
-                galleryItems={galleryItems} 
-                chapterTitle={chapter.title}
-              />
-            )}
             
             {/* Chapter Gallery */}
             {!galleryLoading && galleryItems.length > 0 && (
