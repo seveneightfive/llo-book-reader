@@ -500,7 +500,8 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
         scale: 2,
         useCORS: true,
         allowTaint: true,
-        letterRendering: true
+        letterRendering: true,
+        logging: false
       },
       jsPDF: { 
         unit: 'in', 
