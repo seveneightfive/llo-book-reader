@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { marked } from 'marked';
 import { Chapter } from '../lib/supabase';
 
 interface ChapterTitleProps {
@@ -60,11 +61,13 @@ export function ChapterTitle({ chapter, onNext, onPrev }: ChapterTitleProps) {
           </h1>
           
           {chapter.intro && (
-            <h2
+            <div
               className="text-xl font-avenir text-slate-600 mb-4 heading-tracking"
+              dangerouslySetInnerHTML={{
+                __html: marked.parse(chapter.intro)
+              }}
             >
-              {chapter.intro}
-            </h2>
+            </div>
           )}
           
           {chapter.lede && (
