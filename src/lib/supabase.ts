@@ -52,7 +52,7 @@ export type Page = {
 export type GalleryItem = {
   id: string;
   book_id: string;
-  chapter_id: string;
+  chapterid: string;
   image: string;
   caption: string | null;
   sort_order: number;
