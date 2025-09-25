@@ -102,6 +102,7 @@ export function useChapterGallery(chapterId: string) {
   useEffect(() => {
     async function fetchGalleryItems() {
       try {
+        console.log('useChapterGallery - Fetching for chapter ID:', chapterId);
         setLoading(true);
         
         const { data, error } = await supabase
@@ -110,9 +111,13 @@ export function useChapterGallery(chapterId: string) {
           .eq('chapter_id', chapterId)
           .order('sort_order');
 
+        console.log('useChapterGallery - Query result:', { data, error });
+        
         if (error) throw error;
         setGalleryItems(data || []);
+        console.log('useChapterGallery - Set gallery items:', data?.length || 0);
       } catch (err) {
+        console.error('useChapterGallery - Error:', err);
         setError(err instanceof Error ? err.message : 'Failed to fetch gallery items');
       } finally {
         setLoading(false);

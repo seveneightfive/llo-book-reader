@@ -20,10 +20,11 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
   const { pages, loading } = useChapterPages(chapter.id);
   const { galleryItems, loading: galleryLoading } = useChapterGallery(chapter.id);
   
-  // Debug logging
-  console.log('Chapter ID:', chapter.id);
-  console.log('Gallery Items:', galleryItems);
-  console.log('Gallery Loading:', galleryLoading);
+  // Debug logging for gallery
+  console.log('ChapterReader - Chapter ID:', chapter.id);
+  console.log('ChapterReader - Gallery Items:', galleryItems);
+  console.log('ChapterReader - Gallery Loading:', galleryLoading);
+  console.log('ChapterReader - Gallery Items Length:', galleryItems?.length || 0);
   
   // Get chapter image with fallback to default
   const getChapterImageUrl = () => {
@@ -343,13 +344,24 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
             
             {/* Spacer to allow last content to scroll to top on desktop */}
             <div className="hidden lg:block" style={{ height: 'calc(100vh - 80px)' }} />
-            
-            {/* Chapter Gallery */}
-            {!galleryLoading && galleryItems.length > 0 && (
+          </div>
+          
+          {/* Chapter Gallery - Outside the main content container */}
+          <div className="px-4 lg:px-16 pb-16">
+            {galleryLoading ? (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-800 mx-auto mb-4"></div>
+                <p className="text-slate-600">Loading gallery...</p>
+              </div>
+            ) : galleryItems && galleryItems.length > 0 ? (
               <ChapterGallery 
                 galleryItems={galleryItems} 
                 chapterTitle={chapter.title}
               />
+            ) : (
+              <div className="text-center py-8 text-slate-500">
+                <p>No gallery items found for this chapter.</p>
+              </div>
             )}
           </div>
         </div>
