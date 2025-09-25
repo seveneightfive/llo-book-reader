@@ -446,25 +446,30 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
       filename: `${book.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`,
       image: { 
         type: 'jpeg', 
-        quality: 0.8 
+        quality: 0.7 
       },
       html2canvas: { 
-        scale: 1.5,
+        scale: 1,
         useCORS: true,
         allowTaint: true,
         letterRendering: true,
-        logging: true
+        logging: false,
+        width: 800,
+        height: 1200,
+        scrollX: 0,
+        scrollY: 0
       },
       jsPDF: { 
         unit: 'in', 
         format: 'letter', 
         orientation: 'portrait',
-        compress: true
+        compress: true,
+        putOnlyUsedFonts: true
       },
       pagebreak: { 
         mode: ['css', 'legacy'],
         before: '.page-break',
-        after: ['.chapter-title-page', '.content-block']
+        after: ['.chapter-title-page']
       }
     };
 
