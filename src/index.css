@@ -125,4 +125,12 @@
     background: none;
     padding: 0;
   }
+  
+  .image-caption {
+    font-size: 0.975rem;
+    font-style: italic;
+    text-align: center;
+    color: #64748b;
+    margin-bottom: 20px;
+  }
 }
