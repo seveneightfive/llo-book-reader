@@ -198,7 +198,7 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
             font-size: 10pt;
             color: #64748b;
             font-style: italic;
-            line-height: 1.4;
+            line-height: 1.2;
           }
           
           .chapter-image-page {
@@ -247,7 +247,7 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           
           .chapter-title {
             font-family: 'Avenir Next', 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            font-size: 16pt;
+            font-size: 14pt;
             font-weight: 500;
             color: #1e293b;
             margin-bottom: 20px;
@@ -261,7 +261,7 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
             color: #64748b;
             max-width: 300px;
             margin: 0 auto;
-            line-height: 1.7;
+            line-height: 1.2;
           }
           
           .chapter-content {
