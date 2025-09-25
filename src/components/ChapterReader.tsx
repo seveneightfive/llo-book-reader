@@ -26,6 +26,25 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
   console.log('ChapterReader - Gallery Loading:', galleryLoading);
   console.log('ChapterReader - Gallery Items Length:', galleryItems?.length || 0);
   
+  // Test gallery_items table access
+  useEffect(() => {
+    const testGalleryAccess = async () => {
+      try {
+        const { data, error, count } = await supabase
+          .from('gallery_items')
+          .select('*', { count: 'exact' });
+        
+        console.log('Gallery table test - Total items:', count);
+        console.log('Gallery table test - Data:', data);
+        console.log('Gallery table test - Error:', error);
+      } catch (err) {
+        console.error('Gallery table test - Exception:', err);
+      }
+    };
+    
+    testGalleryAccess();
+  }, []);
+  
   // Get chapter image with fallback to default
   const getChapterImageUrl = () => {
     if (chapter.chapter_image) {
