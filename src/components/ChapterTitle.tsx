@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { marked } from 'marked';
 import { Chapter } from '../lib/supabase';
+import { supabase } from '../lib/supabase';
 
 interface ChapterTitleProps {
   chapter: Chapter;
@@ -9,7 +10,21 @@ interface ChapterTitleProps {
 }
 
 export function ChapterTitle({ chapter, onNext, onPrev }: ChapterTitleProps) {
-  const imageSrc = chapter.chapter_image;
+  // Use chapter_image if available, otherwise fallback to default chapter image from Supabase Storage
+  const getChapterImageUrl = () => {
+    if (chapter.chapter_image) {
+      return chapter.chapter_image;
+    }
+    
+    // Generate default image URL from Supabase Storage
+    const { data } = supabase.storage
+      .from('chapter-images')
+      .getPublicUrl(`Chapter-${chapter.chapter_number}.jpg`);
+    
+    return data.publicUrl;
+  };
+  
+  const imageSrc = getChapterImageUrl();
 
   return (
     <motion.div
