@@ -24,6 +24,9 @@ const sanitizeContent = (content: string | null): string => {
 
 export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWithPages[]): Promise<void> => {
   try {
+    console.log('Starting PDF generation for:', book.title);
+    console.log('Chapters with pages:', chaptersWithPages.length);
+    
     // Generate complete HTML document
     const htmlContent = `
       <!DOCTYPE html>
@@ -56,62 +59,34 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           }
           
           .cover-page {
-            position: relative;
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
+            text-align: center;
+            padding: 100px 20px;
             page-break-after: always;
-            display: flex;
-            align-items: center;
-            justify-content: center;
           }
           
           .cover-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-          }
-          
-          .cover-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
-            text-align: center;
-            padding: 0.5in;
-            padding-top: 1in;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 10;
-          }
-          
-          .cover-title-box {
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 15px 25px;
+            max-width: 300px;
+            max-height: 400px;
+            margin: 0 auto 30px auto;
+            display: block;
             border-radius: 8px;
-            margin-bottom: 20px;
-            max-width: 80%;
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
           }
           
           .book-title {
             font-family: 'Avenir Next', 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            font-size: 18pt;
+            font-size: 24pt;
             font-weight: 500;
             color: #1e293b;
-            margin: 0;
+            margin: 20px 0 10px 0;
             letter-spacing: 0.025em;
           }
           
           .book-author {
-            font-size: 10pt;
+            font-size: 14pt;
             color: #64748b;
             font-style: italic;
-            margin: 0;
+            margin: 10px 0;
           }
           
           .dedication-page, .intro-page {
@@ -142,6 +117,14 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
             border-radius: 8px;
           }
           
+          .intro-content {
+            font-size: 14pt;
+            line-height: 1.7;
+            max-width: 500px;
+            margin: 0 auto;
+            text-align: justify;
+          }
+          
           .toc-page {
             page-break-after: always;
             padding: 40px 0;
@@ -149,16 +132,19 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           
           .toc-title {
             font-family: 'Avenir Next', 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            font-size: 14pt;
+            font-size: 18pt;
             font-weight: 500;
             margin-bottom: 30px;
             color: #1e293b;
+            text-align: center;
           }
           
           .chapter-entry {
             display: flex;
             align-items: flex-start;
             margin-bottom: 12px;
+            padding: 10px;
+            border-bottom: 1px solid #e2e8f0;
           }
           
           .chapter-circle {
@@ -170,11 +156,10 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 10pt;
+            font-size: 12pt;
             font-weight: 500;
             margin-right: 12px;
             flex-shrink: 0;
-            margin-top: 2px;
           }
           
           .chapter-text {
@@ -183,7 +168,7 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           
           .chapter-title-toc {
             font-family: 'Avenir Next', 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            font-size: 12pt;
+            font-size: 14pt;
             font-weight: 500;
             color: #1e293b;
             margin-bottom: 2px;
@@ -191,29 +176,10 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           }
           
           .chapter-lede-toc {
-            font-size: 10pt;
+            font-size: 12pt;
             color: #64748b;
             font-style: italic;
             line-height: 1.2;
-          }
-          
-          .chapter-image-page {
-            page-break-before: always;
-            page-break-after: always;
-            height: 100%;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            padding: 0;
-            margin: 0;
-          }
-          
-          .chapter-image-full {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
           }
           
           .chapter-title-page {
@@ -223,17 +189,27 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
             page-break-after: always;
           }
           
+          .chapter-image {
+            max-width: 400px;
+            max-height: 300px;
+            margin: 0 auto 30px auto;
+            display: block;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+          }
+          
           .chapter-number {
             font-family: 'Avenir Next', 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            font-size: 24pt;
+            font-size: 32pt;
             font-weight: bold;
             color: #1e293b;
             margin-bottom: 10px;
+            font-family: 'Avenir Next', 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
           }
           
           .chapter-label {
             font-family: 'Avenir Next', 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            font-size: 8pt;
+            font-size: 10pt;
             letter-spacing: 0.2em;
             text-transform: uppercase;
             color: #64748b;
@@ -243,7 +219,7 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           
           .chapter-title {
             font-family: 'Avenir Next', 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            font-size: 14pt;
+            font-size: 18pt;
             font-weight: 500;
             color: #1e293b;
             margin-bottom: 20px;
@@ -253,81 +229,70 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           .chapter-intro {
             text-align: center;
             font-style: italic;
-            font-size: 10pt;
+            font-size: 12pt;
             color: #64748b;
-            max-width: 300px;
+            max-width: 400px;
             margin: 0 auto;
-            line-height: 1.2;
+            line-height: 1.5;
           }
           
           .chapter-content {
-            page-break-before: always;
             padding: 0;
           }
           
           .content-block {
             page-break-before: always;
-            margin-bottom: 20px;
-            min-height: 200px;
-          }
-          
-          .content-image-container {
-            page-break-before: always;
-            page-break-after: always;
-            display: block;
-            margin: 20px auto;
-            text-align: center;
+            padding: 40px 20px;
+            min-height: 300px;
           }
           
           .content-image {
             max-width: 100%;
-            max-height: 6in;
+            max-height: 400px;
             height: auto;
             object-fit: contain;
             margin: 0 auto;
             display: block;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
           }
           
           .image-caption {
-            font-size: 9pt;
+            font-size: 10pt;
             font-style: italic;
             text-align: center;
             color: #64748b;
-            margin-top: 8px;
-            margin-bottom: 0;
+            margin-bottom: 20px;
           }
           
           .subheading {
             font-family: 'Avenir Next', 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            font-size: 14pt;
+            font-size: 16pt;
             font-weight: 500;
             color: #1e293b;
-            margin: 30px 0 15px 0;
+            margin: 0 0 20px 0;
             letter-spacing: 0.025em;
           }
           
           .content-text {
-            font-size: 11pt;
+            font-size: 12pt;
             line-height: 1.6;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
             text-align: justify;
-            page-break-inside: avoid;
           }
           
           .content-quote {
-            font-size: 12pt;
+            font-size: 14pt;
             font-style: italic;
             line-height: 1.7;
-            margin: 25px 0;
+            margin: 30px 0;
             padding: 20px 30px;
             border-left: 4px solid #cbd5e1;
             background: #f8fafc;
             border-radius: 0 8px 8px 0;
             letter-spacing: 0.01em;
-            page-break-before: always;
-            page-break-inside: avoid;
+            text-align: center;
           }
           
           /* Markdown styling */
@@ -335,19 +300,19 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
             font-family: 'Avenir Next', 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
             font-weight: 500;
             color: #1e293b;
-            margin: 20px 0 10px 0;
+            margin: 15px 0 10px 0;
             letter-spacing: 0.025em;
           }
           
-          h1 { font-size: 14pt; }
-          h2 { font-size: 13pt; }
-          h3 { font-size: 12pt; }
-          h4 { font-size: 11pt; }
-          h5 { font-size: 10pt; }
-          h6 { font-size: 9pt; }
+          h1 { font-size: 16pt; }
+          h2 { font-size: 15pt; }
+          h3 { font-size: 14pt; }
+          h4 { font-size: 13pt; }
+          h5 { font-size: 12pt; }
+          h6 { font-size: 11pt; }
           
           p {
-            margin-bottom: 12px;
+            margin-bottom: 15px;
             text-align: justify;
           }
           
@@ -361,16 +326,16 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           }
           
           ul, ol {
-            margin: 12px 0;
+            margin: 15px 0;
             padding-left: 20px;
           }
           
           li {
-            margin-bottom: 6px;
+            margin-bottom: 8px;
           }
           
           blockquote {
-            margin: 20px 0;
+            margin: 25px 0;
             padding: 15px 25px;
             border-left: 4px solid #cbd5e1;
             background: #f8fafc;
@@ -382,7 +347,7 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
             background: #f1f5f9;
             padding: 2px 4px;
             border-radius: 3px;
-            font-size: 10pt;
+            font-size: 11pt;
           }
           
           pre {
@@ -403,12 +368,8 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
         <!-- Cover Page -->
         <div class="cover-page">
           ${book.cover_image ? `<img src="${book.cover_image}" alt="${book.title} cover" class="cover-image">` : ''}
-          <div class="cover-overlay">
-            <div class="cover-title-box">
-              <h1 class="book-title">${sanitizeContent(book.title)}</h1>
-              <p class="book-author">by ${sanitizeContent(book.author)}</p>
-            </div>
-          </div>
+          <h1 class="book-title">${sanitizeContent(book.title)}</h1>
+          <p class="book-author">by ${sanitizeContent(book.author)}</p>
         </div>
 
         <!-- Dedication Page -->
@@ -447,15 +408,9 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
 
         <!-- Chapters -->
         ${chaptersWithPages.filter(chapter => chapter.pages.length > 0).map(chapter => `
-          <!-- Chapter Image Page -->
-          ${chapter.chapter_image ? `
-          <div class="chapter-image-page">
-            <img src="${chapter.chapter_image}" alt="${chapter.title}" class="chapter-image-full">
-          </div>
-          ` : ''}
-
           <!-- Chapter Title Page -->
           <div class="chapter-title-page">
+            ${chapter.chapter_image ? `<img src="${chapter.chapter_image}" alt="${chapter.title}" class="chapter-image">` : ''}
             <div class="chapter-number">${chapter.chapter_number}</div>
             <div class="chapter-label">Chapter</div>
             <h1 class="chapter-title">${sanitizeContent(chapter.title)}</h1>
@@ -467,68 +422,60 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           </div>
 
           <!-- Chapter Content -->
-          <div class="chapter-content">
-            ${chapter.pages.map(page => `
+          ${chapter.pages.map(page => `
+            <div class="content-block">
+              ${page.subheading ? `<h3 class="subheading">${sanitizeContent(page.subheading)}</h3>` : ''}
               ${page.image_url ? `
-                <div class="content-image-container">
-                  <img src="${page.image_url}" alt="" class="content-image">
-                  ${page.image_caption ? `<div class="image-caption">${sanitizeContent(page.image_caption)}</div>` : ''}
-                </div>
+                <img src="${page.image_url}" alt="" class="content-image">
+                ${page.image_caption ? `<div class="image-caption">${sanitizeContent(page.image_caption)}</div>` : ''}
               ` : ''}
-              
-              ${page.subheading ? `
-                <div class="content-block">
-                  <h3 class="subheading">${sanitizeContent(page.subheading)}</h3>
-                </div>
-              ` : ''}
-              
+              ${page.content ? `<div class="content-text">${sanitizeContent(page.content)}</div>` : ''}
               ${page.quote ? `<div class="content-quote">${sanitizeContent(page.quote)}</div>` : ''}
-              
-              ${page.content ? `
-                <div class="content-block">
-                  <div class="content-text">${sanitizeContent(page.content)}</div>
-                </div>
-              ` : ''}
-            `).join('')}
-          </div>
+            </div>
+          `).join('')}
         `).join('')}
       </body>
       </html>
     `;
 
+    console.log('HTML content generated, starting PDF conversion...');
+
     // Configure html2pdf options
     const options = {
-      margin: [0.5, 0.5, 0.5, 0.5], // top, right, bottom, left in inches
+      margin: [0.75, 0.75, 0.75, 0.75], // top, right, bottom, left in inches
       filename: `${book.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`,
       image: { 
         type: 'jpeg', 
-        quality: 0.85 
+        quality: 0.8 
       },
       html2canvas: { 
-        scale: 2,
+        scale: 1.5,
         useCORS: true,
         allowTaint: true,
         letterRendering: true,
-        logging: false
+        logging: true
       },
       jsPDF: { 
         unit: 'in', 
-        format: [4.25, 5.5], 
+        format: 'letter', 
         orientation: 'portrait',
         compress: true
       },
       pagebreak: { 
-        mode: ['avoid-all', 'css', 'legacy'],
+        mode: ['css', 'legacy'],
         before: '.page-break',
-        after: '.chapter-title-page'
+        after: ['.chapter-title-page', '.content-block']
       }
     };
 
     // Generate and download PDF
+    console.log('Calling html2pdf with options:', options);
     await html2pdf()
       .set(options)
       .from(htmlContent)
       .save();
+
+    console.log('PDF generation completed successfully');
 
   } catch (error) {
     console.error('Error generating PDF:', error);
@@ -538,7 +485,9 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
 
 export const downloadBookPDF = async (book: Book, chaptersWithPages: ChapterWithPages[]): Promise<void> => {
   try {
+    console.log('Starting PDF download process...');
     await generateBookPDF(book, chaptersWithPages);
+    console.log('PDF download completed');
   } catch (error) {
     console.error('PDF download failed:', error);
     throw error;
