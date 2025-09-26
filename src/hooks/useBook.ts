@@ -6,12 +6,12 @@ export function useBook(slug: string) {
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [viewCountIncremented, setViewCountIncremented] = useState(false);
 
   useEffect(() => {
     async function fetchBook() {
       try {
         setLoading(true);
+        setError(null);
         
         // Fetch book
         const { data: bookData, error: bookError } = await supabase
@@ -21,42 +21,41 @@ export function useBook(slug: string) {
           .maybeSingle();
 
         if (bookError) throw bookError;
+        
+        if (!bookData) {
+          setError(`Book with slug "${slug}" not found`);
+          setBook(null);
+          setChapters([]);
+          setLoading(false);
+          return;
+        }
+        
         setBook(bookData);
 
-        // Only fetch chapters if book exists
-        if (bookData) {
-          // Increment view count only once per session
-          if (!viewCountIncremented) {
-            try {
-              const { error: updateError } = await supabase
-                .from('books')
-                .update({ view_count: (bookData.view_count || 0) + 1 })
-                .eq('id', bookData.id);
-              
-              if (updateError) {
-                console.warn('Failed to increment view count:', updateError);
-              } else {
-                console.log('View count incremented successfully');
-                setViewCountIncremented(true);
-                // Update local book data to reflect the new view count
-                setBook(prev => prev ? { ...prev, view_count: (prev.view_count || 0) + 1 } : null);
-              }
-            } catch (err) {
-              console.warn('Error incrementing view count:', err);
+        // Increment view count (fire and forget, don't wait for response)
+        supabase
+          .from('books')
+          .update({ view_count: (bookData.view_count || 0) + 1 })
+          .eq('id', bookData.id)
+          .then(({ error: updateError }) => {
+            if (updateError) {
+              console.warn('Failed to increment view count:', updateError);
             }
+          })
+          .catch(err => {
+            console.warn('Error incrementing view count:', err);
+          });
           }
 
-          const { data: chaptersData, error: chaptersError } = await supabase
-            .from('chapters')
-            .select('*')
-            .eq('book_id', bookData.id)
-            .order('chapter_number');
+        // Fetch chapters
+        const { data: chaptersData, error: chaptersError } = await supabase
+          .from('chapters')
+          .select('*')
+          .eq('book_id', bookData.id)
+          .order('chapter_number');
 
-          if (chaptersError) throw chaptersError;
-          setChapters(chaptersData || []);
-        } else {
-          setChapters([]);
-        }
+        if (chaptersError) throw chaptersError;
+        setChapters(chaptersData || []);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch book');
       } finally {
@@ -65,10 +64,9 @@ export function useBook(slug: string) {
     }
 
     if (slug) {
-      setViewCountIncremented(false); // Reset when slug changes
       fetchBook();
     }
-  }, [slug, viewCountIncremented]);
+  }, [slug]);
 
   return { book, chapters, loading, error };
 }

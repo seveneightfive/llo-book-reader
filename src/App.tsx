@@ -60,6 +60,17 @@ function HomePage() {
         >
           Read Now
         </a>
+        
+        <div className="mt-12 text-slate-400 text-sm">
+          <p>Available books:</p>
+          <ul className="mt-2 space-y-1">
+            <li>
+              <a href="/book/lasting-legacy-online" className="hover:text-slate-300 underline">
+                Lasting Legacy Online
+              </a>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   );
