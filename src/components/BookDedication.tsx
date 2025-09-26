@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
 import { marked } from 'marked';
-import { marked } from 'marked';
 import { Book } from '../lib/supabase';
 
 interface BookDedicationProps {
@@ -32,10 +31,6 @@ export function BookDedication({ book, onNext, onPrev }: BookDedicationProps) {
           
           <blockquote className="text-xl font-lora italic text-slate-800 mb-12 leading-body-relaxed quote-tracking py-6 bg-slate-50/50 rounded-lg mx-4 px-8">
             <div 
-              dangerouslySetInnerHTML={{
-                __html: marked.parse(book.dedication || '')
-              }}
-            />
               dangerouslySetInnerHTML={{
                 __html: marked.parse(book.dedication || '')
               }}
