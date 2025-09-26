@@ -50,7 +50,13 @@ export function BookReader({ book, chapters }: BookReaderProps) {
   const handleNext = () => {
     switch (state.type) {
       case 'cover':
-        setState({ type: 'dedication' });
+        if (book.dedication) {
+          setState({ type: 'dedication' });
+        } else if (book.intro) {
+          setState({ type: 'intro' });
+        } else {
+          setState({ type: 'chapter-title', chapter: 1 });
+        }
         break;
       case 'dedication':
         if (book.intro) {
@@ -80,15 +86,21 @@ export function BookReader({ book, chapters }: BookReaderProps) {
         setState({ type: 'cover' });
         break;
       case 'intro':
-        setState({ type: 'dedication' });
+        if (book.dedication) {
+          setState({ type: 'dedication' });
+        } else {
+          setState({ type: 'cover' });
+        }
         break;
       case 'chapter-title':
         const validNumbers = getValidChapterNumbers();
         if (state.chapter === validNumbers[0]) {
           if (book.intro) {
             setState({ type: 'intro' });
-          } else {
+          } else if (book.dedication) {
             setState({ type: 'dedication' });
+          } else {
+            setState({ type: 'cover' });
           }
         } else {
           const prevChapterNumber = getPrevValidChapterNumber(state.chapter);
@@ -150,7 +162,7 @@ export function BookReader({ book, chapters }: BookReaderProps) {
           <BookCover key="cover" book={book} onNext={handleNext} />
         )}
         
-        {state.type === 'dedication' && (
+        {state.type === 'dedication' && book.dedication && (
           <BookDedication 
             key="dedication" 
             book={book} 
