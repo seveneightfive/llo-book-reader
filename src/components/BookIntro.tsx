@@ -1,4 +1,6 @@
 import { motion } from 'framer-motion';
+import { marked } from 'marked';
+import { marked } from 'marked';
 import { Book } from '../lib/supabase';
 
 interface BookIntroProps {
@@ -29,9 +31,15 @@ export function BookIntro({ book, onNext, onPrev }: BookIntroProps) {
           </h2>
           
           <div className="max-w-none mb-12 px-8">
-            <p className="text-body-large font-lora leading-body-relaxed">
-              {book.intro}
-            </p>
+            <div 
+              className="text-body-large font-lora leading-body-relaxed markdown-body"
+              dangerouslySetInnerHTML={{
+                __html: marked.parse(book.intro || '')
+              }}
+            />
+                __html: marked.parse(book.intro || '')
+              }}
+            />
           </div>
           
           <div className="flex justify-between">
