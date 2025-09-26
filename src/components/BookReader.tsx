@@ -50,13 +50,7 @@ export function BookReader({ book, chapters }: BookReaderProps) {
   const handleNext = () => {
     switch (state.type) {
       case 'cover':
-        if (book.dedication) {
-          setState({ type: 'dedication' });
-        } else if (book.intro) {
-          setState({ type: 'intro' });
-        } else {
-          setState({ type: 'chapter-title', chapter: 1 });
-        }
+        setState({ type: 'dedication' });
         break;
       case 'dedication':
         if (book.intro) {
@@ -86,21 +80,15 @@ export function BookReader({ book, chapters }: BookReaderProps) {
         setState({ type: 'cover' });
         break;
       case 'intro':
-        if (book.dedication) {
-          setState({ type: 'dedication' });
-        } else {
-          setState({ type: 'cover' });
-        }
+        setState({ type: 'dedication' });
         break;
       case 'chapter-title':
         const validNumbers = getValidChapterNumbers();
         if (state.chapter === validNumbers[0]) {
           if (book.intro) {
             setState({ type: 'intro' });
-          } else if (book.dedication) {
-            setState({ type: 'dedication' });
           } else {
-            setState({ type: 'cover' });
+            setState({ type: 'dedication' });
           }
         } else {
           const prevChapterNumber = getPrevValidChapterNumber(state.chapter);
@@ -142,6 +130,24 @@ export function BookReader({ book, chapters }: BookReaderProps) {
 
   return (
     <div className="min-h-screen relative">
+      {/* PDF Download Button - Fixed position */}
+      {state.type !== 'cover' && (
+        <button
+          onClick={handleDownloadPdf}
+          disabled={isGeneratingPdf}
+          className="hidden lg:block fixed top-4 right-4 z-50 px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg font-avenir"
+        >
+          {isGeneratingPdf ? (
+            <span className="flex items-center">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+              Generating PDF...
+            </span>
+          ) : (
+            'Download PDF'
+          )}
+        </button>
+      )}
+      
       {/* Loading Overlay */}
       {isGeneratingPdf && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-40">
@@ -162,7 +168,7 @@ export function BookReader({ book, chapters }: BookReaderProps) {
           <BookCover key="cover" book={book} onNext={handleNext} />
         )}
         
-        {state.type === 'dedication' && book.dedication && (
+        {state.type === 'dedication' && (
           <BookDedication 
             key="dedication" 
             book={book} 

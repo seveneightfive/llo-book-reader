@@ -196,15 +196,6 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      {/* Logo - Fixed position */}
-      <div className="hidden lg:block fixed top-4 right-4 z-50">
-        <img
-          src="https://ixqhvvmctlcjhbkqzfbr.supabase.co/storage/v1/object/public/LLO%20Branding/logo.png"
-          alt="Lasting Legacy Online"
-          className="h-12 w-auto"
-        />
-      </div>
-      
       {/* Header */}
       <div className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 z-40">
         <button
