@@ -13,7 +13,7 @@ export async function fetchAllPagesForChapters(chapters: Chapter[]): Promise<Cha
         .from('pages')
         .select('*')
         .eq('chapter_id', chapter.id)
-        .order('sortOrder');
+        .order('order_index');
 
       if (error) {
         console.error(`Error fetching pages for chapter ${chapter.chapter_number}:`, error);

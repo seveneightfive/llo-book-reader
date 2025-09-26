@@ -47,8 +47,8 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
   
   // Get chapter image with fallback to default
   const getChapterImageUrl = () => {
-    if (chapter.chapter_image) {
-      return chapter.chapter_image;
+    if (chapter.image) {
+      return chapter.image;
     }
     
     // Generate default image URL from Supabase Storage
@@ -124,18 +124,18 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
   }, [pages, currentImage]);
 
   // Group pages by subheading for better organization
-  const groupedPages = pages.reduce((groups, page, index) => {
-    if (page.subheading) {
+  const groupedPages = pages.reduce((groups, page) => {
+    if (page.type === 'subheading') {
       // Start a new group with this subheading
       groups.push({
         subheading: page,
         content: [],
-        hasImage: !!page.image_url
+        hasImage: !!page.image
       });
     } else if (groups.length > 0) {
       // Add to the current group
       groups[groups.length - 1].content.push(page);
-      if (page.image_url) {
+      if (page.image) {
         groups[groups.length - 1].hasImage = true;
       }
     } else {
@@ -143,7 +143,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
       groups.push({
         subheading: null,
         content: [page],
-        hasImage: !!page.image_url
+        hasImage: !!page.image
       });
     }
     return groups;
@@ -156,9 +156,9 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
   // Find first image for initial display
   useEffect(() => {
     if (!currentImage && pages.length > 0) {
-      const firstImagePage = pages.find(p => p.image_url);
-      if (firstImagePage?.image_url) {
-        setCurrentImage(firstImagePage.image_url);
+      const firstImagePage = pages.find(p => p.image);
+      if (firstImagePage?.image) {
+        setCurrentImage(firstImagePage.image);
         setCurrentCaption(firstImagePage.image_caption);
       }
     }
@@ -281,12 +281,12 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                 {group.hasImage && (
                   <div className="lg:hidden mb-6">
                     {(() => {
-                      const imageContent = group.subheading?.image_url ? group.subheading : 
-                                         group.content.find(p => p.image_url);
-                      return imageContent?.image_url ? (
+                      const imageContent = group.subheading?.image ? group.subheading : 
+                                         group.content.find(p => p.image);
+                      return imageContent?.image ? (
                         <div>
                           <img
-                            src={imageContent.image_url}
+                            src={imageContent.image}
                             alt=""
                             className="w-full rounded-lg shadow-md"
                           />
@@ -302,19 +302,19 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                 )}
                 
                 {/* Subheading */}
-                {group.subheading?.subheading && (
+                {group.subheading?.type === 'subheading' && group.subheading?.content && (
                   <h3 
                     data-subheading-id={group.subheading.id}
                     className="text-2xl lg:text-3xl font-avenir text-slate-800 mb-8 heading-tracking"
                   >
-                    {group.subheading.subheading}
+                    {group.subheading.content}
                   </h3>
                 )}
                 
                 {/* Content pages in this group */}
                 {group.content.map((page) => (
                   <div key={page.id} data-page-id={page.id} className="mb-6">
-                    {page.content && (
+                    {page.type === 'content' && page.content && (
                       <div 
                         className="max-w-none mb-8 markdown-body"
                         dangerouslySetInnerHTML={{
@@ -323,12 +323,12 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                       />
                     )}
                     
-                    {page.quote && (
+                    {page.type === 'quote' && page.content && (
                       <blockquote className="border-l-4 border-slate-300 pl-8 py-6 bg-slate-50/70 rounded-r-lg my-8 mx-4">
                         <div 
                           className="text-body-large font-lora italic leading-body-relaxed quote-tracking"
                           dangerouslySetInnerHTML={{
-                            __html: marked.parse(page.quote)
+                            __html: marked.parse(page.content)
                           }}
                         />
                       </blockquote>
@@ -337,7 +337,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                 ))}
                 
                 {/* Handle subheading content if it exists */}
-                {group.subheading?.content && (
+                {group.subheading?.type === 'content' && group.subheading?.content && (
                   <div data-page-id={group.subheading.id} className="mb-6">
                     <div 
                       className="max-w-none mb-8 markdown-body"
@@ -348,12 +348,12 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                   </div>
                 )}
                 
-                {group.subheading?.quote && (
+                {group.subheading?.type === 'quote' && group.subheading?.content && (
                   <blockquote className="border-l-4 border-slate-300 pl-8 py-6 bg-slate-50/70 rounded-r-lg my-8 mx-4">
                     <div 
                       className="text-body-large font-lora italic leading-body-relaxed quote-tracking"
                       dangerouslySetInnerHTML={{
-                        __html: marked.parse(group.subheading.quote)
+                        __html: marked.parse(group.subheading.content)
                       }}
                     />
                   </blockquote>

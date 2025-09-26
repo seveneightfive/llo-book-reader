@@ -398,7 +398,7 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           ${chaptersWithPages.filter(chapter => chapter.pages.length > 0).map(chapter => `
             <div class="chapter-entry">
               <div class="chapter-circle">${chapter.chapter_number}</div>
-              <div class="chapter-text">
+              ${chapter.image ? `<img src="${chapter.image}" alt="${chapter.title}" class="chapter-image">` : ''}
                 <div class="chapter-title-toc">${sanitizeContent(chapter.title)}</div>
                 ${chapter.lede ? `<div class="chapter-lede-toc">${sanitizeContent(chapter.lede)}</div>` : ''}
               </div>
@@ -424,13 +424,13 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           <!-- Chapter Content -->
           ${chapter.pages.map(page => `
             <div class="content-block">
-              ${page.subheading ? `<h3 class="subheading">${sanitizeContent(page.subheading)}</h3>` : ''}
-              ${page.image_url ? `
-                <img src="${page.image_url}" alt="" class="content-image">
+              ${page.type === 'subheading' && page.content ? `<h3 class="subheading">${sanitizeContent(page.content)}</h3>` : ''}
+              ${page.image ? `
+                <img src="${page.image}" alt="" class="content-image">
                 ${page.image_caption ? `<div class="image-caption">${sanitizeContent(page.image_caption)}</div>` : ''}
               ` : ''}
-              ${page.content ? `<div class="content-text">${sanitizeContent(page.content)}</div>` : ''}
-              ${page.quote ? `<div class="content-quote">${sanitizeContent(page.quote)}</div>` : ''}
+              ${page.type === 'content' && page.content ? `<div class="content-text">${sanitizeContent(page.content)}</div>` : ''}
+              ${page.type === 'quote' && page.content ? `<div class="content-quote">${sanitizeContent(page.content)}</div>` : ''}
             </div>
           `).join('')}
         `).join('')}

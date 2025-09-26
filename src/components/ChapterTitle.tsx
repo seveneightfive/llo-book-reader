@@ -12,8 +12,8 @@ interface ChapterTitleProps {
 export function ChapterTitle({ chapter, onNext, onPrev }: ChapterTitleProps) {
   // Use chapter_image if available, otherwise fallback to default chapter image from Supabase Storage
   const getChapterImageUrl = () => {
-    if (chapter.chapter_image) {
-      return chapter.chapter_image;
+    if (chapter.image) {
+      return chapter.image;
     }
     
     // Generate default image URL from Supabase Storage
@@ -79,7 +79,7 @@ export function ChapterTitle({ chapter, onNext, onPrev }: ChapterTitleProps) {
             <div
               className="text-xl font-avenir text-slate-600 mb-4 heading-tracking"
               dangerouslySetInnerHTML={{
-                __html: marked.parse(chapter.intro)
+                __html: marked.parse(chapter.heading || '')
               }}
             >
             </div>

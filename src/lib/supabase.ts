@@ -10,15 +10,11 @@ export type Book = {
   slug: string;
   title: string;
   author: string;
-  description: string | null;
   cover_image: string | null;
-  datePublished: number | null;
   dedication: string | null;
   intro: string | null;
-  User: string | null;
   view_count: number;
   created_at: string;
-  updated_at: string;
 };
 
 export type Chapter = {
@@ -26,36 +22,29 @@ export type Chapter = {
   book_id: string;
   chapter_number: number;
   title: string;
-  intro: string | null;
+  heading: string | null;
   lede: string | null;
-  chapter_image: string | null;
-  user: string | null;
+  image: string | null;
   created_at: string;
-  updated_at: string;
 };
 
 export type Page = {
   id: string;
   chapter_id: string;
+  type: string;
   content: string | null;
-  subheading: string | null;
-  quote: string | null;
-  image_url: string | null;
+  image: string | null;
   image_caption: string | null;
-  sortOrder: number;
-  user: string | null;
-  book_id: string | null;
+  order_index: number;
   created_at: string;
-  updated_at: string;
 };
 
 export type GalleryItem = {
   id: string;
   book_id: string;
-  chapterid: string;
+  chapter_id: string;
   image: string;
   caption: string | null;
   sort_order: number;
   created_at: string;
-  updated_at: string;
 };

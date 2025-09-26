@@ -87,7 +87,7 @@ export function useChapterPages(chapterId: string) {
           .from('pages')
           .select('*')
           .eq('chapter_id', chapterId)
-          .order('sortOrder');
+          .order('order_index');
 
         if (error) throw error;
         setPages(data || []);
@@ -120,7 +120,7 @@ export function useChapterGallery(chapterId: string) {
         const { data, error } = await supabase
           .from('gallery_items')
           .select('*')
-          .eq('chapterid', chapterId)
+          .eq('chapter_id', chapterId)
           .order('sort_order');
 
         console.log('useChapterGallery - Query result:', { data, error });
