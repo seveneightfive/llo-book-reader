@@ -130,19 +130,6 @@ export function BookReader({ book, chapters }: BookReaderProps) {
 
   return (
     <div className="min-h-screen relative">
-      {/* Logo - Fixed position */}
-      {state.type !== 'cover' && (
-        <div
-          className="hidden lg:block fixed top-4 right-4 z-50"
-        >
-          <img
-            src="https://ixqhvvmctlcjhbkqzfbr.supabase.co/storage/v1/object/public/LLO%20Branding/logo.png"
-            alt="Lasting Legacy Online"
-            className="h-12 w-auto"
-          />
-        </div>
-      )}
-      
       {/* Loading Overlay */}
       {isGeneratingPdf && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-40">
