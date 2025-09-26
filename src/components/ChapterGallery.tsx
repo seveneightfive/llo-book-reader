@@ -129,7 +129,7 @@ export function ChapterGallery({ galleryItems, chapterTitle }: ChapterGalleryPro
 
               {/* Caption */}
               {galleryItems[selectedImage].caption && (
-                <div className="absolute -bottom-16 left-0 right-0 text-center">
+                <div className="absolute -bottom-20 left-0 right-0 text-center">
                   <p className="text-white font-lora leading-relaxed">
                     {galleryItems[selectedImage].caption}
                   </p>
