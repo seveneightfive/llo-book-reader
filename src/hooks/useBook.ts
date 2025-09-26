@@ -45,7 +45,6 @@ export function useBook(slug: string) {
           .catch(err => {
             console.warn('Error incrementing view count:', err);
           });
-          }
 
         // Fetch chapters
         const { data: chaptersData, error: chaptersError } = await supabase
