@@ -130,22 +130,17 @@ export function BookReader({ book, chapters }: BookReaderProps) {
 
   return (
     <div className="min-h-screen relative">
-      {/* PDF Download Button - Fixed position */}
+      {/* Logo - Fixed position */}
       {state.type !== 'cover' && (
-        <button
-          onClick={handleDownloadPdf}
-          disabled={isGeneratingPdf}
-          className="hidden lg:block fixed top-4 right-4 z-50 px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg font-avenir"
+        <div
+          className="hidden lg:block fixed top-4 right-4 z-50"
         >
-          {isGeneratingPdf ? (
-            <span className="flex items-center">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-              Generating PDF...
-            </span>
-          ) : (
-            'Download PDF'
-          )}
-        </button>
+          <img
+            src="https://ixqhvvmctlcjhbkqzfbr.supabase.co/storage/v1/object/public/LLO%20Branding/logo.png"
+            alt="Lasting Legacy Online"
+            className="h-12 w-auto"
+          />
+        </div>
       )}
       
       {/* Loading Overlay */}
