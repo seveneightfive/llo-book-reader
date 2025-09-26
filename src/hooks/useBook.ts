@@ -6,6 +6,7 @@ export function useBook(slug: string) {
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [viewCountIncremented, setViewCountIncremented] = useState(false);
 
   useEffect(() => {
     async function fetchBook() {
@@ -24,16 +25,26 @@ export function useBook(slug: string) {
 
         // Only fetch chapters if book exists
         if (bookData) {
-          // Increment view count (non-blocking)
-          supabase
-            .from('books')
-            .update({ view_count: (bookData.view_count || 0) + 1 })
-            .eq('id', bookData.id)
-            .then(({ error }) => {
-              if (error) {
-                console.warn('Failed to increment view count:', error);
+          // Increment view count only once per session
+          if (!viewCountIncremented) {
+            try {
+              const { error: updateError } = await supabase
+                .from('books')
+                .update({ view_count: (bookData.view_count || 0) + 1 })
+                .eq('id', bookData.id);
+              
+              if (updateError) {
+                console.warn('Failed to increment view count:', updateError);
+              } else {
+                console.log('View count incremented successfully');
+                setViewCountIncremented(true);
+                // Update local book data to reflect the new view count
+                setBook(prev => prev ? { ...prev, view_count: (prev.view_count || 0) + 1 } : null);
               }
-            });
+            } catch (err) {
+              console.warn('Error incrementing view count:', err);
+            }
+          }
 
           const { data: chaptersData, error: chaptersError } = await supabase
             .from('chapters')
@@ -54,9 +65,10 @@ export function useBook(slug: string) {
     }
 
     if (slug) {
+      setViewCountIncremented(false); // Reset when slug changes
       fetchBook();
     }
-  }, [slug]);
+  }, [slug, viewCountIncremented]);
 
   return { book, chapters, loading, error };
 }
