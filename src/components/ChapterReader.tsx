@@ -372,15 +372,11 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-800 mx-auto mb-4"></div>
                 <p className="text-slate-600">Loading gallery...</p>
               </div>
-            ) : galleryItems && galleryItems.length > 0 ? (
+            ) : galleryItems && galleryItems.length > 0 && (
               <ChapterGallery 
                 galleryItems={galleryItems} 
                 chapterTitle={chapter.title}
               />
-            ) : (
-              <div className="text-center py-8 text-slate-500">
-                <p>No gallery items found for this chapter.</p>
-              </div>
             )}
           </div>
         </div>
