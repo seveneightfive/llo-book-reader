@@ -17,15 +17,15 @@
   
   /* Typography utilities */
   .text-body {
-    font-size: 18px;
+    font-size: 16px;
     line-height: 1.6;
-    color: #212121;
+    color: #374151;
   }
   
   .text-body-large {
-    font-size: 20px;
+    font-size: 18px;
     line-height: 1.7;
-    color: #212121;
+    color: #374151;
   }
   
   .heading-tracking {
@@ -42,11 +42,11 @@
   
   /* Markdown content styling */
   .markdown-body {
-    color: #212121;
+    color: #374151;
   }
   
   .markdown-body p {
-    font-size: 20px;
+    font-size: 18px;
     line-height: 1.7;
     margin-bottom: 1rem;
     font-family: 'Lora', Georgia, 'Times New Roman', serif;
@@ -92,7 +92,7 @@
   
   .markdown-body li {
     margin-bottom: 0.5rem;
-    font-size: 20px;
+    font-size: 18px;
     line-height: 1.7;
     font-family: 'Lora', Georgia, 'Times New Roman', serif;
   }
@@ -127,7 +127,7 @@
   }
   
   .image-caption {
-    font-size: 0.975rem;
+    font-size: 1.1rem;
     font-style: italic;
     text-align: center;
     color: #64748b;

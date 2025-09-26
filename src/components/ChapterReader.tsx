@@ -267,7 +267,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
           className="w-full lg:w-1/2 overflow-y-auto px-4 lg:px-0"
           style={{ height: 'calc(100vh - 80px)' }}
         >
-          <div className="p-12 lg:p-16 max-w-3xl mx-auto">
+          <div className="p-4 lg:p-4 max-w-none mx-auto">
             {groupedPages.map((group, groupIndex) => (
               <motion.div
                 ref={groupIndex === groupedPages.length - 1 ? lastContentElementRef : undefined}
@@ -366,7 +366,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
           </div>
           
           {/* Chapter Gallery - Outside the main content container */}
-          <div className="px-4 lg:px-16 pb-16">
+          <div className="px-4 lg:px-4 pb-16">
             {galleryLoading ? (
               <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-800 mx-auto mb-4"></div>
