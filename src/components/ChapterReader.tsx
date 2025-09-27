@@ -125,7 +125,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
 
   // Group pages by subheading for better organization
   const groupedPages = pages.reduce((groups, page) => {
-    if (page.content && page.content.trim().length < 100 && !page.image) {
+    if (page.content && page.content.trim().length < 200 && !page.content.includes('.') && !page.content.includes('?') && !page.content.includes('!')) {
       // Start a new group with this subheading
       groups.push({
         subheading: page,
@@ -302,7 +302,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                 )}
                 
                 {/* Subheading */}
-                {group.subheading?.content && group.subheading.content.trim().length < 100 && !group.subheading.image && (
+                {group.subheading?.content && group.subheading.content.trim().length < 200 && !group.subheading.content.includes('.') && !group.subheading.content.includes('?') && !group.subheading.content.includes('!') && (
                   <h3 
                     data-subheading-id={group.subheading.id}
                     className="text-2xl lg:text-3xl font-avenir text-slate-800 mb-8 heading-tracking"
@@ -314,7 +314,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                 {/* Content pages in this group */}
                 {group.content.map((page) => (
                   <div key={page.id} data-page-id={page.id} className="mb-6">
-                    {page.content && page.content.trim().length >= 100 && (
+                    {page.content && (page.content.trim().length >= 200 || page.content.includes('.') || page.content.includes('?') || page.content.includes('!')) && !page.content.includes('"') && (
                       <div 
                         className="max-w-none mb-8 markdown-body"
                         dangerouslySetInnerHTML={{
@@ -337,7 +337,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                 ))}
                 
                 {/* Handle subheading content if it exists */}
-                {group.subheading?.content && group.subheading.content.trim().length >= 100 && (
+                {group.subheading?.content && (group.subheading.content.trim().length >= 200 || group.subheading.content.includes('.') || group.subheading.content.includes('?') || group.subheading.content.includes('!')) && !group.subheading.content.includes('"') && (
                   <div data-page-id={group.subheading.id} className="mb-6">
                     <div 
                       className="max-w-none mb-8 markdown-body"
