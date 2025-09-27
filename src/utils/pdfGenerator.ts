@@ -410,13 +410,13 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
         ${chaptersWithPages.filter(chapter => chapter.pages.length > 0).map(chapter => `
           <!-- Chapter Title Page -->
           <div class="chapter-title-page">
-            ${chapter.chapter_image ? `<img src="${chapter.chapter_image}" alt="${chapter.title}" class="chapter-image">` : ''}
+            ${chapter.image ? `<img src="${chapter.image}" alt="${chapter.title}" class="chapter-image">` : ''}
             <div class="chapter-number">${chapter.chapter_number}</div>
             <div class="chapter-label">Chapter</div>
             <h1 class="chapter-title">${sanitizeContent(chapter.title)}</h1>
-            ${chapter.intro || chapter.lede ? `
+            ${chapter.heading || chapter.lede ? `
               <div class="chapter-intro">
-                ${sanitizeContent(chapter.intro || chapter.lede || '')}
+                ${sanitizeContent(chapter.heading || chapter.lede || '')}
               </div>
             ` : ''}
           </div>
@@ -424,13 +424,13 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           <!-- Chapter Content -->
           ${chapter.pages.map(page => `
             <div class="content-block">
-              ${page.type === 'subheading' && page.content ? `<h3 class="subheading">${sanitizeContent(page.content)}</h3>` : ''}
+              ${page.content && page.content.trim().length < 100 && !page.image ? `<h3 class="subheading">${sanitizeContent(page.content)}</h3>` : ''}
               ${page.image ? `
                 <img src="${page.image}" alt="" class="content-image">
                 ${page.image_caption ? `<div class="image-caption">${sanitizeContent(page.image_caption)}</div>` : ''}
               ` : ''}
-              ${page.type === 'content' && page.content ? `<div class="content-text">${sanitizeContent(page.content)}</div>` : ''}
-              ${page.type === 'quote' && page.content ? `<div class="content-quote">${sanitizeContent(page.content)}</div>` : ''}
+              ${page.content && page.content.trim().length >= 100 ? `<div class="content-text">${sanitizeContent(page.content)}</div>` : ''}
+              ${page.content && page.content.includes('"') && page.content.trim().length < 500 ? `<div class="content-quote">${sanitizeContent(page.content)}</div>` : ''}
             </div>
           `).join('')}
         `).join('')}
