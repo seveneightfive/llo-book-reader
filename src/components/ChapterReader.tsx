@@ -125,7 +125,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
 
   // Group pages by subheading for better organization
   const groupedPages = pages.reduce((groups, page) => {
-    if (page.type === 'subheading') {
+    if (page.content && page.content.trim().length < 100 && !page.image) {
       // Start a new group with this subheading
       groups.push({
         subheading: page,
@@ -302,7 +302,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                 )}
                 
                 {/* Subheading */}
-                {group.subheading?.type === 'subheading' && group.subheading?.content && (
+                {group.subheading?.content && group.subheading.content.trim().length < 100 && !group.subheading.image && (
                   <h3 
                     data-subheading-id={group.subheading.id}
                     className="text-2xl lg:text-3xl font-avenir text-slate-800 mb-8 heading-tracking"
@@ -314,7 +314,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                 {/* Content pages in this group */}
                 {group.content.map((page) => (
                   <div key={page.id} data-page-id={page.id} className="mb-6">
-                    {page.type === 'content' && page.content && (
+                    {page.content && page.content.trim().length >= 100 && (
                       <div 
                         className="max-w-none mb-8 markdown-body"
                         dangerouslySetInnerHTML={{
@@ -323,7 +323,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                       />
                     )}
                     
-                    {page.type === 'quote' && page.content && (
+                    {page.content && page.content.includes('"') && page.content.trim().length < 500 && (
                       <blockquote className="border-l-4 border-slate-300 pl-8 py-6 bg-slate-50/70 rounded-r-lg my-8 mx-4">
                         <div 
                           className="text-body-large font-lora italic leading-body-relaxed quote-tracking"
@@ -337,7 +337,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                 ))}
                 
                 {/* Handle subheading content if it exists */}
-                {group.subheading?.type === 'content' && group.subheading?.content && (
+                {group.subheading?.content && group.subheading.content.trim().length >= 100 && (
                   <div data-page-id={group.subheading.id} className="mb-6">
                     <div 
                       className="max-w-none mb-8 markdown-body"
@@ -348,7 +348,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                   </div>
                 )}
                 
-                {group.subheading?.type === 'quote' && group.subheading?.content && (
+                {group.subheading?.content && group.subheading.content.includes('"') && group.subheading.content.trim().length < 500 && (
                   <blockquote className="border-l-4 border-slate-300 pl-8 py-6 bg-slate-50/70 rounded-r-lg my-8 mx-4">
                     <div 
                       className="text-body-large font-lora italic leading-body-relaxed quote-tracking"

@@ -31,7 +31,6 @@ export type Chapter = {
 export type Page = {
   id: string;
   chapter_id: string;
-  type: string;
   content: string | null;
   image: string | null;
   image_caption: string | null;
