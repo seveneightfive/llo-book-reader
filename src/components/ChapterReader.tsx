@@ -124,34 +124,8 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
   }, [pages, currentImage]);
 
   // Group pages by subheading for better organization
-  const groupedPages = pages.reduce((groups, page) => {
-    if (page.content && page.content.trim().length < 100 && !page.content.includes('.') && !page.content.includes('?') && !page.content.includes('!')) {
-      // Start a new group with this subheading
-      groups.push({
-        subheading: page,
-        content: [],
-        hasImage: !!page.image
-      });
-    } else if (groups.length > 0) {
-      // Add to the current group
-      groups[groups.length - 1].content.push(page);
-      if (page.image) {
-        groups[groups.length - 1].hasImage = true;
-      }
-    } else {
-      // No subheading yet, create a group without subheading
-      groups.push({
-        subheading: null,
-        content: [page],
-        hasImage: !!page.image
-      });
-    }
-    return groups;
-  }, [] as Array<{
-    subheading: Page | null;
-    content: Page[];
-    hasImage: boolean;
-  }>);
+  // Simply display pages in order without complex grouping
+  const displayPages = pages;
 
   // Find first image for initial display
   useEffect(() => {
@@ -166,7 +140,10 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
 
   // Set up IntersectionObserver to detect when last content is at top of viewport
   useEffect(() => {
-    if (!contentRef.current || !lastContentElementRef.current) return;
+    if (!contentRef.current) return;
+    
+    const lastElement = contentRef.current.querySelector('[data-page-id]:last-child');
+    if (!lastElement) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -181,7 +158,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
       }
     );
 
-    observer.observe(lastContentElementRef.current);
+    observer.observe(lastElement);
 
     return () => observer.disconnect();
   }, [pages]);
@@ -268,62 +245,47 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
           style={{ height: 'calc(100vh - 80px)' }}
         >
           <div className="p-4 lg:p-4 max-w-none mx-auto">
-            {groupedPages.map((group, groupIndex) => (
+            {displayPages.map((page, pageIndex) => (
               <motion.div
-                ref={groupIndex === groupedPages.length - 1 ? lastContentElementRef : undefined}
-                key={group.subheading?.id || `group-${groupIndex}`}
+                key={page.id}
+                data-page-id={page.id}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: groupIndex * 0.1, duration: 0.6 }}
+                transition={{ delay: pageIndex * 0.1, duration: 0.6 }}
                 className="mb-8 lg:mb-12"
               >
-                {/* Mobile: Show image first if this group has one */}
-                {group.hasImage && (
+                {/* Mobile: Show image first if this page has one */}
+                {page.image && (
                   <div className="lg:hidden mb-6">
-                    {(() => {
-                      const imageContent = group.subheading?.image ? group.subheading : 
-                                         group.content.find(p => p.image);
-                      return imageContent?.image ? (
-                        <div>
-                          <img
-                            src={imageContent.image}
-                            alt=""
-                            className="w-full rounded-lg shadow-md"
-                          />
-                          {imageContent.image_caption && (
-                            <p className="text-slate-600 italic mt-2 text-center" style={{ fontSize: '0.975rem' }}>
-                              {imageContent.image_caption}
-                            </p>
-                          )}
-                        </div>
-                      ) : null;
-                    })()}
+                    <div>
+                      <img
+                        src={page.image}
+                        alt=""
+                        className="w-full rounded-lg shadow-md"
+                      />
+                      {page.image_caption && (
+                        <p className="text-slate-600 italic mt-2 text-center" style={{ fontSize: '0.975rem' }}>
+                          {page.image_caption}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 )}
                 
                 {/* Subheading */}
-                {group.subheading?.content && (
+                {page.subheading && page.subheading.trim() && (
                   <h3 
-                    data-subheading-id={group.subheading.id}
+                    data-subheading-id={page.id}
                     className="text-2xl lg:text-3xl font-avenir text-slate-800 mb-8 heading-tracking"
                   >
-                    {group.subheading.content}
+                    {page.subheading}
                   </h3>
                 )}
                 
-                {/* Content pages in this group */}
-                {group.content.map((page) => (
-                  <div key={page.id} data-page-id={page.id} className="mb-6">
-                    {page.content && !page.content.includes('"') && (
-                      <div 
-                        className="max-w-none mb-8 markdown-body"
-                        dangerouslySetInnerHTML={{
-                          __html: marked.parse(page.content)
-                        }}
-                      />
-                    )}
-                    
-                    {page.content && page.content.includes('"') && page.content.trim().length < 500 && (
+                {/* Page Content */}
+                {page.content && page.content.trim() && (
+                  <div className="mb-6">
+                    {page.content.includes('"') && page.content.trim().length < 500 ? (
                       <blockquote className="border-l-4 border-slate-300 pl-8 py-6 bg-slate-50/70 rounded-r-lg my-8 mx-4">
                         <div 
                           className="text-body-large font-lora italic leading-body-relaxed quote-tracking"
@@ -332,37 +294,150 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                           }}
                         />
                       </blockquote>
+                    ) : (
+                      <div 
+                        className="max-w-none mb-8 markdown-body"
+                        dangerouslySetInnerHTML={{
+                          __html: marked.parse(page.content)
+                        }}
+                      />
                     )}
                   </div>
-                ))}
-                
-                {/* Handle subheading content if it exists */}
-                {group.subheading?.content && group.subheading.content.trim().length >= 100 && !group.subheading.content.includes('"') && (
-                  <div data-page-id={group.subheading.id} className="mb-6">
-                    <div 
-                      className="max-w-none mb-8 markdown-body"
-                      dangerouslySetInnerHTML={{
-                        __html: marked.parse(group.subheading.content)
-                      }}
-                    />
-                  </div>
-                )}
-                
-                {group.subheading?.content && group.subheading.content.includes('"') && group.subheading.content.trim().length < 500 && (
-                  <blockquote className="border-l-4 border-slate-300 pl-8 py-6 bg-slate-50/70 rounded-r-lg my-8 mx-4">
-                    <div 
-                      className="text-body-large font-lora italic leading-body-relaxed quote-tracking"
-                      dangerouslySetInnerHTML={{
-                        __html: marked.parse(group.subheading.content)
-                      }}
-                    />
-                  </blockquote>
                 )}
               </motion.div>
             ))}
             
             {/* Spacer to allow last content to scroll to top on desktop */}
             <div className="hidden lg:block" style={{ height: 'calc(100vh - 80px)' }} />
+          </div>
+          
+          {/* Chapter Gallery - Outside the main content container */}
+          <div className="px-4 lg:px-4 pb-16">
+            {galleryLoading ? (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-800 mx-auto mb-4"></div>
+                <p className="text-slate-600">Loading gallery...</p>
+              </div>
+            ) : galleryItems && galleryItems.length > 0 && (
+              <ChapterGallery 
+                galleryItems={galleryItems} 
+                chapterTitle={chapter.title}
+              />
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Fixed Bottom Navigation - Desktop Only */}
+      <AnimatePresence>
+        {showBottomNav && (
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed bottom-0 right-0 bg-white p-4 border-t border-l border-slate-200 hidden lg:flex justify-between items-center z-40 shadow-lg"
+            style={{ width: '50%' }}
+          >
+            <button
+              onClick={onPrev}
+              className="px-8 py-3 bg-slate-100 text-slate-700 rounded-full font-avenir hover:bg-slate-200 transition-colors"
+            >
+              ← Previous Chapter
+            </button>
+            
+            <button
+              onClick={onNext}
+              className="px-8 py-3 bg-slate-800 text-white rounded-full font-avenir hover:bg-slate-900 transition-colors"
+            >
+              Next Chapter →
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Off-canvas Navigation */}
+      <AnimatePresence>
+        {isNavOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 z-50"
+              onClick={() => setIsNavOpen(false)}
+            />
+            
+            <motion.div
+              initial={{ x: -300 }}
+              animate={{ x: 0 }}
+              exit={{ x: -300 }}
+              transition={{ type: "spring", damping: 20 }}
+              className="fixed left-0 top-0 h-full w-80 bg-white shadow-xl z-50 overflow-y-auto"
+            >
+              <div className="p-6 border-b border-slate-200">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <h2 
+                      className="text-sm font-avenir text-slate-500 mb-1"
+                    >
+                      {bookTitle}
+                    </h2>
+                  </div>
+                  <button
+                    onClick={() => setIsNavOpen(false)}
+                    className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+              </div>
+              
+              <div className="p-6">
+                {chapters.map((chap) => (
+                  <button
+                    key={chap.id}
+                    onClick={() => {
+                      onChapterChange(chap.chapter_number);
+                      setIsNavOpen(false);
+                    }}
+                    className={`w-full text-left p-4 rounded-lg transition-colors mb-2 ${
+                      chap.id === chapter.id 
+                        ? 'bg-slate-800 text-white' 
+                        : 'hover:bg-slate-100'
+                    }`}
+                  >
+                    <div className="text-sm opacity-70 mb-1">
+                      Chapter {chap.chapter_number}
+                    </div>
+                    <div 
+                      className="font-avenir text-sm"
+                    >
+                      {chap.lede || chap.title}
+                    </div>
+                  </button>
+                ))}
+              </div>
+              
+              {/* Download PDF Button */}
+              <div className="p-6 border-t border-slate-200">
+                <button
+                  onClick={() => {
+                    onDownloadPdf();
+                    setIsNavOpen(false);
+                  }}
+                  className="w-full px-4 py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition-colors flex items-center justify-center font-avenir"
+                >
+                  Download PDF
+                </button>
+              </motion.div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
           </div>
           
           {/* Chapter Gallery - Outside the main content container */}
