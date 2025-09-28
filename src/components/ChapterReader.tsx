@@ -302,7 +302,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                 )}
                 
                 {/* Subheading */}
-                {group.subheading?.content && group.subheading.content.trim().length < 100 && !group.subheading.content.includes('.') && !group.subheading.content.includes('?') && !group.subheading.content.includes('!') && (
+                {group.subheading?.content && (
                   <h3 
                     data-subheading-id={group.subheading.id}
                     className="text-2xl lg:text-3xl font-avenir text-slate-800 mb-8 heading-tracking"
@@ -337,7 +337,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                 ))}
                 
                 {/* Handle subheading content if it exists */}
-                {group.subheading?.content && (group.subheading.content.trim().length >= 100 || group.subheading.content.includes('.') || group.subheading.content.includes('?') || group.subheading.content.includes('!')) && !group.subheading.content.includes('"') && (
+                {group.subheading?.content && group.subheading.content.trim().length >= 100 && !group.subheading.content.includes('"') && (
                   <div data-page-id={group.subheading.id} className="mb-6">
                     <div 
                       className="max-w-none mb-8 markdown-body"
