@@ -47,8 +47,8 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
   
   // Get chapter image with fallback to default
   const getChapterImageUrl = () => {
-    if (chapter.image) {
-      return chapter.image;
+    if (chapter.chapter_image) {
+      return chapter.chapter_image;
     }
     
     // Generate default image URL from Supabase Storage

@@ -24,7 +24,7 @@ export type Chapter = {
   title: string;
   heading: string | null;
   lede: string | null;
-  image: string | null;
+  chapter_image: string | null;
   created_at: string;
 };
 

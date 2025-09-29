@@ -10,9 +10,9 @@ interface ChapterTitleProps {
 }
 
 export function ChapterTitle({ chapter, onNext, onPrev }: ChapterTitleProps) {
-  // Use chapter.image if it exists and is not empty, otherwise use default from storage
-  const imageSrc = (chapter.image && chapter.image.trim() !== '') 
-    ? chapter.image 
+  // Use chapter.chapter_image if it exists and is not empty, otherwise use default from storage
+  const imageSrc = (chapter.chapter_image && chapter.chapter_image.trim() !== '') 
+    ? chapter.chapter_image 
     : supabase.storage.from('chapter-images').getPublicUrl(`Chapter-${chapter.chapter_number}.jpg`).data.publicUrl;
 
   return (
