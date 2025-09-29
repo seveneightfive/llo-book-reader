@@ -50,7 +50,7 @@ export function useBook(slug: string) {
         const { data: chaptersData, error: chaptersError } = await supabase
           .from('chapters')
           .select('*')
-          .eq('book_id', bookData.id)
+          .eq('Related_Books', bookData.id)
           .order('chapter_number');
 
         if (chaptersError) throw chaptersError;
@@ -83,7 +83,7 @@ export function useChapterPages(chapterId: string) {
         const { data, error } = await supabase
           .from('pages')
           .select('*')
-          .eq('chapter_id', chapterId)
+          .eq('Related_Chapters', chapterId)
           .order('order_index');
 
         if (error) throw error;
@@ -117,7 +117,7 @@ export function useChapterGallery(chapterId: string) {
         const { data, error } = await supabase
           .from('gallery_items')
           .select('*')
-          .eq('chapter_id', chapterId)
+          .eq('Related_Chapters', chapterId)
           .order('sort_order');
 
         console.log('useChapterGallery - Query result:', { data, error });

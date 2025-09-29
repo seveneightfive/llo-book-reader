@@ -12,7 +12,7 @@ export async function fetchAllPagesForChapters(chapters: Chapter[]): Promise<Cha
       const { data: pages, error } = await supabase
         .from('pages')
         .select('*')
-        .eq('chapter_id', chapter.id)
+        .eq('Related_Chapters', chapter.id)
         .order('order_index');
 
       if (error) {

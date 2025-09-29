@@ -11,40 +11,58 @@ export type Book = {
   title: string;
   author: string;
   cover_image: string | null;
+  datePublished: number | null;
+  created_at: string;
+  updated_at: string;
   dedication: string | null;
   intro: string | null;
+  User: string | null;
   view_count: number;
-  created_at: string;
+  co_author: string | null;
+  whalesync_id: string;
 };
 
 export type Chapter = {
   id: string;
-  book_id: string;
-  chapter_number: number;
+  Related_Books: string;
   title: string;
-  heading: string | null;
-  lede: string | null;
-  chapter_image: string | null;
+  chapter_number: number;
   created_at: string;
+  updated_at: string;
+  chapter_image: string | null;
+  lede: string | null;
+  intro: string | null;
+  user: string | null;
+  publish_chapter: boolean | null;
+  whalesync_id: string;
 };
 
 export type Page = {
   id: string;
-  chapter_id: string;
+  Related_Chapters: string;
   content: string | null;
-  image: string | null;
+  image_url: string | null;
   image_caption: string | null;
-  subheading: string | null;
   order_index: number;
   created_at: string;
+  updated_at: string;
+  subheading: string | null;
+  quote: string | null;
+  user: string | null;
+  Related_Books: string | null;
+  question_number: string | null;
+  whalesync_id: string;
 };
 
 export type GalleryItem = {
-  id: string;
-  book_id: string;
-  chapter_id: string;
-  image: string;
+  Related_Books: string;
   caption: string | null;
-  sort_order: number;
-  created_at: string;
+  Related_Chapters: string;
+  image: string;
+  ownerid: string | null;
+  pageid: string | null;
+  rowid: string | null;
+  sort_order: string | null;
+  image_title: string | null;
+  whalesync_id: string;
 };

@@ -47,7 +47,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
   
   // Get chapter image with fallback to default
   const getChapterImageUrl = () => {
-    if (chapter.chapter_image) {
+    if (chapter.chapter_image && chapter.chapter_image.trim() !== '') {
       return chapter.chapter_image;
     }
     
@@ -130,9 +130,9 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
   // Find first image for initial display
   useEffect(() => {
     if (!currentImage && pages.length > 0) {
-      const firstImagePage = pages.find(p => p.image);
-      if (firstImagePage?.image) {
-        setCurrentImage(firstImagePage.image);
+      const firstImagePage = pages.find(p => p.image_url);
+      if (firstImagePage?.image_url) {
+        setCurrentImage(firstImagePage.image_url);
         setCurrentCaption(firstImagePage.image_caption);
       }
     }
@@ -255,11 +255,11 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                 className="mb-8 lg:mb-12"
               >
                 {/* Mobile: Show image first if this page has one */}
-                {page.image && (
+                {page.image_url && (
                   <div className="lg:hidden mb-6">
                     <div>
                       <img
-                        src={page.image}
+                        src={page.image_url}
                         alt=""
                         className="w-full rounded-lg shadow-md"
                       />
