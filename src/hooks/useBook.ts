@@ -78,6 +78,7 @@ export function useChapterPages(chapterId: string) {
   useEffect(() => {
     async function fetchPages() {
       try {
+        console.log('useChapterPages - Fetching for chapter ID:', chapterId);
         setLoading(true);
         
         const { data, error } = await supabase
@@ -86,6 +87,8 @@ export function useChapterPages(chapterId: string) {
           .eq('Related_Chapters', chapterId)
           .order('order_index');
 
+        console.log('useChapterPages - Query result:', { data, error });
+        console.log('useChapterPages - Data length:', data?.length || 0);
         if (error) throw error;
         setPages(data || []);
       } catch (err) {

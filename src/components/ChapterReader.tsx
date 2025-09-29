@@ -20,6 +20,23 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
   const { pages, loading } = useChapterPages(chapter.id);
   const { galleryItems, loading: galleryLoading } = useChapterGallery(chapter.id);
   
+  // Debug logging for pages
+  console.log('ChapterReader - Chapter ID:', chapter.id);
+  console.log('ChapterReader - Pages:', pages);
+  console.log('ChapterReader - Pages Loading:', loading);
+  console.log('ChapterReader - Pages Length:', pages?.length || 0);
+  
+  // Log each page's content
+  pages.forEach((page, index) => {
+    console.log(`Page ${index}:`, {
+      id: page.id,
+      subheading: page.subheading,
+      content: page.content,
+      image_url: page.image_url,
+      order_index: page.order_index
+    });
+  });
+  
   // Debug logging for gallery
   console.log('ChapterReader - Chapter ID:', chapter.id);
   console.log('ChapterReader - Gallery Items:', galleryItems);
@@ -245,6 +262,14 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
           style={{ height: 'calc(100vh - 80px)' }}
         >
           <div className="p-4 lg:p-4 max-w-none mx-auto">
+            {/* Debug info */}
+            <div className="mb-4 p-4 bg-yellow-100 border border-yellow-300 rounded">
+              <p><strong>Debug Info:</strong></p>
+              <p>Chapter ID: {chapter.id}</p>
+              <p>Pages found: {pages.length}</p>
+              <p>Loading: {loading ? 'Yes' : 'No'}</p>
+            </div>
+            
             {displayPages.map((page, pageIndex) => (
               <motion.div
                 key={page.id}
