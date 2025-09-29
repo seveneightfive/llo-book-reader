@@ -273,7 +273,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                 )}
                 
                 {/* Subheading */}
-                {page.subheading && page.subheading.trim() && (
+                {page.subheading && page.subheading.trim() !== '' && (
                   <h3 
                     data-subheading-id={page.id}
                     className="text-2xl lg:text-3xl font-avenir text-slate-800 mb-8 heading-tracking"
@@ -283,7 +283,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                 )}
                 
                 {/* Page Content */}
-                {page.content && page.content.trim() && (
+                {page.content && page.content.trim() !== '' && (
                   <div className="mb-6">
                     {page.content.includes('"') && page.content.trim().length < 500 ? (
                       <blockquote className="border-l-4 border-slate-300 pl-8 py-6 bg-slate-50/70 rounded-r-lg my-8 mx-4">
