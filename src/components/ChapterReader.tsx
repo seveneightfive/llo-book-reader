@@ -262,14 +262,6 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
           style={{ height: 'calc(100vh - 80px)' }}
         >
           <div className="p-4 lg:p-4 max-w-none mx-auto">
-            {/* Debug info */}
-            <div className="mb-4 p-4 bg-yellow-100 border border-yellow-300 rounded">
-              <p><strong>Debug Info:</strong></p>
-              <p>Chapter ID: {chapter.id}</p>
-              <p>Pages found: {pages.length}</p>
-              <p>Loading: {loading ? 'Yes' : 'No'}</p>
-            </div>
-            
             {displayPages.map((page, pageIndex) => (
               <motion.div
                 key={page.id}
