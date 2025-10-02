@@ -13,16 +13,16 @@ export async function fetchAllPagesForChapters(chapters: Chapter[]): Promise<Cha
         .from('pages')
         .select('*')
         .eq('chapter_id', chapter.id)
-        .order('page_order');
+        .order('order_index');
 
       if (error) {
-        console.error(`Error fetching pages for chapter ${chapter.chapter_order}:`, error);
+        console.error(`Error fetching pages for chapter ${chapter.chapter_number}:`, error);
         chaptersWithPages.push({ ...chapter, pages: [] });
       } else {
         chaptersWithPages.push({ ...chapter, pages: pages || [] });
       }
     } catch (err) {
-      console.error(`Failed to fetch pages for chapter ${chapter.chapter_order}:`, err);
+      console.error(`Failed to fetch pages for chapter ${chapter.chapter_number}:`, err);
       chaptersWithPages.push({ ...chapter, pages: [] });
     }
   }

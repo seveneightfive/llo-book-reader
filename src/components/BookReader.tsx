@@ -30,7 +30,7 @@ export function BookReader({ book, chapters }: BookReaderProps) {
   };
 
   const getValidChapterNumbers = () => {
-    return chapters.map(c => c.chapter_order).sort((a, b) => a - b);
+    return chapters.map(c => c.chapter_number).sort((a, b) => a - b);
   };
 
   const getNextValidChapterNumber = (currentNumber: number) => {
@@ -104,7 +104,7 @@ export function BookReader({ book, chapters }: BookReaderProps) {
   };
 
   const handleChapterChange = (chapterNumber: number) => {
-    const chapter = chapters.find(c => c.chapter_order === chapterNumber);
+    const chapter = chapters.find(c => c.chapter_number === chapterNumber);
     if (chapter) {
       setState({ type: 'chapter-title', chapter: chapterNumber });
     }
@@ -189,7 +189,7 @@ export function BookReader({ book, chapters }: BookReaderProps) {
         {state.type === 'chapter-title' && getCurrentChapter(state.chapter) && (
           <ChapterTitle 
             key={`chapter-title-${state.chapter}`}
-            chapter={chapters.find(c => c.chapter_order === state.chapter)!}
+            chapter={chapters.find(c => c.chapter_number === state.chapter)!}
             onNext={handleNext}
             onPrev={handlePrev}
           />
@@ -198,7 +198,7 @@ export function BookReader({ book, chapters }: BookReaderProps) {
         {state.type === 'chapter-content' && getCurrentChapter(state.chapter) && (
           <ChapterReader 
             key={`chapter-content-${state.chapter}`}
-            chapter={chapters.find(c => c.chapter_order === state.chapter)!}
+            chapter={chapters.find(c => c.chapter_number === state.chapter)!}
             chapters={chapters}
             bookTitle={book.title}
             onNext={handleNext}

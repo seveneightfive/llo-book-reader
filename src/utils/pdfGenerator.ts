@@ -350,7 +350,7 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
       <body>
         <!-- Cover Page -->
         <div class="cover-page">
-          ${book.image_url ? `<img src="${book.image_url}" alt="${book.title} cover" class="cover-image">` : ''}
+          ${book.cover_image ? `<img src="${book.cover_image}" alt="${book.title} cover" class="cover-image">` : ''}
           <h1 class="book-title">${sanitizeContent(book.title)}</h1>
           <p class="book-author">by ${sanitizeContent(book.author)}</p>
         </div>
@@ -380,7 +380,7 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           <h2 class="toc-title">Table of Contents</h2>
           ${chaptersWithPages.filter(chapter => chapter.pages.length > 0).map(chapter => `
             <div class="chapter-entry">
-              <div class="chapter-circle">${chapter.chapter_order}</div>
+              <div class="chapter-circle">${chapter.chapter_number}</div>
               <div class="chapter-text">
                 <div class="chapter-title-toc">${sanitizeContent(chapter.title)}</div>
               </div>
@@ -392,8 +392,8 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
         ${chaptersWithPages.filter(chapter => chapter.pages.length > 0).map(chapter => `
           <!-- Chapter Title Page -->
           <div class="chapter-title-page">
-            ${chapter.chapter_image_url ? `<img src="${chapter.chapter_image_url}" alt="${chapter.title}" class="chapter-image">` : ''}
-            <div class="chapter-number">${chapter.chapter_order}</div>
+            ${chapter.image ? `<img src="${chapter.image}" alt="${chapter.title}" class="chapter-image">` : ''}
+            <div class="chapter-number">${chapter.chapter_number}</div>
             <div class="chapter-label">Chapter</div>
             <h1 class="chapter-title">${sanitizeContent(chapter.title)}</h1>
           </div>
@@ -401,16 +401,15 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           <!-- Chapter Content -->
           ${chapter.pages.map(page => `
             <div class="content-block">
-              ${page.page_title ? `<h3 class="subheading">${sanitizeContent(page.page_title)}</h3>` : ''}
-              ${page.page_image_url ? `
-                <img src="${page.page_image_url}" alt="" class="content-image">
-                ${page.page_image_caption ? `<div class="image-caption">${sanitizeContent(page.page_image_caption)}</div>` : ''}
+              ${page.type === 'subheading' ? `<h3 class="subheading">${sanitizeContent(page.content || '')}</h3>` : ''}
+              ${page.image ? `
+                <img src="${page.image}" alt="" class="content-image">
+                ${page.image_caption ? `<div class="image-caption">${sanitizeContent(page.image_caption)}</div>` : ''}
               ` : ''}
-              ${page.page_content ? `<div class="content-text">${sanitizeContent(page.page_content)}</div>` : ''}
-              ${page.page_quote ? `
+              ${page.type === 'content' && page.content ? `<div class="content-text">${sanitizeContent(page.content)}</div>` : ''}
+              ${page.type === 'quote' && page.content ? `
                 <div class="content-quote">
-                  ${sanitizeContent(page.page_quote)}
-                  ${page.page_quote_attribute ? `<br><br>— ${sanitizeContent(page.page_quote_attribute)}` : ''}
+                  ${sanitizeContent(page.content)}
                 </div>
               ` : ''}
             </div>

@@ -64,14 +64,14 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
   
   // Get chapter image with fallback to default
   const getChapterImageUrl = () => {
-    if (chapter.chapter_image_url && chapter.chapter_image_url.trim() !== '') {
-      return chapter.chapter_image_url;
+    if (chapter.image && chapter.image.trim() !== '') {
+      return chapter.image;
     }
     
     // Generate default image URL from Supabase Storage
     const { data } = supabase.storage
       .from('chapter-images')
-      .getPublicUrl(`Chapter-${chapter.chapter_order}.jpg`);
+      .getPublicUrl(`Chapter-${chapter.chapter_number}.jpg`);
     
     return data.publicUrl;
   };
@@ -122,9 +122,9 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
           if (rect.top <= containerRect.top + 200 && rect.bottom > containerRect.top) {
             const pageId = element.getAttribute('data-page-id');
             const page = pages.find(p => p.id === pageId);
-            if (page?.page_image_url && page.page_image_url !== currentImage) {
-              setCurrentImage(page.page_image_url);
-              setCurrentCaption(page.page_image_caption);
+            if (page?.image && page.image !== currentImage) {
+              setCurrentImage(page.image);
+              setCurrentCaption(page.image_caption);
             }
           }
         });
@@ -146,10 +146,10 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
   // Find first image for initial display
   useEffect(() => {
     if (!currentImage && pages.length > 0) {
-      const firstImagePage = pages.find(p => p.page_image_url);
-      if (firstImagePage?.page_image_url) {
-        setCurrentImage(firstImagePage.page_image_url);
-        setCurrentCaption(firstImagePage.page_image_caption);
+      const firstImagePage = pages.find(p => p.image);
+      if (firstImagePage?.image) {
+        setCurrentImage(firstImagePage.image);
+        setCurrentCaption(firstImagePage.image_caption);
       }
     }
   }, [pages, currentImage]);
@@ -271,17 +271,17 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                 className="mb-8 lg:mb-12"
               >
                 {/* Mobile: Show image first if this page has one */}
-                {page.page_image_url && (
+                {page.image && (
                   <div className="lg:hidden mb-6">
                     <div>
                       <img
-                        src={page.page_image_url}
+                        src={page.image}
                         alt=""
                         className="w-full rounded-lg shadow-md"
                       />
-                      {page.page_image_caption && (
+                      {page.image_caption && (
                         <p className="text-slate-600 italic mt-2 text-center" style={{ fontSize: '0.975rem' }}>
-                          {page.page_image_caption}
+                          {page.image_caption}
                         </p>
                       )}
                     </div>
@@ -289,24 +289,24 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                 )}
                 
                 {/* Subheading */}
-                {page.page_title && page.page_title.trim() !== '' && (
+                {page.type === 'subheading' && page.content && page.content.trim() !== '' && (
                   <h3 
                     data-subheading-id={page.id}
                     className="text-2xl lg:text-3xl font-avenir text-slate-800 mb-8 heading-tracking"
                   >
-                    {page.page_title}
+                    {page.content}
                   </h3>
                 )}
                 
                 {/* Page Content */}
-                {page.page_content && page.page_content.trim() !== '' && (
+                {page.type === 'content' && page.content && page.content.trim() !== '' && (
                   <div className="mb-6">
-                    {page.page_content.includes('"') && page.page_content.trim().length < 500 ? (
+                    {page.content.includes('"') && page.content.trim().length < 500 ? (
                       <blockquote className="border-l-4 border-slate-300 pl-8 py-6 bg-slate-50/70 rounded-r-lg my-8 mx-4">
                         <div 
                           className="text-body-large font-lora italic leading-body-relaxed quote-tracking"
                           dangerouslySetInnerHTML={{
-                            __html: marked.parse(page.page_content)
+                            __html: marked.parse(page.content)
                           }}
                         />
                       </blockquote>
@@ -314,7 +314,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                       <div 
                         className="max-w-none mb-8 markdown-body"
                         dangerouslySetInnerHTML={{
-                          __html: marked.parse(page.page_content)
+                          __html: marked.parse(page.content)
                         }}
                       />
                     )}
@@ -322,15 +322,10 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                 )}
                 
                 {/* Page Quote */}
-                {page.page_quote && page.page_quote.trim() !== '' && (
+                {page.type === 'quote' && page.content && page.content.trim() !== '' && (
                   <blockquote className="border-l-4 border-slate-300 pl-8 py-6 bg-slate-50/70 rounded-r-lg my-8 mx-4">
                     <div className="text-body-large font-lora italic leading-body-relaxed quote-tracking">
-                      {page.page_quote}
-                      {page.page_quote_attribute && (
-                        <div className="mt-4 text-slate-600 not-italic text-sm">
-                          — {page.page_quote_attribute}
-                        </div>
-                      )}
+                      {page.content}
                     </div>
                   </blockquote>
                 )}
@@ -428,7 +423,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                   <button
                     key={chap.id}
                     onClick={() => {
-                      onChapterChange(chap.chapter_order);
+                      onChapterChange(chap.chapter_number);
                       setIsNavOpen(false);
                     }}
                     className={`w-full text-left p-4 rounded-lg transition-colors mb-2 ${
@@ -438,7 +433,7 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
                     }`}
                   >
                     <div className="text-sm opacity-70 mb-1">
-                      Chapter {chap.chapter_order}
+                      Chapter {chap.chapter_number}
                     </div>
                     <div 
                       className="font-avenir text-sm"
