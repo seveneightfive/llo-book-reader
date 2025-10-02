@@ -15,7 +15,6 @@ export type Book = {
   dedication: string | null;
   intro: string | null;
   view_count: number;
-  view_count: number;
 };
 
 export type Chapter = {
@@ -56,6 +55,3 @@ export type Answer = {
   question: string | null;
   content: string | null;
 };
-(window as any).supabase = supabase;
-
-  id: number;

@@ -1,60 +1,23 @@
-import { createClient } from '@supabase/supabase-js';
+import React from 'react';
+import { Book } from '../lib/supabase';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL!;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY!;
+interface BookCoverProps {
+  book: Book;
+}
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
-
-export type Book = {
-  id: number;
-  created_at: string;
-  title: string;
-  author: string;
-  slug: string;
-  cover_image: string | null;
-  dedication: string | null;
-  intro: string | null;
-  view_count: number;
-};
-
-export type Chapter = {
-  id: number;
-  created_at: string;
-  book_id: number;
-  chapter_number: number;
-  title: string;
-  heading: string | null;
-  lede: string | null;
-  image: string | null;
-};
-
-export type Page = {
-  id: number;
-  created_at: string;
-  chapter_id: number;
-  type: 'subheading' | 'content' | 'quote' | 'image';
-  content: string | null;
-  image: string | null;
-  image_caption: string | null;
-  order_index: number;
-};
-
-export type GalleryItem = {
-  id: number;
-  created_at: string;
-  book_id: number;
-  chapter_id: number;
-  image: string;
-  caption: string | null;
-  sort_order: number;
-};
-
-export type Answer = {
-  id: number;
-  chapter_id: string;
-  question: string | null;
-  content: string | null;
-};
-(window as any).supabase = supabase;
-
-  id: number;
+export function BookCover({ book }: BookCoverProps) {
+  return (
+    <div className="text-center">
+      {book.cover_image && (
+        <img
+          src={book.cover_image}
+          alt={`${book.title} cover`}
+          className="mx-auto mb-8 max-w-md rounded-lg shadow-lg"
+        />
+      )}
+      <h1 className="text-4xl font-bold mb-4">{book.title}</h1>
+      <p className="text-xl text-gray-600 mb-2">by {book.author}</p>
+      <p className="text-sm text-gray-500">{book.view_count} views</p>
+    </div>
+  );
+}
