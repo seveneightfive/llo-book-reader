@@ -131,10 +131,9 @@ export function ChapterReader({ chapter, chapters, bookTitle, onPrev, onNext, on
       }
     };
 
-          if (currentPage?.page_image_url) {
-            if (currentPage.page_image_url !== currentImage) {
-              setCurrentImage(currentPage.page_image_url);
-              setCurrentCaption(currentPage.page_image_caption);
+    if (contentRef.current) {
+      const contentElement = contentRef.current;
+      contentElement.addEventListener('scroll', handleScroll);
       handleScroll();
       return () => contentElement.removeEventListener('scroll', handleScroll);
     }
