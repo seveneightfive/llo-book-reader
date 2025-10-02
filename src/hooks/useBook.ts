@@ -40,9 +40,9 @@ export type Page = {
 };
 
 export type GalleryItem = {
-  id: number;
+  id: string;
   created_at: string;
-  chapter_id: number;
+  chapter_id: string;
   gallery_image_url: string;
   gallery_image_title: string | null;
   gallery_image_caption: string | null;

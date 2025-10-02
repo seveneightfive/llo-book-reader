@@ -1,57 +1,34 @@
-import { createClient } from '@supabase/supabase-js';
+import React from 'react';
+import { GalleryItem } from '../lib/supabase';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL!;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY!;
+interface ChapterGalleryProps {
+  items: GalleryItem[];
+}
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+export default function ChapterGallery({ items }: ChapterGalleryProps) {
+  if (!items || items.length === 0) {
+    return null;
+  }
 
-export type Book = {
-  id: number;
-  created_at: string;
-  title: string;
-  author: string;
-  slug: string;
-  cover_image: string | null;
-  dedication: string | null;
-  intro: string | null;
-  view_count: number;
-};
-
-export type Chapter = {
-  id: number;
-  created_at: string;
-  book_id: number;
-  chapter_number: number;
-  title: string;
-  heading: string | null;
-  lede: string | null;
-  image: string | null;
-};
-
-export type Page = {
-  id: number;
-  created_at: string;
-  chapter_id: number;
-  type: 'subheading' | 'content' | 'quote' | 'image';
-  content: string | null;
-  image: string | null;
-  image_caption: string | null;
-  page_order: number;
-};
-
-export type GalleryItem = {
-  id: number;
-  created_at: string;
-  chapter_id: number;
-  gallery_image_url: string;
-  gallery_image_title: string | null;
-  gallery_image_caption: string | null;
-  gallery_image_order: number;
-};
-
-export type Answer = {
-  id: number;
-  chapter_id: string;
-  question: string | null;
-  content: string | null;
-};
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 my-8">
+      {items.map((item) => (
+        <div key={item.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+          <img
+            src={item.gallery_image_url}
+            alt={item.gallery_image_title || 'Gallery image'}
+            className="w-full h-48 object-cover"
+          />
+          <div className="p-4">
+            {item.gallery_image_title && (
+              <h3 className="font-semibold text-lg mb-2">{item.gallery_image_title}</h3>
+            )}
+            {item.gallery_image_caption && (
+              <p className="text-gray-600 text-sm">{item.gallery_image_caption}</p>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
