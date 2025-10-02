@@ -1,66 +1,55 @@
-import { createClient } from '@supabase/supabase-js';
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Book } from '../lib/supabase';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL!;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY!;
+interface BookCoverProps {
+  book: Book;
+  onNext: () => void;
+}
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
-
-// ===== TYPES MATCHING YOUR DATABASE SCHEMA EXACTLY =====
-
-export type Book = {
-  id: number;              // bigint
-  created_at: string;
-  title: string;
-  author: string;
-  slug: string;
-  cover_image: string | null;
-  dedication: string | null;
-  intro: string | null;
-  date_published: string;
-  view_count: number;
-};
-
-export type Chapter = {
-  id: number;              // bigint
-  created_at: string;
-  title: string;
-  lede: string | null;
-  book_id: number;         // bigint
-  number: number;
-  image_url: string | null;
-};
-
-export type Page = {
-  id: number;              // bigint
-  created_at: string;
-  chapter_id: number;      // bigint
-  content: string | null;
-  sort_order: number;      // smallint
-  image_url: string | null;
-  quote: string | null;
-  quote_attribute: string | null;
-  image_caption: string | null;
-  subtitle: string | null;
-  final_order: number;     // smallint
-};
-
-export type GalleryItem = {
-  id: number;              // bigint
-  created_at: string;
-  image_title: string | null;
-  image_url: string;
-  image_caption: string | null;
-  sort_order: number;      // smallint
-  chapter_id: number;      // bigint
-  page_id: number | null;  // bigint (nullable)
-};
-
-// Helper types for queries
-export type BookWithChapters = Book & {
-  chapters: Chapter[];
-};
-
-export type ChapterWithPages = Chapter & {
-  pages: Page[];
-  gallery: GalleryItem[];
-};
+export default function BookCover({ book, onNext }: BookCoverProps) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.8 }}
+      className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-700 flex items-center justify-center p-8"
+    >
+      <div className="max-w-4xl mx-auto text-center">
+        <motion.div
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.8 }}
+        >
+          {book.cover_image && (
+            <div className="mb-8">
+              <img
+                src={book.cover_image}
+                alt={`Cover of ${book.title}`}
+                className="w-64 h-96 object-cover rounded-lg shadow-2xl mx-auto"
+              />
+            </div>
+          )}
+          
+          <h1 className="text-5xl md:text-6xl font-avenir text-white mb-4 heading-tracking">
+            {book.title}
+          </h1>
+          
+          <p className="text-xl md:text-2xl font-lora text-slate-300 mb-8">
+            by {book.author}
+          </p>
+          
+          <motion.button
+            onClick={onNext}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="px-8 py-4 bg-white text-slate-900 rounded-full font-avenir text-lg hover:bg-slate-100 transition-colors shadow-lg"
+          >
+            Begin Reading →
+          </motion.button>
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+}
