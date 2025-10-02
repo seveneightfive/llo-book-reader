@@ -42,11 +42,11 @@ export type Page = {
 export type GalleryItem = {
   id: number;
   created_at: string;
-  book_id: number;
   chapter_id: number;
-  image: string;
-  caption: string | null;
-  sort_order: number;
+  gallery_image_url: string;
+  gallery_image_title: string | null;
+  gallery_image_caption: string | null;
+  gallery_image_order: number;
 };
 
 export type Answer = {
