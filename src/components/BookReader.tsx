@@ -1,89 +1,57 @@
-import React, { useState } from 'react';
-import { Book, Chapter } from '../lib/supabase';
-import BookCover from './BookCover';
-import BookIntro from './BookIntro';
-import BookDedication from './BookDedication';
-import ChapterTitle from './ChapterTitle';
-import ChapterReader from './ChapterReader';
+import { createClient } from '@supabase/supabase-js';
 
-interface BookReaderProps {
-  book: Book;
-  chapters: Chapter[];
-}
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL!;
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY!;
 
-export default function BookReader({ book, chapters }: BookReaderProps) {
-  const [currentView, setCurrentView] = useState<'cover' | 'dedication' | 'intro' | 'chapter'>('cover');
-  const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
+export const supabase = createClient(supabaseUrl, supabaseKey);
 
-  const handleBeginReading = () => {
-    if (book.dedication) {
-      setCurrentView('dedication');
-    } else if (book.intro) {
-      setCurrentView('intro');
-    } else {
-      setCurrentView('chapter');
-    }
-  };
+export type Book = {
+  id: number;
+  created_at: string;
+  title: string;
+  author: string;
+  slug: string;
+  cover_image: string | null;
+  dedication: string | null;
+  intro: string | null;
+  view_count: number;
+};
 
-  const handleContinueFromDedication = () => {
-    if (book.intro) {
-      setCurrentView('intro');
-    } else {
-      setCurrentView('chapter');
-    }
-  };
+export type Chapter = {
+  id: number;
+  created_at: string;
+  book_id: number;
+  chapter_number: number;
+  title: string;
+  heading: string | null;
+  lede: string | null;
+  image: string | null;
+};
 
-  const handleContinueFromIntro = () => {
-    setCurrentView('chapter');
-  };
+export type Page = {
+  id: number;
+  created_at: string;
+  chapter_id: number;
+  type: 'subheading' | 'content' | 'quote' | 'image';
+  content: string | null;
+  image: string | null;
+  image_caption: string | null;
+  page_order: number;
+};
 
-  const handleNextChapter = () => {
-    if (currentChapterIndex < chapters.length - 1) {
-      setCurrentChapterIndex(currentChapterIndex + 1);
-    }
-  };
+export type GalleryItem = {
+  id: string;
+  created_at: string;
+  chapter_id: number;
+  gallery_image_url: string;
+  gallery_image_title: string | null;
+  gallery_image_caption: string | null;
+  gallery_image_order: number;
+};
 
-  const handlePreviousChapter = () => {
-    if (currentChapterIndex > 0) {
-      setCurrentChapterIndex(currentChapterIndex - 1);
-    }
-  };
-
-  const currentChapter = chapters[currentChapterIndex];
-
-  if (currentView === 'cover') {
-    return <BookCover book={book} onBeginReading={handleBeginReading} />;
-  }
-
-  if (currentView === 'dedication' && book.dedication) {
-    return <BookDedication book={book} onContinue={handleContinueFromDedication} />;
-  }
-
-  if (currentView === 'intro' && book.intro) {
-    return <BookIntro book={book} onContinue={handleContinueFromIntro} />;
-  }
-
-  if (currentView === 'chapter' && currentChapter) {
-    return (
-      <div>
-        <ChapterTitle chapter={currentChapter} />
-        <ChapterReader 
-          chapter={currentChapter}
-          onNext={handleNextChapter}
-          onPrevious={handlePreviousChapter}
-          hasNext={currentChapterIndex < chapters.length - 1}
-          hasPrevious={currentChapterIndex > 0}
-        />
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-white flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-2xl text-slate-800 mb-2">Loading...</h1>
-        <p className="text-slate-600">Preparing your reading experience...</p>
-      </div>
-    </div>
-  );
-}
+export type Answer = {
+  id: number;
+  chapter_id: string;
+  question: string | null;
+  content: string | null;
+};
