@@ -11,7 +11,7 @@ export type Book = {
   title: string;
   author: string;
   slug: string;
-  cover_image: string | null;
+  image_url: string | null;
   dedication: string | null;
   intro: string | null;
   view_count: number;
