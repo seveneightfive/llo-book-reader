@@ -7,6 +7,7 @@ import BookIntro from './BookIntro';
 import ChapterTitle from './ChapterTitle';
 import ChapterReader from './ChapterReader';
 import ChapterGallery from './ChapterGallery';
+import NavigationMenu from './NavigationMenu';
 
 interface BookReaderProps {
   book: Book;
@@ -128,7 +129,7 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
       case 'dedication':
         setCurrentState('cover');
         break;
-      
+
       case 'intro':
         if (book.dedication) {
           setCurrentState('dedication');
@@ -136,12 +137,11 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
           setCurrentState('cover');
         }
         break;
-      
+
       case 'chapter-title':
         if (currentChapterIndex > 0) {
           setCurrentChapterIndex(currentChapterIndex - 1);
           setCurrentState('chapter-content');
-          // Will need to fetch pages for previous chapter
         } else if (book.intro) {
           setCurrentState('intro');
         } else if (book.dedication) {
@@ -150,7 +150,7 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
           setCurrentState('cover');
         }
         break;
-      
+
       case 'chapter-content':
         if (currentPageIndex > 0) {
           setCurrentPageIndex(currentPageIndex - 1);
@@ -158,7 +158,7 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
           setCurrentState('chapter-title');
         }
         break;
-      
+
       case 'gallery':
         if (chapters.length > 0) {
           setCurrentChapterIndex(chapters.length - 1);
@@ -166,6 +166,15 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
         }
         break;
     }
+  };
+
+  const handleNavigateToChapter = (index: number) => {
+    setCurrentChapterIndex(index);
+    setCurrentState('chapter-title');
+  };
+
+  const handleNavigateToGallery = () => {
+    setCurrentState('gallery');
   };
 
   if (loading) {
@@ -178,10 +187,19 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
 
   return (
     <div className="min-h-screen bg-slate-50">
+      <NavigationMenu
+        book={book}
+        chapters={chapters}
+        currentChapterIndex={currentChapterIndex}
+        currentState={currentState}
+        onNavigateToChapter={handleNavigateToChapter}
+        onNavigateToGallery={handleNavigateToGallery}
+      />
+
       {currentState === 'cover' && (
         <BookCover book={book} onNext={handleNext} />
       )}
-      
+
       {currentState === 'dedication' && book.dedication && (
         <BookDedication
           book={book}
@@ -190,38 +208,38 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
           onPrevious={handlePrevious}
         />
       )}
-      
+
       {currentState === 'intro' && book.intro && (
-        <BookIntro 
-          intro={book.intro} 
-          onNext={handleNext} 
-          onPrevious={handlePrevious} 
+        <BookIntro
+          intro={book.intro}
+          onNext={handleNext}
+          onPrevious={handlePrevious}
         />
       )}
-      
+
       {currentState === 'chapter-title' && currentChapter && (
-        <ChapterTitle 
-          chapter={currentChapter} 
-          onNext={handleNext} 
-          onPrevious={handlePrevious} 
+        <ChapterTitle
+          chapter={currentChapter}
+          onNext={handleNext}
+          onPrevious={handlePrevious}
         />
       )}
-      
+
       {currentState === 'chapter-content' && currentChapter && pages.length > 0 && (
-        <ChapterReader 
+        <ChapterReader
           chapter={currentChapter}
           page={pages[currentPageIndex]}
           pageNumber={currentPageIndex + 1}
           totalPages={pages.length}
-          onNext={handleNext} 
-          onPrevious={handlePrevious} 
+          onNext={handleNext}
+          onPrevious={handlePrevious}
         />
       )}
-      
+
       {currentState === 'gallery' && (
-        <ChapterGallery 
+        <ChapterGallery
           galleryItems={galleryItems}
-          onPrevious={handlePrevious} 
+          onPrevious={handlePrevious}
         />
       )}
     </div>
