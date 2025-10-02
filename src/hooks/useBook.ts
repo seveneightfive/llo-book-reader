@@ -10,6 +10,7 @@ export function useBook(slug: string) {
   useEffect(() => {
     async function fetchBook() {
       try {
+        console.log('Fetching book with slug:', slug);
         setLoading(true);
         setError(null);
         
@@ -20,9 +21,13 @@ export function useBook(slug: string) {
           .eq('slug', slug)
           .maybeSingle();
 
+        console.log('Supabase query result - data:', bookData);
+        console.log('Supabase query result - error:', bookError);
+
         if (bookError) throw bookError;
         
         if (!bookData) {
+          console.log(`No book found with slug "${slug}"`);
           setError(`Book with slug "${slug}" not found`);
           setBook(null);
           setChapters([]);
@@ -30,6 +35,7 @@ export function useBook(slug: string) {
           return;
         }
         
+        console.log('Book found successfully:', bookData.title);
         setBook(bookData);
 
         // Increment view count (fire and forget, don't wait for response)
@@ -53,9 +59,13 @@ export function useBook(slug: string) {
           .eq('section_id', bookData.id)
           .order('chapter_order');
 
+        console.log('Chapters query result - data:', chaptersData);
+        console.log('Chapters query result - error:', chaptersError);
+
         if (chaptersError) throw chaptersError;
         setChapters(chaptersData || []);
       } catch (err) {
+        console.error('Error in fetchBook:', err);
         setError(err instanceof Error ? err.message : 'Failed to fetch book');
       } finally {
         setLoading(false);
