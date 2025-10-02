@@ -11,10 +11,10 @@ export default function BookCover({ book, onNext }: BookCoverProps) {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-8">
       <div className="max-w-4xl mx-auto text-center">
         {/* Book Cover Image */}
-        {book.cover_image && (
+        {book.image_url && (
           <div className="mb-8">
             <img 
-              src={book.cover_image} 
+              src={book.image_url} 
               alt={`Cover of ${book.title}`}
               className="mx-auto max-w-sm w-full h-auto rounded-lg shadow-2xl"
             />
