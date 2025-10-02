@@ -33,10 +33,6 @@ export default function BookDedication({ book, dedication, onNext, onPrevious }:
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.8 }}
         >
-          <h2 className="text-2xl font-avenir text-white mb-8 dedication-tracking uppercase drop-shadow-lg">
-            Dedication
-          </h2>
-
           <blockquote className="text-xl font-lora italic text-slate-900 mb-12 leading-body-relaxed quote-tracking py-8 md:py-10 lg:py-12 bg-white/80 backdrop-blur-md rounded-lg mx-4 md:mx-8 lg:mx-12 px-8 md:px-12 lg:px-16 shadow-xl">
             <div
               className="markdown-body"
