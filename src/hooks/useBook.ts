@@ -57,5 +57,3 @@ export type Answer = {
   content: string | null;
 };
 (window as any).supabase = supabase;
-
-  id: number;
