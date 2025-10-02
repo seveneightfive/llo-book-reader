@@ -36,7 +36,7 @@ export type Page = {
   content: string | null;
   image: string | null;
   image_caption: string | null;
-  order_index: number;
+  page_order: number;
 };
 
 export type GalleryItem = {
