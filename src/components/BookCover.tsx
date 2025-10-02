@@ -57,6 +57,8 @@ export default function BookCover({ book, onNext }: BookCoverProps) {
     </motion.div>
   );
 }
+
+export type GalleryImage = {
   gallery_image_title: string | null;
   gallery_image_url: string;
   gallery_image_caption: string | null;
