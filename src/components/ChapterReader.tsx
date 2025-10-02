@@ -58,12 +58,6 @@ export default function ChapterReader({
             </p>
           </div>
 
-          {page.subtitle && (
-            <h3 className="text-2xl font-avenir text-slate-800 mb-6 heading-tracking">
-              {page.subtitle}
-            </h3>
-          )}
-
           {page.image_url && (
             <div className="mb-8">
               <img
@@ -77,6 +71,12 @@ export default function ChapterReader({
                 </p>
               )}
             </div>
+          )}
+
+          {page.subtitle && (
+            <h3 className="text-2xl font-avenir text-slate-800 mb-6 heading-tracking">
+              {page.subtitle}
+            </h3>
           )}
 
           {page.quote && (
