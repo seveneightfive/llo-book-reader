@@ -71,3 +71,4 @@ export type Answer = {
   content: string | null;
   sort_order: number;
 };
+(window as any).supabase = supabase;
