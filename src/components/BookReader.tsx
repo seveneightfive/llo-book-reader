@@ -183,10 +183,11 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
       )}
       
       {currentState === 'dedication' && book.dedication && (
-        <BookDedication 
-          dedication={book.dedication} 
-          onNext={handleNext} 
-          onPrevious={handlePrevious} 
+        <BookDedication
+          book={book}
+          dedication={book.dedication}
+          onNext={handleNext}
+          onPrevious={handlePrevious}
         />
       )}
       
