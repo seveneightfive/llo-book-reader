@@ -11,41 +11,42 @@ export type Book = {
   title: string;
   author: string;
   slug: string;
-  cover_image: string | null;
+  image_url: string | null;
   dedication: string | null;
   intro: string | null;
   view_count: number;
+  date_published: string | null;
 };
 
 export type Chapter = {
   id: string;
   created_at: string;
   title: string;
-  heading: string | null;
   lede: string | null;
   book_id: string;
-  chapter_number: number;
-  image: string | null;
+  number: number;
+  image_url: string | null;
 };
 
 export type Page = {
   id: string;
   created_at: string;
   chapter_id: string;
-  type: 'subheading' | 'content' | 'quote' | 'image';
   content: string | null;
-  image: string | null;
+  image_url: string | null;
   image_caption: string | null;
-  order_index: number;
+  sort_order: number;
 };
 
 export type GalleryItem = {
-  id: string;
+  id: number;
   created_at: string;
   book_id: string;
-  chapter_id: string;
-  image: string;
-  caption: string | null;
+  chapter_id: number;
+  page_id: number;
+  image_url: string;
+  image_title: string | null;
+  image_caption: string | null;
   sort_order: number;
 };
 
