@@ -1,57 +1,147 @@
-import { createClient } from '@supabase/supabase-js';
+import React, { useState } from 'react';
+import { Book, Chapter } from '../lib/supabase';
+import BookCover from './BookCover';
+import { BookDedication } from './BookDedication';
+import { BookIntro } from './BookIntro';
+import { ChapterTitle } from './ChapterTitle';
+import { ChapterReader } from './ChapterReader';
+import { ChapterGallery } from './ChapterGallery';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL!;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY!;
+interface BookReaderProps {
+  book: Book;
+  chapters: Chapter[];
+}
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+type ReadingState = 
+  | { type: 'cover' }
+  | { type: 'dedication' }
+  | { type: 'intro' }
+  | { type: 'chapter-title'; chapterIndex: number }
+  | { type: 'chapter-content'; chapterIndex: number }
+  | { type: 'chapter-gallery'; chapterIndex: number };
 
-export type Book = {
-  id: number;
-  created_at: string;
-  title: string;
-  author: string;
-  slug: string;
-  cover_image: string | null;
-  dedication: string | null;
-  intro: string | null;
-  view_count: number;
-};
+export default function BookReader({ book, chapters }: BookReaderProps) {
+  const [readingState, setReadingState] = useState<ReadingState>({ type: 'cover' });
 
-export type Chapter = {
-  id: number;
-  created_at: string;
-  book_id: number;
-  chapter_number: number;
-  title: string;
-  heading: string | null;
-  lede: string | null;
-  image: string | null;
-};
+  const handleNext = () => {
+    switch (readingState.type) {
+      case 'cover':
+        if (book.dedication) {
+          setReadingState({ type: 'dedication' });
+        } else if (book.intro) {
+          setReadingState({ type: 'intro' });
+        } else if (chapters.length > 0) {
+          setReadingState({ type: 'chapter-title', chapterIndex: 0 });
+        }
+        break;
+      
+      case 'dedication':
+        if (book.intro) {
+          setReadingState({ type: 'intro' });
+        } else if (chapters.length > 0) {
+          setReadingState({ type: 'chapter-title', chapterIndex: 0 });
+        }
+        break;
+      
+      case 'intro':
+        if (chapters.length > 0) {
+          setReadingState({ type: 'chapter-title', chapterIndex: 0 });
+        }
+        break;
+      
+      case 'chapter-title':
+        setReadingState({ type: 'chapter-content', chapterIndex: readingState.chapterIndex });
+        break;
+      
+      case 'chapter-content':
+        setReadingState({ type: 'chapter-gallery', chapterIndex: readingState.chapterIndex });
+        break;
+      
+      case 'chapter-gallery':
+        const nextChapterIndex = readingState.chapterIndex + 1;
+        if (nextChapterIndex < chapters.length) {
+          setReadingState({ type: 'chapter-title', chapterIndex: nextChapterIndex });
+        }
+        break;
+    }
+  };
 
-export type Page = {
-  id: number;
-  created_at: string;
-  chapter_id: number;
-  type: 'subheading' | 'content' | 'quote' | 'image';
-  content: string | null;
-  image: string | null;
-  image_caption: string | null;
-  page_order: number;
-};
+  const handlePrev = () => {
+    switch (readingState.type) {
+      case 'dedication':
+        setReadingState({ type: 'cover' });
+        break;
+      
+      case 'intro':
+        if (book.dedication) {
+          setReadingState({ type: 'dedication' });
+        } else {
+          setReadingState({ type: 'cover' });
+        }
+        break;
+      
+      case 'chapter-title':
+        if (readingState.chapterIndex === 0) {
+          if (book.intro) {
+            setReadingState({ type: 'intro' });
+          } else if (book.dedication) {
+            setReadingState({ type: 'dedication' });
+          } else {
+            setReadingState({ type: 'cover' });
+          }
+        } else {
+          setReadingState({ type: 'chapter-gallery', chapterIndex: readingState.chapterIndex - 1 });
+        }
+        break;
+      
+      case 'chapter-content':
+        setReadingState({ type: 'chapter-title', chapterIndex: readingState.chapterIndex });
+        break;
+      
+      case 'chapter-gallery':
+        setReadingState({ type: 'chapter-content', chapterIndex: readingState.chapterIndex });
+        break;
+    }
+  };
 
-export type GalleryItem = {
-  id: string;
-  created_at: string;
-  chapter_id: number;
-  gallery_image_url: string;
-  gallery_image_title: string | null;
-  gallery_image_caption: string | null;
-  gallery_image_order: number;
-};
-
-export type Answer = {
-  id: number;
-  chapter_id: string;
-  question: string | null;
-  content: string | null;
-};
+  switch (readingState.type) {
+    case 'cover':
+      return <BookCover book={book} onNext={handleNext} />;
+    
+    case 'dedication':
+      return <BookDedication book={book} onNext={handleNext} onPrev={handlePrev} />;
+    
+    case 'intro':
+      return <BookIntro book={book} onNext={handleNext} onPrev={handlePrev} />;
+    
+    case 'chapter-title':
+      return (
+        <ChapterTitle 
+          chapter={chapters[readingState.chapterIndex]} 
+          onNext={handleNext} 
+          onPrev={handlePrev} 
+        />
+      );
+    
+    case 'chapter-content':
+      return (
+        <ChapterReader 
+          chapter={chapters[readingState.chapterIndex]} 
+          onNext={handleNext} 
+          onPrev={handlePrev} 
+        />
+      );
+    
+    case 'chapter-gallery':
+      return (
+        <ChapterGallery 
+          chapter={chapters[readingState.chapterIndex]} 
+          onNext={handleNext} 
+          onPrev={handlePrev} 
+        />
+      );
+    
+    default:
+      return <BookCover book={book} onNext={handleNext} />;
+  }
+}
