@@ -1,66 +1,106 @@
-import { createClient } from '@supabase/supabase-js';
+import React from 'react';
+import { motion } from 'framer-motion';
+import { marked } from 'marked';
+import { Chapter, Page } from '../lib/supabase';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL!;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY!;
+interface ChapterReaderProps {
+  chapter: Chapter;
+  page: Page;
+  pageNumber: number;
+  totalPages: number;
+  onNext: () => void;
+  onPrevious: () => void;
+}
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+export default function ChapterReader({
+  chapter,
+  page,
+  pageNumber,
+  totalPages,
+  onNext,
+  onPrevious
+}: ChapterReaderProps) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: 50 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -50 }}
+      transition={{ duration: 0.5 }}
+      className="min-h-screen bg-white p-8"
+    >
+      <div className="max-w-3xl mx-auto">
+        <div className="mb-8">
+          <p className="text-slate-500 text-sm font-avenir">
+            Chapter {chapter.number}: {chapter.title}
+          </p>
+        </div>
 
-// ===== TYPES MATCHING YOUR DATABASE SCHEMA EXACTLY =====
+        {page.subtitle && (
+          <h3 className="text-2xl font-avenir text-slate-800 mb-6 heading-tracking">
+            {page.subtitle}
+          </h3>
+        )}
 
-export type Book = {
-  id: number;              // bigint
-  created_at: string;
-  title: string;
-  author: string;
-  slug: string;
-  image_url: string | null;
-  dedication: string | null;
-  intro: string | null;
-  date_published: string;
-  view_count: number;
-};
+        {page.image_url && (
+          <div className="mb-8">
+            <img
+              src={page.image_url}
+              alt={page.image_caption || 'Chapter image'}
+              className="w-full rounded-lg shadow-md"
+            />
+            {page.image_caption && (
+              <p className="text-sm text-slate-600 mt-2 italic font-lora">
+                {page.image_caption}
+              </p>
+            )}
+          </div>
+        )}
 
-export type Chapter = {
-  id: number;              // bigint
-  created_at: string;
-  title: string;
-  lede: string | null;
-  book_id: number;         // bigint
-  number: number;
-  image_url: string | null;
-};
+        {page.quote && (
+          <blockquote className="text-xl font-lora italic text-slate-700 mb-8 pl-6 border-l-4 border-slate-300 leading-body-relaxed quote-tracking">
+            <div
+              className="markdown-body"
+              dangerouslySetInnerHTML={{
+                __html: marked.parse(page.quote)
+              }}
+            />
+            {page.quote_attribute && (
+              <footer className="text-base text-slate-600 mt-4 not-italic">
+                — {page.quote_attribute}
+              </footer>
+            )}
+          </blockquote>
+        )}
 
-export type Page = {
-  id: number;              // bigint
-  created_at: string;
-  chapter_id: number;      // bigint
-  content: string | null;
-  sort_order: number;      // smallint
-  image_url: string | null;
-  quote: string | null;
-  quote_attribute: string | null;
-  image_caption: string | null;
-  subtitle: string | null;
-  final_order: number;     // smallint
-};
+        {page.content && (
+          <div
+            className="prose prose-lg font-lora text-slate-800 mb-12 leading-body-relaxed body-tracking"
+            dangerouslySetInnerHTML={{
+              __html: marked.parse(page.content)
+            }}
+          />
+        )}
 
-export type GalleryItem = {
-  id: number;              // bigint
-  created_at: string;
-  image_title: string | null;
-  image_url: string;
-  image_caption: string | null;
-  sort_order: number;      // smallint
-  chapter_id: number;      // bigint
-  page_id: number | null;  // bigint (nullable)
-};
+        <div className="flex justify-between items-center pt-8 border-t border-slate-200">
+          <button
+            onClick={onPrevious}
+            className="px-6 py-2 font-avenir text-slate-600 hover:text-slate-800 transition-colors"
+          >
+            ← Previous
+          </button>
 
-// Helper types for queries
-export type BookWithChapters = Book & {
-  chapters: Chapter[];
-};
+          <span className="text-slate-500 text-sm font-avenir">
+            Page {pageNumber} of {totalPages}
+          </span>
 
-export type ChapterWithPages = Chapter & {
-  pages: Page[];
-  gallery: GalleryItem[];
-};
+          <button
+            onClick={onNext}
+            className="px-6 py-2 bg-slate-800 text-white rounded-full font-avenir hover:bg-slate-900 transition-colors"
+          >
+            Next →
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}

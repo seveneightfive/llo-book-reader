@@ -1,58 +1,59 @@
-import { createClient } from '@supabase/supabase-js';
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Chapter } from '../lib/supabase';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL!;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY!;
+interface ChapterTitleProps {
+  chapter: Chapter;
+  onNext: () => void;
+  onPrevious: () => void;
+}
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+export default function ChapterTitle({ chapter, onNext, onPrevious }: ChapterTitleProps) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 1.05 }}
+      transition={{ duration: 0.6 }}
+      className="min-h-screen bg-slate-800 flex items-center justify-center p-8"
+    >
+      <div className="max-w-3xl mx-auto text-center">
+        <motion.div
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.8 }}
+        >
+          <p className="text-slate-400 font-avenir text-sm uppercase mb-4 dedication-tracking">
+            Chapter {chapter.number}
+          </p>
 
-export type Book = {
-  id: string;
-  created_at: string;
-  title: string;
-  author: string;
-  slug: string;
-  cover_image: string | null;
-  dedication: string | null;
-  intro: string | null;
-  view_count: number;
-};
+          <h2 className="text-4xl md:text-5xl font-avenir text-white mb-6 heading-tracking">
+            {chapter.title}
+          </h2>
 
-export type Chapter = {
-  id: string;
-  created_at: string;
-  title: string;
-  heading: string | null;
-  lede: string | null;
-  book_id: string;
-  chapter_number: number;
-  image: string | null;
-};
+          {chapter.lede && (
+            <p className="text-xl font-lora text-slate-300 mb-12 leading-body-relaxed quote-tracking italic">
+              {chapter.lede}
+            </p>
+          )}
 
-export type Page = {
-  id: string;
-  created_at: string;
-  chapter_id: string;
-  type: 'subheading' | 'content' | 'quote' | 'image';
-  content: string | null;
-  image: string | null;
-  image_caption: string | null;
-  order_index: number;
-};
+          <div className="flex justify-between items-center mt-12">
+            <button
+              onClick={onPrevious}
+              className="px-6 py-2 font-avenir text-slate-300 hover:text-white transition-colors"
+            >
+              ← Back
+            </button>
 
-export type GalleryItem = {
-  id: string;
-  created_at: string;
-  book_id: string;
-  chapter_id: string;
-  image: string;
-  caption: string | null;
-  sort_order: number;
-};
-
-export type Answer = {
-  id: string;
-  chapter_id: string;
-  question: string | null;
-  content: string | null;
-  sort_order: number;
-};
+            <button
+              onClick={onNext}
+              className="px-8 py-4 bg-white text-slate-900 rounded-full font-avenir hover:bg-slate-100 transition-colors"
+            >
+              Begin Chapter →
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+}

@@ -1,15 +1,14 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { marked } from 'marked';
-import { Book } from '../lib/supabase';
 
 interface BookIntroProps {
-  book: Book;
+  intro: string;
   onNext: () => void;
-  onPrev: () => void;
+  onPrevious: () => void;
 }
 
-export default function BookIntro({ book, onNext, onPrev }: BookIntroProps) {
+export default function BookIntro({ intro, onNext, onPrevious }: BookIntroProps) {
   return (
     <motion.div
       initial={{ opacity: 0, x: 100 }}
@@ -29,17 +28,17 @@ export default function BookIntro({ book, onNext, onPrev }: BookIntroProps) {
           </h2>
           
           <div className="max-w-none mb-12 px-8">
-            <div 
+            <div
               className="text-body-large font-lora leading-body-relaxed markdown-body"
               dangerouslySetInnerHTML={{
-                __html: marked.parse(book.intro || '')
+                __html: marked.parse(intro)
               }}
             />
           </div>
-          
+
           <div className="flex justify-between">
             <button
-              onClick={onPrev}
+              onClick={onPrevious}
               className="px-6 py-2 font-avenir text-slate-600 hover:text-slate-800 transition-colors"
             >
               ← Back

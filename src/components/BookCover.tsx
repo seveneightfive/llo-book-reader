@@ -22,10 +22,10 @@ export default function BookCover({ book, onNext }: BookCoverProps) {
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.8 }}
         >
-          {book.cover_image && (
+          {book.image_url && (
             <div className="mb-8">
               <img
-                src={book.cover_image}
+                src={book.image_url}
                 alt={`Cover of ${book.title}`}
                 className="w-64 h-96 object-cover rounded-lg shadow-2xl mx-auto"
               />

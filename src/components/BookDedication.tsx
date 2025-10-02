@@ -1,15 +1,14 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { marked } from 'marked';
-import { Book } from '../lib/supabase';
 
 interface BookDedicationProps {
-  book: Book;
+  dedication: string;
   onNext: () => void;
-  onPrev: () => void;
+  onPrevious: () => void;
 }
 
-export default function BookDedication({ book, onNext, onPrev }: BookDedicationProps) {
+export default function BookDedication({ dedication, onNext, onPrevious }: BookDedicationProps) {
   return (
     <motion.div
       initial={{ opacity: 0, x: 100 }}
@@ -29,17 +28,17 @@ export default function BookDedication({ book, onNext, onPrev }: BookDedicationP
           </h2>
           
           <blockquote className="text-xl font-lora italic text-slate-800 mb-12 leading-body-relaxed quote-tracking py-6 bg-slate-50/50 rounded-lg mx-4 px-8">
-            <div 
+            <div
               className="markdown-body"
               dangerouslySetInnerHTML={{
-                __html: marked.parse(book.dedication || '')
+                __html: marked.parse(dedication)
               }}
             />
           </blockquote>
-          
+
           <div className="flex justify-between">
             <button
-              onClick={onPrev}
+              onClick={onPrevious}
               className="px-6 py-2 font-avenir text-slate-600 hover:text-slate-800 transition-colors"
             >
               ← Back

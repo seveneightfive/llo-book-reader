@@ -32,12 +32,12 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
   }, [currentState, currentChapter]);
 
   useEffect(() => {
-    if (currentState === 'gallery') {
+    if (currentState === 'gallery' && chapters.length > 0) {
       fetchGalleryItems();
     }
-  }, [currentState]);
+  }, [currentState, chapters]);
 
-  const fetchPages = async (chapterId: string) => {
+  const fetchPages = async (chapterId: number) => {
     setLoading(true);
     try {
       const { data, error } = await supabase
@@ -59,10 +59,12 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
   const fetchGalleryItems = async () => {
     setLoading(true);
     try {
+      // Fetch gallery items for all chapters in this book
+      const chapterIds = chapters.map(ch => ch.id);
       const { data, error } = await supabase
         .from('gallery')
         .select('*')
-        .eq('book_id', book.id)
+        .in('chapter_id', chapterIds)
         .order('sort_order', { ascending: true });
 
       if (error) throw error;

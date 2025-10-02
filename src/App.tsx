@@ -26,7 +26,7 @@ function BookPage() {
         .from('books')
         .select('*')
         .eq('slug', bookSlug)
-        .single();
+        .maybeSingle();
 
       if (bookError) {
         console.error('Book fetch error:', bookError);
