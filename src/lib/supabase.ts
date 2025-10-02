@@ -5,8 +5,10 @@ const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY!;
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
+// ===== TYPES MATCHING YOUR DATABASE SCHEMA EXACTLY =====
+
 export type Book = {
-  id: string;
+  id: number;              // bigint
   created_at: string;
   title: string;
   author: string;
@@ -14,46 +16,51 @@ export type Book = {
   image_url: string | null;
   dedication: string | null;
   intro: string | null;
+  date_published: string;
   view_count: number;
-  date_published: string | null;
 };
 
 export type Chapter = {
-  id: string;
+  id: number;              // bigint
   created_at: string;
   title: string;
   lede: string | null;
-  book_id: string;
+  book_id: number;         // bigint
   number: number;
   image_url: string | null;
 };
 
 export type Page = {
-  id: string;
+  id: number;              // bigint
   created_at: string;
-  chapter_id: string;
+  chapter_id: number;      // bigint
   content: string | null;
+  sort_order: number;      // smallint
   image_url: string | null;
+  quote: string | null;
+  quote_attribute: string | null;
   image_caption: string | null;
-  sort_order: number;
+  subtitle: string | null;
+  final_order: number;     // smallint
 };
 
 export type GalleryItem = {
-  id: number;
+  id: number;              // bigint
   created_at: string;
-  book_id: string;
-  chapter_id: number;
-  page_id: number;
-  image_url: string;
   image_title: string | null;
+  image_url: string;
   image_caption: string | null;
-  sort_order: number;
+  sort_order: number;      // smallint
+  chapter_id: number;      // bigint
+  page_id: number | null;  // bigint (nullable)
 };
 
-export type Answer = {
-  id: string;
-  chapter_id: string;
-  question: string | null;
-  content: string | null;
-  sort_order: number;
+// Helper types for queries
+export type BookWithChapters = Book & {
+  chapters: Chapter[];
+};
+
+export type ChapterWithPages = Chapter & {
+  pages: Page[];
+  gallery: GalleryItem[];
 };
