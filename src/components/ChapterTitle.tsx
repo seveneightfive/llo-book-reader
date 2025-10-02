@@ -15,9 +15,24 @@ export default function ChapterTitle({ chapter, onNext, onPrevious }: ChapterTit
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 1.05 }}
       transition={{ duration: 0.6 }}
-      className="min-h-screen bg-slate-800 flex items-center justify-center p-8"
+      className="min-h-screen flex items-center justify-center p-8 relative"
+      style={{
+        backgroundColor: chapter.image_url ? 'transparent' : '#1e293b'
+      }}
     >
-      <div className="max-w-3xl mx-auto text-center">
+      {chapter.image_url && (
+        <>
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{
+              backgroundImage: `url(${chapter.image_url})`,
+            }}
+          />
+          <div className="absolute inset-0 bg-black/60" />
+        </>
+      )}
+
+      <div className="max-w-3xl mx-auto text-center relative z-10">
         <motion.div
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
