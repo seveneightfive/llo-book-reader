@@ -1,3 +1,4 @@
+import React from 'react';
 import { motion } from 'framer-motion';
 import { marked } from 'marked';
 import { Book } from '../lib/supabase';
@@ -8,7 +9,7 @@ interface BookIntroProps {
   onPrev: () => void;
 }
 
-export function BookIntro({ book, onNext, onPrev }: BookIntroProps) {
+export default function BookIntro({ book, onNext, onPrev }: BookIntroProps) {
   return (
     <motion.div
       initial={{ opacity: 0, x: 100 }}
@@ -23,9 +24,7 @@ export function BookIntro({ book, onNext, onPrev }: BookIntroProps) {
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.8 }}
         >
-          <h2
-            className="text-3xl font-avenir text-slate-800 mb-8 text-center heading-tracking"
-          >
+          <h2 className="text-3xl font-avenir text-slate-800 mb-8 text-center heading-tracking">
             Introduction
           </h2>
           
