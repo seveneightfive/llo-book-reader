@@ -1,44 +1,66 @@
-import React from 'react';
-import { Book } from '../lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 
-interface BookCoverProps {
-  book: Book;
-  onNext: () => void;
-}
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL!;
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY!;
 
-export default function BookCover({ book, onNext }: BookCoverProps) {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-8">
-      <div className="max-w-4xl mx-auto text-center">
-        {/* Book Cover Image */}
-        {book.image_url && (
-          <div className="mb-8">
-            <img 
-              src={book.image_url} 
-              alt={`Cover of ${book.title}`}
-              className="mx-auto max-w-sm w-full h-auto rounded-lg shadow-2xl"
-            />
-          </div>
-        )}
-        
-        {/* Title */}
-        <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
-          {book.title}
-        </h1>
-        
-        {/* Author */}
-        <p className="text-xl md:text-2xl text-gray-300 mb-12">
-          by {book.author}
-        </p>
-        
-        {/* Begin Reading Button */}
-        <button
-          onClick={onNext}
-          className="bg-white text-slate-900 px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-100 transition-colors duration-200 shadow-lg"
-        >
-          Begin Reading
-        </button>
-      </div>
-    </div>
-  );
-}
+export const supabase = createClient(supabaseUrl, supabaseKey);
+
+// ===== TYPES MATCHING YOUR DATABASE SCHEMA EXACTLY =====
+
+export type Book = {
+  id: number;              // bigint
+  created_at: string;
+  title: string;
+  author: string;
+  slug: string;
+  cover_image: string | null;
+  dedication: string | null;
+  intro: string | null;
+  date_published: string;
+  view_count: number;
+};
+
+export type Chapter = {
+  id: number;              // bigint
+  created_at: string;
+  title: string;
+  lede: string | null;
+  book_id: number;         // bigint
+  number: number;
+  image_url: string | null;
+};
+
+export type Page = {
+  id: number;              // bigint
+  created_at: string;
+  chapter_id: number;      // bigint
+  content: string | null;
+  sort_order: number;      // smallint
+  image_url: string | null;
+  quote: string | null;
+  quote_attribute: string | null;
+  image_caption: string | null;
+  subtitle: string | null;
+  final_order: number;     // smallint
+};
+
+export type GalleryItem = {
+  id: number;              // bigint
+  created_at: string;
+  image_title: string | null;
+  image_url: string;
+  image_caption: string | null;
+  sort_order: number;      // smallint
+  chapter_id: number;      // bigint
+  page_id: number | null;  // bigint (nullable)
+};
+
+// Helper types for queries
+export type BookWithChapters = Book & {
+  chapters: Chapter[];
+};
+
+export type ChapterWithPages = Chapter & {
+  pages: Page[];
+  gallery: GalleryItem[];
+};
