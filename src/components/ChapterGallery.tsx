@@ -1,66 +1,71 @@
-import { createClient } from '@supabase/supabase-js';
+import React from 'react';
+import { motion } from 'framer-motion';
+import { ArrowLeft } from 'lucide-react';
+import { GalleryItem } from '../lib/supabase';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL!;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY!;
+interface ChapterGalleryProps {
+  galleryItems: GalleryItem[];
+  onPrevious: () => void;
+}
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+export default function ChapterGallery({ galleryItems, onPrevious }: ChapterGalleryProps) {
+  return (
+    <div className="min-h-screen bg-slate-50 p-8">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="max-w-6xl mx-auto"
+      >
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-bold text-slate-800 font-avenir">Gallery</h1>
+          <button
+            onClick={onPrevious}
+            className="flex items-center gap-2 px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Story
+          </button>
+        </div>
 
-// ===== TYPES MATCHING YOUR DATABASE SCHEMA EXACTLY =====
-
-export type Book = {
-  id: number;              // bigint
-  created_at: string;
-  title: string;
-  author: string;
-  slug: string;
-  image_url: string | null;
-  dedication: string | null;
-  intro: string | null;
-  date_published: string;
-  view_count: number;
-};
-
-export type Chapter = {
-  id: number;              // bigint
-  created_at: string;
-  title: string;
-  lede: string | null;
-  book_id: number;         // bigint
-  number: number;
-  image_url: string | null;
-};
-
-export type Page = {
-  id: number;              // bigint
-  created_at: string;
-  chapter_id: number;      // bigint
-  content: string | null;
-  sort_order: number;      // smallint
-  image_url: string | null;
-  quote: string | null;
-  quote_attribute: string | null;
-  image_caption: string | null;
-  subtitle: string | null;
-  final_order: number;     // smallint
-};
-
-export type GalleryItem = {
-  id: number;              // bigint
-  created_at: string;
-  image_title: string | null;
-  image_url: string;
-  image_caption: string | null;
-  sort_order: number;      // smallint
-  chapter_id: number;      // bigint
-  page_id: number | null;  // bigint (nullable)
-};
-
-// Helper types for queries
-export type BookWithChapters = Book & {
-  chapters: Chapter[];
-};
-
-export type ChapterWithPages = Chapter & {
-  pages: Page[];
-  gallery: GalleryItem[];
-};
+        {galleryItems.length === 0 ? (
+          <div className="text-center py-16">
+            <p className="text-slate-600 text-lg font-avenir">No gallery items available.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {galleryItems.map((item, index) => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+                className="bg-white rounded-lg shadow-md overflow-hidden"
+              >
+                <img
+                  src={item.image_url}
+                  alt={item.image_title || 'Gallery image'}
+                  className="w-full h-64 object-cover"
+                />
+                {(item.image_title || item.image_caption) && (
+                  <div className="p-4">
+                    {item.image_title && (
+                      <h3 className="font-semibold text-slate-800 mb-2 font-avenir">
+                        {item.image_title}
+                      </h3>
+                    )}
+                    {item.image_caption && (
+                      <p className="text-slate-600 text-sm font-avenir">
+                        {item.image_caption}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </motion.div>
+    </div>
+  );
+}
