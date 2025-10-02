@@ -1,65 +1,66 @@
-import { motion } from 'framer-motion';
-import { GalleryItem } from '../lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 
-interface ChapterGalleryProps {
-  galleryItems: GalleryItem[];
-  chapterTitle: string;
-}
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL!;
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY!;
 
-export function ChapterGallery({ galleryItems, chapterTitle }: ChapterGalleryProps) {
-  if (!galleryItems || galleryItems.length === 0) {
-    return null;
-  }
+export const supabase = createClient(supabaseUrl, supabaseKey);
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-      className="mt-16 mb-8"
-    >
-      <div className="text-center mb-8">
-        <h3 className="text-2xl font-avenir text-slate-800 mb-2 heading-tracking">
-          Gallery
-        </h3>
-        <p className="text-slate-600 font-lora italic">
-          Images from {chapterTitle}
-        </p>
-      </div>
+// ===== TYPES MATCHING YOUR DATABASE SCHEMA EXACTLY =====
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {galleryItems.map((item, index) => (
-          <motion.div
-            key={item.id}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1, duration: 0.6 }}
-            className="bg-white rounded-lg shadow-md overflow-hidden"
-          >
-            <div className="aspect-w-16 aspect-h-12">
-              <img
-                src={item.image_url}
-                alt={item.image_title || ''}
-                className="w-full h-64 object-cover"
-              />
-            </div>
-            {(item.image_title || item.image_caption) && (
-              <div className="p-4">
-                {item.image_title && (
-                  <h4 className="font-avenir text-slate-800 mb-2">
-                    {item.image_title}
-                  </h4>
-                )}
-                {item.image_caption && (
-                  <p className="text-slate-600 font-lora italic text-sm image-caption">
-                    {item.image_caption}
-                  </p>
-                )}
-              </div>
-            )}
-          </motion.div>
-        ))}
-      </div>
-    </motion.div>
-  );
-}
+export type Book = {
+  id: number;              // bigint
+  created_at: string;
+  title: string;
+  author: string;
+  slug: string;
+  image_url: string | null;
+  dedication: string | null;
+  intro: string | null;
+  date_published: string;
+  view_count: number;
+};
+
+export type Chapter = {
+  id: number;              // bigint
+  created_at: string;
+  title: string;
+  lede: string | null;
+  book_id: number;         // bigint
+  number: number;
+  image_url: string | null;
+};
+
+export type Page = {
+  id: number;              // bigint
+  created_at: string;
+  chapter_id: number;      // bigint
+  content: string | null;
+  sort_order: number;      // smallint
+  image_url: string | null;
+  quote: string | null;
+  quote_attribute: string | null;
+  image_caption: string | null;
+  subtitle: string | null;
+  final_order: number;     // smallint
+};
+
+export type GalleryItem = {
+  id: number;              // bigint
+  created_at: string;
+  image_title: string | null;
+  image_url: string;
+  image_caption: string | null;
+  sort_order: number;      // smallint
+  chapter_id: number;      // bigint
+  page_id: number | null;  // bigint (nullable)
+};
+
+// Helper types for queries
+export type BookWithChapters = Book & {
+  chapters: Chapter[];
+};
+
+export type ChapterWithPages = Chapter & {
+  pages: Page[];
+  gallery: GalleryItem[];
+};
