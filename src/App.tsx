@@ -1,66 +1,109 @@
-import { createClient } from '@supabase/supabase-js';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useParams } from 'react-router-dom';
+import { supabase, Book, Chapter } from './lib/supabase';
+import BookReader from './components/BookReader';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL!;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY!;
+function BookPage() {
+  const { slug } = useParams<{ slug: string }>();
+  const [book, setBook] = useState<Book | null>(null);
+  const [chapters, setChapters] = useState<Chapter[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+  useEffect(() => {
+    if (slug) {
+      fetchBookAndChapters(slug);
+    }
+  }, [slug]);
 
-// ===== TYPES MATCHING YOUR DATABASE SCHEMA EXACTLY =====
+  const fetchBookAndChapters = async (bookSlug: string) => {
+    try {
+      setLoading(true);
+      console.log('Fetching book with slug:', bookSlug);
 
-export type Book = {
-  id: number;              // bigint
-  created_at: string;
-  title: string;
-  author: string;
-  slug: string;
-  image_url: string | null;
-  dedication: string | null;
-  intro: string | null;
-  date_published: string;
-  view_count: number;
-};
+      // Fetch book
+      const { data: bookData, error: bookError } = await supabase
+        .from('books')
+        .select('*')
+        .eq('slug', bookSlug)
+        .single();
 
-export type Chapter = {
-  id: number;              // bigint
-  created_at: string;
-  title: string;
-  lede: string | null;
-  book_id: number;         // bigint
-  number: number;
-  image_url: string | null;
-};
+      if (bookError) {
+        console.error('Book fetch error:', bookError);
+        throw bookError;
+      }
 
-export type Page = {
-  id: number;              // bigint
-  created_at: string;
-  chapter_id: number;      // bigint
-  content: string | null;
-  sort_order: number;      // smallint
-  image_url: string | null;
-  quote: string | null;
-  quote_attribute: string | null;
-  image_caption: string | null;
-  subtitle: string | null;
-  final_order: number;     // smallint
-};
+      console.log('Book data:', bookData);
+      setBook(bookData);
 
-export type GalleryItem = {
-  id: number;              // bigint
-  created_at: string;
-  image_title: string | null;
-  image_url: string;
-  image_caption: string | null;
-  sort_order: number;      // smallint
-  chapter_id: number;      // bigint
-  page_id: number | null;  // bigint (nullable)
-};
+      // Fetch chapters
+      const { data: chaptersData, error: chaptersError } = await supabase
+        .from('chapters')
+        .select('*')
+        .eq('book_id', bookData.id)
+        .order('number', { ascending: true });
 
-// Helper types for queries
-export type BookWithChapters = Book & {
-  chapters: Chapter[];
-};
+      if (chaptersError) {
+        console.error('Chapters fetch error:', chaptersError);
+        throw chaptersError;
+      }
 
-export type ChapterWithPages = Chapter & {
-  pages: Page[];
-  gallery: GalleryItem[];
-};
+      console.log('Chapters data:', chaptersData);
+      setChapters(chaptersData || []);
+
+    } catch (err) {
+      console.error('Error fetching book:', err);
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-slate-600 font-avenir text-lg">Loading book...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-red-600 font-avenir text-lg">Error: {error}</div>
+      </div>
+    );
+  }
+
+  if (!book) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-slate-600 font-avenir text-lg">Book not found</div>
+      </div>
+    );
+  }
+
+  return <BookReader book={book} chapters={chapters} />;
+}
+
+function HomePage() {
+  return (
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-4xl font-avenir text-slate-800 mb-4">Book Reader</h1>
+        <p className="text-slate-600">Navigate to /book/lasting-legacy-online to read the book</p>
+      </div>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/book/:slug" element={<BookPage />} />
+      </Routes>
+    </Router>
+  );
+}
