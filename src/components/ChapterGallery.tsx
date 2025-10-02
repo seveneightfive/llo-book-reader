@@ -1,34 +1,73 @@
-import React from 'react';
-import { GalleryItem } from '../lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 
-interface ChapterGalleryProps {
-  items: GalleryItem[];
-}
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL!;
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY!;
 
-export default function ChapterGallery({ items }: ChapterGalleryProps) {
-  if (!items || items.length === 0) {
-    return null;
-  }
+export const supabase = createClient(supabaseUrl, supabaseKey);
 
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 my-8">
-      {items.map((item) => (
-        <div key={item.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-          <img
-            src={item.gallery_image_url}
-            alt={item.gallery_image_title || 'Gallery image'}
-            className="w-full h-48 object-cover"
-          />
-          <div className="p-4">
-            {item.gallery_image_title && (
-              <h3 className="font-semibold text-lg mb-2">{item.gallery_image_title}</h3>
-            )}
-            {item.gallery_image_caption && (
-              <p className="text-gray-600 text-sm">{item.gallery_image_caption}</p>
-            )}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
+export type Book = {
+  id: number;
+  created_at: string;
+  title: string;
+  author: string;
+  slug: string;
+  image_url: string | null;
+  dedication: string | null;
+  intro: string | null;
+  date_published: string | null;
+  'view-count': number;
+};
+
+export type Section = {
+  id: number;
+  created_at: string;
+  title: string;
+  lede: string | null;
+  front_id: number | null;
+  section_order: number;
+  image_url: string | null;
+  slug: string | null;
+};
+
+export type Chapter = {
+  id: number;
+  created_at: string;
+  chapter_order: number;
+  title: string;
+  chapter_image_url: string | null;
+  section_id: number;
+};
+
+export type Page = {
+  id: number;
+  created_at: string;
+  section_id: number;
+  chapter_id: number;
+  page_content: string | null;
+  page_order: number;
+  page_image_url: string | null;
+  page_quote: string | null;
+  page_quote_attribute: string | null;
+  page_image_caption: string | null;
+  page_title: string | null;
+};
+
+export type GalleryItem = {
+  id: number;
+  created_at: string;
+  gallery_image_title: string | null;
+  gallery_image_url: string;
+  gallery_image_caption: string | null;
+  galllery_image_order: number;
+  section_id: number;
+  chapter_id: number;
+  page_id: number;
+};
+
+export type Answer = {
+  id: string;
+  chapter_id: string;
+  question: string | null;
+  content: string | null;
+  sort_order: number;
+};
