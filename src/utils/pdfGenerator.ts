@@ -175,13 +175,6 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
             line-height: 1.3;
           }
           
-          .chapter-lede-toc {
-            font-size: 12pt;
-            color: #64748b;
-            font-style: italic;
-            line-height: 1.2;
-          }
-          
           .chapter-title-page {
             text-align: center;
             padding: 80px 0;
@@ -224,16 +217,6 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
             color: #1e293b;
             margin-bottom: 20px;
             letter-spacing: 0.025em;
-          }
-          
-          .chapter-intro {
-            text-align: center;
-            font-style: italic;
-            font-size: 12pt;
-            color: #64748b;
-            max-width: 400px;
-            margin: 0 auto;
-            line-height: 1.5;
           }
           
           .chapter-content {
@@ -367,7 +350,7 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
       <body>
         <!-- Cover Page -->
         <div class="cover-page">
-          ${book.cover_image ? `<img src="${book.cover_image}" alt="${book.title} cover" class="cover-image">` : ''}
+          ${book.image_url ? `<img src="${book.image_url}" alt="${book.title} cover" class="cover-image">` : ''}
           <h1 class="book-title">${sanitizeContent(book.title)}</h1>
           <p class="book-author">by ${sanitizeContent(book.author)}</p>
         </div>
@@ -397,10 +380,9 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
           <h2 class="toc-title">Table of Contents</h2>
           ${chaptersWithPages.filter(chapter => chapter.pages.length > 0).map(chapter => `
             <div class="chapter-entry">
-              <div class="chapter-circle">${chapter.chapter_number}</div>
-              ${chapter.image ? `<img src="${chapter.image}" alt="${chapter.title}" class="chapter-image">` : ''}
+              <div class="chapter-circle">${chapter.chapter_order}</div>
+              <div class="chapter-text">
                 <div class="chapter-title-toc">${sanitizeContent(chapter.title)}</div>
-                ${chapter.lede ? `<div class="chapter-lede-toc">${sanitizeContent(chapter.lede)}</div>` : ''}
               </div>
             </div>
           `).join('')}
@@ -410,27 +392,27 @@ export const generateBookPDF = async (book: Book, chaptersWithPages: ChapterWith
         ${chaptersWithPages.filter(chapter => chapter.pages.length > 0).map(chapter => `
           <!-- Chapter Title Page -->
           <div class="chapter-title-page">
-            ${chapter.image ? `<img src="${chapter.image}" alt="${chapter.title}" class="chapter-image">` : ''}
-            <div class="chapter-number">${chapter.chapter_number}</div>
+            ${chapter.chapter_image_url ? `<img src="${chapter.chapter_image_url}" alt="${chapter.title}" class="chapter-image">` : ''}
+            <div class="chapter-number">${chapter.chapter_order}</div>
             <div class="chapter-label">Chapter</div>
             <h1 class="chapter-title">${sanitizeContent(chapter.title)}</h1>
-            ${chapter.heading || chapter.lede ? `
-              <div class="chapter-intro">
-                ${sanitizeContent(chapter.heading || chapter.lede || '')}
-              </div>
-            ` : ''}
           </div>
 
           <!-- Chapter Content -->
           ${chapter.pages.map(page => `
             <div class="content-block">
-              ${page.content && page.content.trim().length < 100 && !page.image ? `<h3 class="subheading">${sanitizeContent(page.content)}</h3>` : ''}
-              ${page.image ? `
-                <img src="${page.image}" alt="" class="content-image">
-                ${page.image_caption ? `<div class="image-caption">${sanitizeContent(page.image_caption)}</div>` : ''}
+              ${page.page_title ? `<h3 class="subheading">${sanitizeContent(page.page_title)}</h3>` : ''}
+              ${page.page_image_url ? `
+                <img src="${page.page_image_url}" alt="" class="content-image">
+                ${page.page_image_caption ? `<div class="image-caption">${sanitizeContent(page.page_image_caption)}</div>` : ''}
               ` : ''}
-              ${page.content && page.content.trim().length >= 100 ? `<div class="content-text">${sanitizeContent(page.content)}</div>` : ''}
-              ${page.content && page.content.includes('"') && page.content.trim().length < 500 ? `<div class="content-quote">${sanitizeContent(page.content)}</div>` : ''}
+              ${page.page_content ? `<div class="content-text">${sanitizeContent(page.page_content)}</div>` : ''}
+              ${page.page_quote ? `
+                <div class="content-quote">
+                  ${sanitizeContent(page.page_quote)}
+                  ${page.page_quote_attribute ? `<br><br>— ${sanitizeContent(page.page_quote_attribute)}` : ''}
+                </div>
+              ` : ''}
             </div>
           `).join('')}
         `).join('')}

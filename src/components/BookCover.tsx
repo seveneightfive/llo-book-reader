@@ -24,7 +24,7 @@ export function BookCover({ book, onNext }: BookCoverProps) {
         >
           {book.cover_image && (
             <img
-              src={book.cover_image}
+              src={book.image_url}
               alt={book.title}
               className="w-64 h-96 object-cover mx-auto rounded-lg shadow-2xl mb-8"
             />
@@ -49,14 +49,14 @@ export function BookCover({ book, onNext }: BookCoverProps) {
           by {book.author}
         </motion.p>
         
-        {book.view_count > 0 && (
+        {book['view-count'] > 0 && (
           <motion.p
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.8, duration: 0.8 }}
             className="text-sm font-avenir text-slate-400 mb-8"
           >
-            {book.view_count.toLocaleString()} {book.view_count === 1 ? 'view' : 'views'}
+            {book['view-count'].toLocaleString()} {book['view-count'] === 1 ? 'view' : 'views'}
           </motion.p>
         )}
         

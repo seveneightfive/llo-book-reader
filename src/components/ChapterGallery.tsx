@@ -60,15 +60,15 @@ export function ChapterGallery({ galleryItems, chapterTitle }: ChapterGalleryPro
               >
                 <div className="relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
                   <img
-                    src={item.image}
-                    alt={item.caption || `Gallery image ${index + 1}`}
+                    src={item.gallery_image_url}
+                    alt={item.gallery_image_caption || `Gallery image ${index + 1}`}
                     className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
                 </div>
-                {item.caption && (
+                {item.gallery_image_caption && (
                   <p className="mt-3 font-lora text-slate-600 leading-relaxed" style={{ fontSize: '1.1rem' }}>
-                    {item.caption}
+                    {item.gallery_image_caption}
                   </p>
                 )}
               </motion.div>
@@ -122,16 +122,16 @@ export function ChapterGallery({ galleryItems, chapterTitle }: ChapterGalleryPro
 
               {/* Image */}
               <img
-                src={galleryItems[selectedImage].image}
-                alt={galleryItems[selectedImage].caption || `Gallery image ${selectedImage + 1}`}
+                src={galleryItems[selectedImage].gallery_image_url}
+                alt={galleryItems[selectedImage].gallery_image_caption || `Gallery image ${selectedImage + 1}`}
                 className="max-w-full max-h-[80vh] object-contain rounded-lg"
               />
 
               {/* Caption */}
-              {galleryItems[selectedImage].caption && (
+              {galleryItems[selectedImage].gallery_image_caption && (
                 <div className="absolute -bottom-20 left-0 right-0 text-center">
                   <p className="text-white font-lora leading-relaxed">
-                    {galleryItems[selectedImage].caption}
+                    {galleryItems[selectedImage].gallery_image_caption}
                   </p>
                 </div>
               )}

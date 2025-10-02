@@ -35,7 +35,7 @@ export function useBook(slug: string) {
         // Increment view count (fire and forget, don't wait for response)
         supabase
           .from('books')
-          .update({ view_count: (bookData.view_count || 0) + 1 })
+          .update({ 'view-count': (bookData['view-count'] || 0) + 1 })
           .eq('id', bookData.id)
           .then(({ error: updateError }) => {
             if (updateError) {
@@ -50,8 +50,8 @@ export function useBook(slug: string) {
         const { data: chaptersData, error: chaptersError } = await supabase
           .from('chapters')
           .select('*')
-          .eq('Related_Books', bookData.id)
-          .order('chapter_number');
+          .eq('section_id', bookData.id)
+          .order('chapter_order');
 
         if (chaptersError) throw chaptersError;
         setChapters(chaptersData || []);
@@ -70,7 +70,7 @@ export function useBook(slug: string) {
   return { book, chapters, loading, error };
 }
 
-export function useChapterPages(chapterId: string) {
+export function useChapterPages(chapterId: number) {
   const [pages, setPages] = useState<Page[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -84,8 +84,8 @@ export function useChapterPages(chapterId: string) {
         const { data, error } = await supabase
           .from('pages')
           .select('*')
-          .eq('Related_Chapters', chapterId)
-          .order('order_index');
+          .eq('chapter_id', chapterId)
+          .order('page_order');
 
         console.log('useChapterPages - Query result:', { data, error });
         console.log('useChapterPages - Data length:', data?.length || 0);
@@ -106,7 +106,7 @@ export function useChapterPages(chapterId: string) {
   return { pages, loading, error };
 }
 
-export function useChapterGallery(chapterId: string) {
+export function useChapterGallery(chapterId: number) {
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -118,10 +118,10 @@ export function useChapterGallery(chapterId: string) {
         setLoading(true);
         
         const { data, error } = await supabase
-          .from('gallery_items')
+          .from('gallery')
           .select('*')
-          .eq('Related_Chapters', chapterId)
-          .order('sort_order');
+          .eq('chapter_id', chapterId)
+          .order('galllery_image_order');
 
         console.log('useChapterGallery - Query result:', { data, error });
         

@@ -6,63 +6,68 @@ const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY!;
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
 export type Book = {
-  id: string;
-  slug: string;
+  id: number;
+  created_at: string;
   title: string;
   author: string;
-  cover_image: string | null;
-  datePublished: number | null;
-  created_at: string;
-  updated_at: string;
+  slug: string;
+  image_url: string | null;
   dedication: string | null;
   intro: string | null;
-  User: string | null;
-  view_count: number;
-  co_author: string | null;
-  whalesync_id: string;
+  date_published: string | null;
+  'view-count': number;
+};
+
+export type Section = {
+  id: number;
+  created_at: string;
+  title: string;
+  lede: string | null;
+  front_id: number | null;
+  section_order: number;
+  image_url: string | null;
+  slug: string | null;
 };
 
 export type Chapter = {
-  id: string;
-  Related_Books: string;
-  title: string;
-  chapter_number: number;
+  id: number;
   created_at: string;
-  updated_at: string;
-  chapter_image: string | null;
-  lede: string | null;
-  intro: string | null;
-  user: string | null;
-  publish_chapter: boolean | null;
-  whalesync_id: string;
+  chapter_order: number;
+  title: string;
+  chapter_image_url: string | null;
+  section_id: number;
 };
 
 export type Page = {
-  id: string;
-  Related_Chapters: string;
-  content: string | null;
-  image_url: string | null;
-  image_caption: string | null;
-  order_index: number;
+  id: number;
   created_at: string;
-  updated_at: string;
-  subheading: string | null;
-  quote: string | null;
-  user: string | null;
-  Related_Books: string | null;
-  question_number: string | null;
-  whalesync_id: string;
+  section_id: number;
+  chapter_id: number;
+  page_content: string | null;
+  page_order: number;
+  page_image_url: string | null;
+  page_quote: string | null;
+  page_quote_attribute: string | null;
+  page_image_caption: string | null;
+  page_title: string | null;
 };
 
 export type GalleryItem = {
-  Related_Books: string;
-  caption: string | null;
-  Related_Chapters: string;
-  image: string;
-  ownerid: string | null;
-  pageid: string | null;
-  rowid: string | null;
-  sort_order: string | null;
-  image_title: string | null;
-  whalesync_id: string;
+  id: number;
+  created_at: string;
+  gallery_image_title: string | null;
+  gallery_image_url: string;
+  gallery_image_caption: string | null;
+  galllery_image_order: number;
+  section_id: number;
+  chapter_id: number;
+  page_id: number | null;
+};
+
+export type Answer = {
+  id: string;
+  chapter_id: string;
+  question: string | null;
+  content: string | null;
+  sort_order: number;
 };

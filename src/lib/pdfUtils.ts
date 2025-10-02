@@ -12,17 +12,17 @@ export async function fetchAllPagesForChapters(chapters: Chapter[]): Promise<Cha
       const { data: pages, error } = await supabase
         .from('pages')
         .select('*')
-        .eq('Related_Chapters', chapter.id)
-        .order('order_index');
+        .eq('chapter_id', chapter.id)
+        .order('page_order');
 
       if (error) {
-        console.error(`Error fetching pages for chapter ${chapter.chapter_number}:`, error);
+        console.error(`Error fetching pages for chapter ${chapter.chapter_order}:`, error);
         chaptersWithPages.push({ ...chapter, pages: [] });
       } else {
         chaptersWithPages.push({ ...chapter, pages: pages || [] });
       }
     } catch (err) {
-      console.error(`Failed to fetch pages for chapter ${chapter.chapter_number}:`, err);
+      console.error(`Failed to fetch pages for chapter ${chapter.chapter_order}:`, err);
       chaptersWithPages.push({ ...chapter, pages: [] });
     }
   }

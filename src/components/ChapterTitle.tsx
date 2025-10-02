@@ -10,10 +10,10 @@ interface ChapterTitleProps {
 }
 
 export function ChapterTitle({ chapter, onNext, onPrev }: ChapterTitleProps) {
-  // Use chapter.chapter_image if it exists and is not empty, otherwise use default from storage
-  const imageSrc = (chapter.chapter_image && chapter.chapter_image.trim() !== '') 
-    ? chapter.chapter_image 
-    : supabase.storage.from('chapter-images').getPublicUrl(`Chapter-${chapter.chapter_number}.jpg`).data.publicUrl;
+  // Use chapter.chapter_image_url if it exists and is not empty, otherwise use default from storage
+  const imageSrc = (chapter.chapter_image_url && chapter.chapter_image_url.trim() !== '') 
+    ? chapter.chapter_image_url 
+    : supabase.storage.from('chapter-images').getPublicUrl(`Chapter-${chapter.chapter_order}.jpg`).data.publicUrl;
 
   return (
     <motion.div
@@ -55,7 +55,7 @@ export function ChapterTitle({ chapter, onNext, onPrev }: ChapterTitleProps) {
           <p
             className="text-sm font-avenir tracking-wider text-slate-500 uppercase mb-4"
           >
-            Chapter {chapter.chapter_number}
+            Chapter {chapter.chapter_order}
           </p>
           
           <h1
@@ -63,22 +63,6 @@ export function ChapterTitle({ chapter, onNext, onPrev }: ChapterTitleProps) {
           >
             {chapter.title}
           </h1>
-          
-          {chapter.intro && (
-            <div
-              className="text-xl font-avenir text-slate-600 mb-4 heading-tracking"
-              dangerouslySetInnerHTML={{
-                __html: marked.parse(chapter.heading || '')
-              }}
-            >
-            </div>
-          )}
-          
-          {chapter.lede && (
-            <p className="text-body-large font-lora mb-12 leading-body-relaxed px-4">
-              {chapter.lede}
-            </p>
-          )}
           
           <div className="flex justify-between items-center w-full max-w-xs mt-8">
             <div className="flex-1"></div>
