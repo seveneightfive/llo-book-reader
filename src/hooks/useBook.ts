@@ -1,57 +1,114 @@
-import { createClient } from '@supabase/supabase-js';
+import { useState, useEffect } from 'react';
+import { supabase, Book, Chapter, Page, GalleryItem } from '../lib/supabase';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL!;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY!;
+export function useBook(slug: string) {
+  const [book, setBook] = useState<Book | null>(null);
+  const [chapters, setChapters] = useState<Chapter[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+  useEffect(() => {
+    async function fetchBook() {
+      try {
+        setLoading(true);
+        
+        // Fetch book
+        const { data: bookData, error: bookError } = await supabase
+          .from('books')
+          .select('*')
+          .eq('slug', slug)
+          .single();
 
-export type Book = {
-  id: number;
-  created_at: string;
-  title: string;
-  author: string;
-  slug: string;
-  image_url: string | null;
-  dedication: string | null;
-  intro: string | null;
-  view_count: number;
-};
+        if (bookError) throw bookError;
+        if (!bookData) throw new Error('Book not found');
 
-export type Chapter = {
-  id: number;
-  created_at: string;
-  book_id: number;
-  chapter_number: number;
-  title: string;
-  heading: string | null;
-  lede: string | null;
-  image: string | null;
-};
+        setBook(bookData);
 
-export type Page = {
-  id: number;
-  created_at: string;
-  chapter_id: number;
-  type: 'subheading' | 'content' | 'quote' | 'image';
-  content: string | null;
-  image: string | null;
-  image_caption: string | null;
-  page_order: number;
-};
+        // Fetch chapters
+        const { data: chaptersData, error: chaptersError } = await supabase
+          .from('chapters')
+          .select('*')
+          .eq('book_id', bookData.id)
+          .order('chapter_number', { ascending: true });
 
-export type GalleryItem = {
-  id: number;
-  created_at: string;
-  book_id: number;
-  chapter_id: number;
-  image: string;
-  caption: string | null;
-  sort_order: number;
-};
+        if (chaptersError) throw chaptersError;
 
-export type Answer = {
-  id: number;
-  chapter_id: string;
-  question: string | null;
-  content: string | null;
-};
+        setChapters(chaptersData || []);
+
+        // Increment view count
+        await supabase
+          .from('books')
+          .update({ view_count: (bookData.view_count || 0) + 1 })
+          .eq('id', bookData.id);
+
+      } catch (err) {
+        console.error('Error fetching book:', err);
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (slug) {
+      fetchBook();
+    }
+  }, [slug]);
+
+  return { book, chapters, loading, error };
+}
+
+export function useChapterPages(chapterId: number) {
+  const [pages, setPages] = useState<Page[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchPages() {
+      try {
+        const { data, error } = await supabase
+          .from('pages')
+          .select('*')
+          .eq('chapter_id', chapterId)
+          .order('page_order', { ascending: true });
+
+        if (error) throw error;
+        setPages(data || []);
+      } catch (error) {
+        console.error('Error fetching pages:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchPages();
+  }, [chapterId]);
+
+  return { pages, loading };
+}
+
+export function useChapterGallery(chapterId: number) {
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchGalleryItems() {
+      try {
+        const { data, error } = await supabase
+          .from('gallery_items')
+          .select('*')
+          .eq('chapter_id', chapterId)
+          .order('sort_order', { ascending: true });
+
+        if (error) throw error;
+        setGalleryItems(data || []);
+      } catch (error) {
+        console.error('useChapterGallery - Error:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchGalleryItems();
+  }, [chapterId]);
+
+  return { galleryItems, loading };
+}
