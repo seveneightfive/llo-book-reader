@@ -50,10 +50,11 @@ export type GalleryItem = {
 };
 
 export type Answer = {
-  id: string;
+  id: number;
   chapter_id: string;
   question: string | null;
   content: string | null;
-  sort_order: number;
 };
 (window as any).supabase = supabase;
+
+  id: number;
