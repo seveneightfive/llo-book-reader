@@ -15,6 +15,7 @@ export type Book = {
   dedication: string | null;
   intro: string | null;
   view_count: number;
+  view_count: number;
 };
 
 export type Chapter = {
