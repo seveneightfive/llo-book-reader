@@ -1,69 +1,54 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Book } from '../lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 
-interface BookCoverProps {
-  book: Book;
-  onNext: () => void;
-}
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL!;
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY!;
 
-export default function BookCover({ book, onNext }: BookCoverProps) {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.8 }}
-      className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-700 flex items-center justify-center p-8"
-    >
-      <div className="max-w-4xl mx-auto text-center">
-        <motion.div
-          initial={{ y: 50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.8 }}
-        >
-          {book.cover_image && (
-            <div className="mb-8">
-              <img
-                src={book.cover_image}
-                alt={`Cover of ${book.title}`}
-                className="w-64 h-96 object-cover rounded-lg shadow-2xl mx-auto"
-              />
-            </div>
-          )}
-          
-          <h1 className="text-5xl font-avenir font-bold text-white mb-4 heading-tracking">
-            {book.title}
-          </h1>
-          
-          <p className="text-xl text-slate-300 mb-8 font-avenir">
-            by {book.author}
-          </p>
-          
-          {book.dedication && (
-            <blockquote className="text-lg font-lora italic text-slate-200 mb-8 max-w-2xl mx-auto leading-relaxed">
-              "{book.dedication}"
-            </blockquote>
-          )}
-          
-          <button
-            onClick={onNext}
-            className="px-8 py-4 bg-white text-slate-900 rounded-full font-avenir font-medium text-lg hover:bg-slate-100 transition-colors shadow-lg"
-          >
-            Begin Reading
-          </button>
-        </motion.div>
-      </div>
-    </motion.div>
-  );
-}
+export const supabase = createClient(supabaseUrl, supabaseKey);
 
-export type GalleryImage = {
+export type Book = {
+  id: number;
+  created_at: string;
+  title: string;
+  author: string;
+  slug: string;
+  cover_image: string | null;
+  dedication: string | null;
+  intro: string | null;
+  date_published: string | null;
+  view_count: number;
+};
+
+export type Chapter = {
+  id: number;
+  created_at: string;
+  title: string;
+  lede: string | null;
+  book_id: number;
+  chapter_number: number;
+  image_url: string | null;
+  slug: string | null;
+};
+
+export type Page = {
+  id: number;
+  created_at: string;
+  chapter_id: number;
+  page_content: string | null;
+  page_order: number;
+  page_image_url: string | null;
+  page_quote: string | null;
+  page_quote_attribute: string | null;
+  page_image_caption: string | null;
+  page_title: string | null;
+};
+
+export type GalleryItem = {
+  id: number;
+  created_at: string;
   gallery_image_title: string | null;
   gallery_image_url: string;
   gallery_image_caption: string | null;
-  galllery_image_order: number;
-  section_id: number;
+  galllery_image_order: number; // Note: keeping the typo as it exists in the database
   chapter_id: number;
   page_id: number;
 };
