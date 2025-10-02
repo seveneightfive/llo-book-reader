@@ -25,9 +25,9 @@ export default function BookDedication({ book, dedication, onNext, onPrevious }:
       }}
     >
       {book.image_url && (
-        <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+        <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
       )}
-      <div className="max-w-2xl mx-auto text-center relative z-10">
+      <div className="max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto text-center relative z-10 px-4 md:px-8 lg:px-12">
         <motion.div
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -37,7 +37,7 @@ export default function BookDedication({ book, dedication, onNext, onPrevious }:
             Dedication
           </h2>
 
-          <blockquote className="text-xl font-lora italic text-slate-900 mb-12 leading-body-relaxed quote-tracking py-6 bg-white/80 backdrop-blur-md rounded-lg mx-4 px-8 shadow-xl">
+          <blockquote className="text-xl font-lora italic text-slate-900 mb-12 leading-body-relaxed quote-tracking py-8 md:py-10 lg:py-12 bg-white/80 backdrop-blur-md rounded-lg mx-4 md:mx-8 lg:mx-12 px-8 md:px-12 lg:px-16 shadow-xl">
             <div
               className="markdown-body"
               dangerouslySetInnerHTML={{
