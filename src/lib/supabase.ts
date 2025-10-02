@@ -11,37 +11,27 @@ export type Book = {
   title: string;
   author: string;
   slug: string;
-  image_url: string | null;
+  cover_image: string | null;
   dedication: string | null;
   intro: string | null;
   date_published: string | null;
-  'view-count': number;
-};
-
-export type Section = {
-  id: number;
-  created_at: string;
-  title: string;
-  lede: string | null;
-  front_id: number | null;
-  section_order: number;
-  image_url: string | null;
-  slug: string | null;
+  view_count: number;
 };
 
 export type Chapter = {
   id: number;
   created_at: string;
-  chapter_order: number;
   title: string;
-  chapter_image_url: string | null;
-  section_id: number;
+  lede: string | null;
+  book_id: number;
+  chapter_number: number;
+  image_url: string | null;
+  slug: string | null;
 };
 
 export type Page = {
   id: number;
   created_at: string;
-  section_id: number;
   chapter_id: number;
   page_content: string | null;
   page_order: number;
@@ -58,8 +48,7 @@ export type GalleryItem = {
   gallery_image_title: string | null;
   gallery_image_url: string;
   gallery_image_caption: string | null;
-  galllery_image_order: number;
-  section_id: number;
+  galllery_image_order: number; // Note: keeping the typo as it exists in the database
   chapter_id: number;
   page_id: number;
 };
