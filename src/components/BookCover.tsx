@@ -1,48 +1,57 @@
-import React from 'react';
-import { Book } from '../lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 
-interface BookCoverProps {
-  book: Book;
-  onNext: () => void;
-}
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL!;
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY!;
 
-export default function BookCover({ book, onNext }: BookCoverProps) {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center p-8">
-      <div className="max-w-2xl mx-auto text-center">
-        {book.cover_image && (
-          <div className="mb-8">
-            <img
-              src={book.cover_image}
-              alt={`Cover of ${book.title}`}
-              className="w-64 h-96 object-cover rounded-lg shadow-2xl mx-auto"
-            />
-          </div>
-        )}
-        
-        <h1 className="text-5xl font-bold text-white mb-4">
-          {book.title}
-        </h1>
-        
-        <p className="text-xl text-slate-300 mb-8">
-          by {book.author}
-        </p>
-        
-        {book.dedication && (
-          <div className="mb-8 p-6 bg-slate-800/50 rounded-lg">
-            <p className="text-slate-200 italic">
-              {book.dedication}
-            </p>
-          </div>
-        )}
-        
-        <button
-          onClick={onNext}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
-        >
-          Begin Reading
-        </button>
-      </div>
-    </div>
-  );
-}
+export const supabase = createClient(supabaseUrl, supabaseKey);
+
+export type Book = {
+  id: number;
+  created_at: string;
+  title: string;
+  author: string;
+  slug: string;
+  image_url: string | null;
+  dedication: string | null;
+  intro: string | null;
+  view_count: number;
+};
+
+export type Chapter = {
+  id: number;
+  created_at: string;
+  book_id: number;
+  chapter_number: number;
+  title: string;
+  heading: string | null;
+  lede: string | null;
+  image: string | null;
+};
+
+export type Page = {
+  id: number;
+  created_at: string;
+  chapter_id: number;
+  type: 'subheading' | 'content' | 'quote' | 'image';
+  content: string | null;
+  image: string | null;
+  image_caption: string | null;
+  page_order: number;
+};
+
+export type GalleryItem = {
+  id: string;
+  created_at: string;
+  chapter_id: number;
+  gallery_image_url: string;
+  gallery_image_title: string | null;
+  gallery_image_caption: string | null;
+  gallery_image_order: number;
+};
+
+export type Answer = {
+  id: number;
+  chapter_id: string;
+  question: string | null;
+  content: string | null;
+};

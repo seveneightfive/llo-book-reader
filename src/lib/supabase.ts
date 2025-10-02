@@ -11,47 +11,63 @@ export type Book = {
   title: string;
   author: string;
   slug: string;
-  cover_image: string | null;
+  image_url: string | null;
   dedication: string | null;
   intro: string | null;
-  view_count: number;
+  date_published: string | null;
+  'view-count': number;
+};
+
+export type Section = {
+  id: number;
+  created_at: string;
+  title: string;
+  lede: string | null;
+  front_id: number | null;
+  section_order: number;
+  image_url: string | null;
+  slug: string | null;
 };
 
 export type Chapter = {
   id: number;
   created_at: string;
-  book_id: number;
-  chapter_number: number;
+  chapter_order: number;
   title: string;
-  heading: string | null;
-  lede: string | null;
-  image: string | null;
+  chapter_image_url: string | null;
+  section_id: number;
 };
 
 export type Page = {
   id: number;
   created_at: string;
+  section_id: number;
   chapter_id: number;
-  type: 'subheading' | 'content' | 'quote' | 'image';
-  content: string | null;
-  image: string | null;
-  image_caption: string | null;
+  page_content: string | null;
   page_order: number;
+  page_image_url: string | null;
+  page_quote: string | null;
+  page_quote_attribute: string | null;
+  page_image_caption: string | null;
+  page_title: string | null;
 };
 
 export type GalleryItem = {
-  id: string;
+  id: number;
   created_at: string;
-  chapter_id: number;
-  gallery_image_url: string;
   gallery_image_title: string | null;
+  gallery_image_url: string;
   gallery_image_caption: string | null;
-  gallery_image_order: number;
+  galllery_image_order: number;
+  section_id: number;
+  chapter_id: number;
+  page_id: number;
 };
 
 export type Answer = {
-  id: number;
+  id: string;
   chapter_id: string;
   question: string | null;
   content: string | null;
+  sort_order: number;
 };
