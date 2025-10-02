@@ -1,58 +1,65 @@
-import { createClient } from '@supabase/supabase-js';
+import { motion } from 'framer-motion';
+import { GalleryItem } from '../lib/supabase';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL!;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY!;
+interface ChapterGalleryProps {
+  galleryItems: GalleryItem[];
+  chapterTitle: string;
+}
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+export function ChapterGallery({ galleryItems, chapterTitle }: ChapterGalleryProps) {
+  if (!galleryItems || galleryItems.length === 0) {
+    return null;
+  }
 
-export type Book = {
-  id: string;
-  created_at: string;
-  title: string;
-  author: string;
-  slug: string;
-  cover_image: string | null;
-  dedication: string | null;
-  intro: string | null;
-  view_count: number;
-};
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      className="mt-16 mb-8"
+    >
+      <div className="text-center mb-8">
+        <h3 className="text-2xl font-avenir text-slate-800 mb-2 heading-tracking">
+          Gallery
+        </h3>
+        <p className="text-slate-600 font-lora italic">
+          Images from {chapterTitle}
+        </p>
+      </div>
 
-export type Chapter = {
-  id: string;
-  created_at: string;
-  title: string;
-  heading: string | null;
-  lede: string | null;
-  book_id: string;
-  chapter_number: number;
-  image: string | null;
-};
-
-export type Page = {
-  id: string;
-  created_at: string;
-  chapter_id: string;
-  type: 'subheading' | 'content' | 'quote' | 'image';
-  content: string | null;
-  image: string | null;
-  image_caption: string | null;
-  order_index: number;
-};
-
-export type GalleryItem = {
-  id: string;
-  created_at: string;
-  book_id: string;
-  chapter_id: string;
-  image: string;
-  caption: string | null;
-  sort_order: number;
-};
-
-export type Answer = {
-  id: string;
-  chapter_id: string;
-  question: string | null;
-  content: string | null;
-  sort_order: number;
-};
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {galleryItems.map((item, index) => (
+          <motion.div
+            key={item.id}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1, duration: 0.6 }}
+            className="bg-white rounded-lg shadow-md overflow-hidden"
+          >
+            <div className="aspect-w-16 aspect-h-12">
+              <img
+                src={item.image_url}
+                alt={item.image_title || ''}
+                className="w-full h-64 object-cover"
+              />
+            </div>
+            {(item.image_title || item.image_caption) && (
+              <div className="p-4">
+                {item.image_title && (
+                  <h4 className="font-avenir text-slate-800 mb-2">
+                    {item.image_title}
+                  </h4>
+                )}
+                {item.image_caption && (
+                  <p className="text-slate-600 font-lora italic text-sm image-caption">
+                    {item.image_caption}
+                  </p>
+                )}
+              </div>
+            )}
+          </motion.div>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
