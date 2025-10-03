@@ -97,7 +97,22 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
     }
   };
 
-  const handleNext = () => {
+  const checkChapterHasGallery = async (chapterId: number): Promise<boolean> => {
+    try {
+      const { count, error } = await supabase
+        .from('gallery')
+        .select('*', { count: 'exact', head: true })
+        .eq('chapter_id', chapterId);
+
+      if (error) throw error;
+      return (count || 0) > 0;
+    } catch (error) {
+      console.error('Error checking chapter gallery:', error);
+      return false;
+    }
+  };
+
+  const handleNext = async () => {
     switch (currentState) {
       case 'cover':
         if (book.dedication) {
@@ -108,7 +123,7 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
           setCurrentState('chapter-title');
         }
         break;
-      
+
       case 'dedication':
         if (book.intro) {
           setCurrentState('intro');
@@ -116,23 +131,33 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
           setCurrentState('chapter-title');
         }
         break;
-      
+
       case 'intro':
         if (chapters.length > 0) {
           setCurrentState('chapter-title');
         }
         break;
-      
+
       case 'chapter-title':
         setCurrentState('chapter-content');
         break;
-      
+
       case 'chapter-content':
         if (currentPageIndex < pages.length - 1) {
           setCurrentPageIndex(currentPageIndex + 1);
         } else {
-          fetchChapterGalleryItems(currentChapter.id);
-          setCurrentState('chapter-gallery');
+          const hasGallery = await checkChapterHasGallery(currentChapter.id);
+          if (hasGallery) {
+            fetchChapterGalleryItems(currentChapter.id);
+            setCurrentState('chapter-gallery');
+          } else {
+            if (currentChapterIndex < chapters.length - 1) {
+              setCurrentChapterIndex(currentChapterIndex + 1);
+              setCurrentState('chapter-title');
+            } else {
+              setCurrentState('gallery');
+            }
+          }
         }
         break;
 
@@ -144,14 +169,14 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
           setCurrentState('gallery');
         }
         break;
-      
+
       case 'gallery':
         // End of book
         break;
     }
   };
 
-  const handlePrevious = () => {
+  const handlePrevious = async () => {
     switch (currentState) {
       case 'dedication':
         setCurrentState('cover');
@@ -167,8 +192,18 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
 
       case 'chapter-title':
         if (currentChapterIndex > 0) {
-          setCurrentChapterIndex(currentChapterIndex - 1);
-          setCurrentState('chapter-content');
+          const previousChapterIndex = currentChapterIndex - 1;
+          const previousChapterId = chapters[previousChapterIndex].id;
+          const hasGallery = await checkChapterHasGallery(previousChapterId);
+
+          setCurrentChapterIndex(previousChapterIndex);
+
+          if (hasGallery) {
+            fetchChapterGalleryItems(previousChapterId);
+            setCurrentState('chapter-gallery');
+          } else {
+            setCurrentState('chapter-content');
+          }
         } else if (book.intro) {
           setCurrentState('intro');
         } else if (book.dedication) {
@@ -193,9 +228,18 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
 
       case 'gallery':
         if (chapters.length > 0) {
-          setCurrentChapterIndex(chapters.length - 1);
-          fetchChapterGalleryItems(chapters[chapters.length - 1].id);
-          setCurrentState('chapter-gallery');
+          const lastChapterIndex = chapters.length - 1;
+          const lastChapterId = chapters[lastChapterIndex].id;
+          const hasGallery = await checkChapterHasGallery(lastChapterId);
+
+          setCurrentChapterIndex(lastChapterIndex);
+
+          if (hasGallery) {
+            fetchChapterGalleryItems(lastChapterId);
+            setCurrentState('chapter-gallery');
+          } else {
+            setCurrentState('chapter-content');
+          }
         }
         break;
     }
