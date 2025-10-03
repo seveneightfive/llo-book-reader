@@ -36,7 +36,7 @@ export default function NavigationMenu({
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed top-6 left-6 z-40 p-3 bg-white rounded-full shadow-lg hover:bg-slate-50 transition-colors"
+        className="fixed top-6 right-6 z-40 p-3 bg-white rounded-full shadow-lg hover:bg-slate-50 transition-colors"
         aria-label="Open menu"
       >
         <Menu className="w-6 h-6 text-slate-800" />
