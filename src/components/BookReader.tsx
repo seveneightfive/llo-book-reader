@@ -7,6 +7,7 @@ import BookIntro from './BookIntro';
 import ChapterTitle from './ChapterTitle';
 import ChapterReader from './ChapterReader';
 import ChapterGallery from './ChapterGallery';
+import ChapterSpecificGallery from './ChapterSpecificGallery';
 import NavigationMenu from './NavigationMenu';
 
 interface BookReaderProps {
@@ -14,7 +15,7 @@ interface BookReaderProps {
   chapters: Chapter[];
 }
 
-type ReadingState = 'cover' | 'dedication' | 'intro' | 'chapter-title' | 'chapter-content' | 'gallery';
+type ReadingState = 'cover' | 'dedication' | 'intro' | 'chapter-title' | 'chapter-content' | 'chapter-gallery' | 'gallery';
 
 export default function BookReader({ book, chapters }: BookReaderProps) {
   const [currentState, setCurrentState] = useState<ReadingState>('cover');
@@ -22,6 +23,7 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [pages, setPages] = useState<Page[]>([]);
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
+  const [chapterGalleryItems, setChapterGalleryItems] = useState<GalleryItem[]>([]);
   const [loading, setLoading] = useState(false);
 
   const currentChapter = chapters[currentChapterIndex];
@@ -77,6 +79,24 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
     }
   };
 
+  const fetchChapterGalleryItems = async (chapterId: number) => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('gallery')
+        .select('*')
+        .eq('chapter_id', chapterId)
+        .order('sort_order', { ascending: true });
+
+      if (error) throw error;
+      setChapterGalleryItems(data || []);
+    } catch (error) {
+      console.error('Error fetching chapter gallery items:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleNext = () => {
     switch (currentState) {
       case 'cover':
@@ -110,7 +130,14 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
       case 'chapter-content':
         if (currentPageIndex < pages.length - 1) {
           setCurrentPageIndex(currentPageIndex + 1);
-        } else if (currentChapterIndex < chapters.length - 1) {
+        } else {
+          fetchChapterGalleryItems(currentChapter.id);
+          setCurrentState('chapter-gallery');
+        }
+        break;
+
+      case 'chapter-gallery':
+        if (currentChapterIndex < chapters.length - 1) {
           setCurrentChapterIndex(currentChapterIndex + 1);
           setCurrentState('chapter-title');
         } else {
@@ -159,10 +186,16 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
         }
         break;
 
+      case 'chapter-gallery':
+        setCurrentPageIndex(pages.length - 1);
+        setCurrentState('chapter-content');
+        break;
+
       case 'gallery':
         if (chapters.length > 0) {
           setCurrentChapterIndex(chapters.length - 1);
-          setCurrentState('chapter-content');
+          fetchChapterGalleryItems(chapters[chapters.length - 1].id);
+          setCurrentState('chapter-gallery');
         }
         break;
     }
@@ -231,6 +264,15 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
           page={pages[currentPageIndex]}
           pageNumber={currentPageIndex + 1}
           totalPages={pages.length}
+          onNext={handleNext}
+          onPrevious={handlePrevious}
+        />
+      )}
+
+      {currentState === 'chapter-gallery' && currentChapter && (
+        <ChapterSpecificGallery
+          chapter={currentChapter}
+          galleryItems={chapterGalleryItems}
           onNext={handleNext}
           onPrevious={handlePrevious}
         />
