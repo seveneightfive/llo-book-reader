@@ -48,8 +48,13 @@
   .markdown-body p {
     font-size: 18px;
     line-height: 1.7;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    margin-top: 0;
     font-family: 'Lora', Georgia, 'Times New Roman', serif;
+  }
+
+  .markdown-body p:last-child {
+    margin-bottom: 0;
   }
   
   .markdown-body h1,
@@ -64,6 +69,13 @@
     letter-spacing: 0.025em;
     margin-top: 2rem;
     margin-bottom: 1rem;
+    display: block;
+  }
+
+  .markdown-body h1:first-child,
+  .markdown-body h2:first-child,
+  .markdown-body h3:first-child {
+    margin-top: 0;
   }
   
   .markdown-body h1 { font-size: 2rem; }

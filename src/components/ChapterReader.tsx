@@ -97,7 +97,7 @@ export default function ChapterReader({
 
           {page.content && (
             <div
-              className="prose prose-lg font-lora text-slate-800 mb-12 leading-body-relaxed body-tracking"
+              className="markdown-body font-lora text-slate-800 mb-12 leading-body-relaxed body-tracking"
               dangerouslySetInnerHTML={{
                 __html: marked.parse(page.content)
               }}
@@ -215,7 +215,7 @@ export default function ChapterReader({
 
             {page.content && (
               <div
-                className="prose prose-lg font-lora text-slate-800 mb-12 leading-body-relaxed body-tracking"
+                className="markdown-body font-lora text-slate-800 mb-12 leading-body-relaxed body-tracking"
                 dangerouslySetInnerHTML={{
                   __html: marked.parse(page.content)
                 }}
