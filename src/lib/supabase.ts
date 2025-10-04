@@ -18,6 +18,7 @@ export type Book = {
   intro: string | null;
   date_published: string;
   view_count: number;
+  filloutform_link: string | null;
 };
 
 export type Chapter = {

@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { GalleryItem } from '../lib/supabase';
 
 interface ChapterGalleryProps {
   galleryItems: GalleryItem[];
   onPrevious: () => void;
+  onNext?: () => void;
 }
 
-export default function ChapterGallery({ galleryItems, onPrevious }: ChapterGalleryProps) {
+export default function ChapterGallery({ galleryItems, onPrevious, onNext }: ChapterGalleryProps) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const openLightbox = (index: number) => {
@@ -47,13 +48,24 @@ export default function ChapterGallery({ galleryItems, onPrevious }: ChapterGall
       >
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold text-slate-800 font-avenir">Gallery</h1>
-          <button
-            onClick={onPrevious}
-            className="flex items-center gap-2 px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Story
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={onPrevious}
+              className="flex items-center gap-2 px-4 py-2 bg-slate-200 text-slate-800 rounded-lg hover:bg-slate-300 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Story
+            </button>
+            {onNext && (
+              <button
+                onClick={onNext}
+                className="flex items-center gap-2 px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors"
+              >
+                Continue
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            )}
+          </div>
         </div>
 
         {galleryItems.length === 0 ? (

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, SquarePen as PenSquare } from 'lucide-react';
 import { Book, Chapter } from '../lib/supabase';
 
 interface NavigationMenuProps {
@@ -118,7 +118,16 @@ export default function NavigationMenu({
                 </div>
               </div>
 
-              <div className="p-6 border-t border-slate-200">
+              <div className="p-6 border-t border-slate-200 space-y-4">
+                {book.filloutform_link && (
+                  <button
+                    onClick={() => window.open(book.filloutform_link!, '_blank', 'noopener,noreferrer')}
+                    className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors font-avenir font-medium"
+                  >
+                    <PenSquare className="w-5 h-5" />
+                    Sign My Guestbook
+                  </button>
+                )}
                 <img
                   src="https://ompmvmjamqekwmnjwnzt.supabase.co/storage/v1/object/public/LLO%20Branding/logo.png"
                   alt="Site Logo"

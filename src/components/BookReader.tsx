@@ -9,13 +9,14 @@ import ChapterReader from './ChapterReader';
 import ChapterGallery from './ChapterGallery';
 import ChapterSpecificGallery from './ChapterSpecificGallery';
 import NavigationMenu from './NavigationMenu';
+import ThankYouPage from './ThankYouPage';
 
 interface BookReaderProps {
   book: Book;
   chapters: Chapter[];
 }
 
-type ReadingState = 'cover' | 'dedication' | 'intro' | 'chapter-title' | 'chapter-content' | 'chapter-gallery' | 'gallery';
+type ReadingState = 'cover' | 'dedication' | 'intro' | 'chapter-title' | 'chapter-content' | 'chapter-gallery' | 'gallery' | 'thank-you';
 
 export default function BookReader({ book, chapters }: BookReaderProps) {
   const [currentState, setCurrentState] = useState<ReadingState>('cover');
@@ -171,6 +172,10 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
         break;
 
       case 'gallery':
+        setCurrentState('thank-you');
+        break;
+
+      case 'thank-you':
         // End of book
         break;
     }
@@ -241,6 +246,10 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
             setCurrentState('chapter-content');
           }
         }
+        break;
+
+      case 'thank-you':
+        setCurrentState('gallery');
         break;
     }
   };
@@ -325,6 +334,14 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
       {currentState === 'gallery' && (
         <ChapterGallery
           galleryItems={galleryItems}
+          onPrevious={handlePrevious}
+          onNext={handleNext}
+        />
+      )}
+
+      {currentState === 'thank-you' && (
+        <ThankYouPage
+          book={book}
           onPrevious={handlePrevious}
         />
       )}
