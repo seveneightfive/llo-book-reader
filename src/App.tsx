@@ -33,6 +33,13 @@ function BookPage() {
         throw bookError;
       }
 
+      if (!bookData) {
+        console.log('Book not found for slug:', bookSlug);
+        setBook(null);
+        setChapters([]);
+        return;
+      }
+
       console.log('Book data:', bookData);
       setBook(bookData);
 
