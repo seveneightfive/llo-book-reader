@@ -43,7 +43,19 @@ function stripHtmlTags(html: string): string {
 
 function parseMarkdownToText(markdown: string): string {
   const html = marked.parse(markdown) as string;
-  return stripHtmlTags(html);
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+
+  const paragraphs: string[] = [];
+  const pElements = tmp.querySelectorAll('p');
+  pElements.forEach(p => {
+    const text = p.textContent || p.innerText || '';
+    if (text.trim()) {
+      paragraphs.push(text.trim());
+    }
+  });
+
+  return paragraphs.join('\n\n');
 }
 
 function addPageNumber(pdf: jsPDF, pageNum: number) {
@@ -175,7 +187,7 @@ async function addTitlePage(pdf: jsPDF, bookData: BookWithFullData, tracker: Pag
     currentY += 28 * 1.2;
   });
 
-  pdf.setFontSize(18);
+  pdf.setFontSize(14);
   pdf.setFont(TYPOGRAPHY.bodyFont, 'normal');
   pdf.text(`by ${bookData.book.author}`, PDF_CONFIG.width / 2, currentY + 20, { align: 'center' });
 }
@@ -191,20 +203,26 @@ async function addDedicationPage(
   tracker.currentPage++;
 
   const dedicationText = parseMarkdownToText(bookData.book.dedication);
+  const pageStartY = PDF_CONFIG.height / 3;
 
-  pdf.setFontSize(14);
-  pdf.setFont(TYPOGRAPHY.titleFont, 'italic');
+  pdf.setFontSize(18);
+  pdf.setFont(TYPOGRAPHY.titleFont, 'bold');
   pdf.setTextColor(TYPOGRAPHY.titleColor.r, TYPOGRAPHY.titleColor.g, TYPOGRAPHY.titleColor.b);
-  pdf.text('Dedication', PDF_CONFIG.width / 2, 80, { align: 'center' });
+  pdf.text('Dedication', PDF_CONFIG.width / 2, pageStartY, { align: 'center' });
 
   pdf.setFontSize(TYPOGRAPHY.bodySize);
   pdf.setFont(TYPOGRAPHY.bodyFont, 'normal');
   pdf.setTextColor(TYPOGRAPHY.bodyColor.r, TYPOGRAPHY.bodyColor.g, TYPOGRAPHY.bodyColor.b);
-  const lines = wrapText(pdf, dedicationText, PDF_CONFIG.contentWidth - 40);
-  let y = 110;
 
-  lines.forEach(line => {
-    pdf.text(line, PDF_CONFIG.width / 2, y, { align: 'center' });
+  const paragraphs = dedicationText.split('\n\n');
+  let y = pageStartY + 35;
+
+  paragraphs.forEach(paragraph => {
+    const lines = wrapText(pdf, paragraph, PDF_CONFIG.contentWidth - 40);
+    lines.forEach(line => {
+      pdf.text(line, PDF_CONFIG.width / 2, y, { align: 'center' });
+      y += TYPOGRAPHY.bodySize * TYPOGRAPHY.bodyLineHeight;
+    });
     y += TYPOGRAPHY.bodySize * TYPOGRAPHY.bodyLineHeight;
   });
 }
@@ -221,26 +239,35 @@ async function addIntroPage(
   tracker.shouldShowPageNumber = true;
 
   const introText = parseMarkdownToText(bookData.book.intro);
+  const pageStartY = PDF_CONFIG.height / 3;
 
-  pdf.setFontSize(TYPOGRAPHY.titleSize);
+  pdf.setFontSize(18);
   pdf.setFont(TYPOGRAPHY.titleFont, 'bold');
   pdf.setTextColor(TYPOGRAPHY.titleColor.r, TYPOGRAPHY.titleColor.g, TYPOGRAPHY.titleColor.b);
-  pdf.text('Introduction', PDF_CONFIG.width / 2, PDF_CONFIG.margin + 10, { align: 'center' });
+  pdf.text('Introduction', PDF_CONFIG.width / 2, pageStartY, { align: 'center' });
 
   pdf.setFontSize(TYPOGRAPHY.bodySize);
   pdf.setFont(TYPOGRAPHY.bodyFont, 'normal');
   pdf.setTextColor(TYPOGRAPHY.bodyColor.r, TYPOGRAPHY.bodyColor.g, TYPOGRAPHY.bodyColor.b);
-  const lines = wrapText(pdf, introText, PDF_CONFIG.contentWidth);
-  let y = PDF_CONFIG.margin + 45;
 
-  lines.forEach(line => {
-    if (y > PDF_CONFIG.height - 60) {
-      addPageNumber(pdf, tracker.currentPage);
-      pdf.addPage();
-      tracker.currentPage++;
-      y = PDF_CONFIG.margin;
-    }
-    pdf.text(line, PDF_CONFIG.margin, y);
+  const paragraphs = introText.split('\n\n');
+  let y = pageStartY + 35;
+
+  paragraphs.forEach(paragraph => {
+    const lines = wrapText(pdf, paragraph, PDF_CONFIG.contentWidth);
+    lines.forEach(line => {
+      if (y > PDF_CONFIG.height - 60) {
+        addPageNumber(pdf, tracker.currentPage);
+        pdf.addPage();
+        tracker.currentPage++;
+        y = PDF_CONFIG.margin;
+        pdf.setFontSize(TYPOGRAPHY.bodySize);
+        pdf.setFont(TYPOGRAPHY.bodyFont, 'normal');
+        pdf.setTextColor(TYPOGRAPHY.bodyColor.r, TYPOGRAPHY.bodyColor.g, TYPOGRAPHY.bodyColor.b);
+      }
+      pdf.text(line, PDF_CONFIG.margin, y);
+      y += TYPOGRAPHY.bodySize * TYPOGRAPHY.bodyLineHeight;
+    });
     y += TYPOGRAPHY.bodySize * TYPOGRAPHY.bodyLineHeight;
   });
 
@@ -361,14 +388,15 @@ async function addChapterContent(
   for (const page of chapter.pages) {
     pdf.addPage();
     tracker.currentPage++;
-    let y = PDF_CONFIG.margin;
+    const pageStartY = PDF_CONFIG.height / 3;
+    let y = pageStartY;
 
     if (page.image_url && page.image_caption) {
       try {
         const pageImage = await loadImageAsBase64(page.image_url);
         const imgDimensions = await getImageDimensions(page.image_url);
 
-        const maxHeight = PDF_CONFIG.height - 120;
+        const maxHeight = PDF_CONFIG.height - pageStartY - 100;
         const dims = calculateImageDimensions(
           imgDimensions.width,
           imgDimensions.height,
@@ -394,7 +422,7 @@ async function addChapterContent(
 
         pdf.addPage();
         tracker.currentPage++;
-        y = PDF_CONFIG.margin;
+        y = pageStartY;
       } catch (error) {
         console.error('Error adding page image:', error);
       }
@@ -411,6 +439,9 @@ async function addChapterContent(
           pdf.addPage();
           tracker.currentPage++;
           y = PDF_CONFIG.margin;
+          pdf.setFontSize(16);
+          pdf.setFont(TYPOGRAPHY.titleFont, 'bold');
+          pdf.setTextColor(TYPOGRAPHY.titleColor.r, TYPOGRAPHY.titleColor.g, TYPOGRAPHY.titleColor.b);
         }
         pdf.text(line, PDF_CONFIG.margin, y);
         y += 16 * 1.3;
@@ -420,24 +451,39 @@ async function addChapterContent(
 
     if (page.quote) {
       const quoteText = parseMarkdownToText(page.quote);
-      pdf.setFontSize(TYPOGRAPHY.bodySize);
-      pdf.setFont(TYPOGRAPHY.bodyFont, 'italic');
-      pdf.setTextColor(60, 60, 60);
-      const quoteLines = wrapText(pdf, quoteText, PDF_CONFIG.contentWidth - 20);
-      quoteLines.forEach(line => {
+      const paragraphs = quoteText.split('\n\n');
+
+      paragraphs.forEach(paragraph => {
+        pdf.setFontSize(TYPOGRAPHY.bodySize);
+        pdf.setFont(TYPOGRAPHY.bodyFont, 'italic');
+        pdf.setTextColor(60, 60, 60);
+        const quoteLines = wrapText(pdf, paragraph, PDF_CONFIG.contentWidth - 20);
+        quoteLines.forEach(line => {
+          if (y > PDF_CONFIG.height - 60) {
+            addPageNumber(pdf, tracker.currentPage);
+            pdf.addPage();
+            tracker.currentPage++;
+            y = PDF_CONFIG.margin;
+            pdf.setFontSize(TYPOGRAPHY.bodySize);
+            pdf.setFont(TYPOGRAPHY.bodyFont, 'italic');
+            pdf.setTextColor(60, 60, 60);
+          }
+          pdf.text(line, PDF_CONFIG.margin + 10, y);
+          y += TYPOGRAPHY.bodySize * TYPOGRAPHY.bodyLineHeight;
+        });
+        y += TYPOGRAPHY.bodySize * TYPOGRAPHY.bodyLineHeight;
+      });
+
+      if (page.quote_attribute) {
         if (y > PDF_CONFIG.height - 60) {
           addPageNumber(pdf, tracker.currentPage);
           pdf.addPage();
           tracker.currentPage++;
           y = PDF_CONFIG.margin;
         }
-        pdf.text(line, PDF_CONFIG.margin + 10, y);
-        y += TYPOGRAPHY.bodySize * TYPOGRAPHY.bodyLineHeight;
-      });
-
-      if (page.quote_attribute) {
-        y += 5;
+        pdf.setFontSize(TYPOGRAPHY.bodySize);
         pdf.setFont(TYPOGRAPHY.bodyFont, 'normal');
+        pdf.setTextColor(60, 60, 60);
         pdf.text(`— ${page.quote_attribute}`, PDF_CONFIG.margin + 10, y);
         y += TYPOGRAPHY.bodySize * TYPOGRAPHY.bodyLineHeight + 5;
       }
@@ -447,18 +493,26 @@ async function addChapterContent(
 
     if (page.content) {
       const contentText = parseMarkdownToText(page.content);
-      pdf.setFontSize(TYPOGRAPHY.bodySize);
-      pdf.setFont(TYPOGRAPHY.bodyFont, 'normal');
-      pdf.setTextColor(TYPOGRAPHY.bodyColor.r, TYPOGRAPHY.bodyColor.g, TYPOGRAPHY.bodyColor.b);
-      const contentLines = wrapText(pdf, contentText, PDF_CONFIG.contentWidth);
-      contentLines.forEach(line => {
-        if (y > PDF_CONFIG.height - 60) {
-          addPageNumber(pdf, tracker.currentPage);
-          pdf.addPage();
-          tracker.currentPage++;
-          y = PDF_CONFIG.margin;
-        }
-        pdf.text(line, PDF_CONFIG.margin, y);
+      const paragraphs = contentText.split('\n\n');
+
+      paragraphs.forEach(paragraph => {
+        pdf.setFontSize(TYPOGRAPHY.bodySize);
+        pdf.setFont(TYPOGRAPHY.bodyFont, 'normal');
+        pdf.setTextColor(TYPOGRAPHY.bodyColor.r, TYPOGRAPHY.bodyColor.g, TYPOGRAPHY.bodyColor.b);
+        const contentLines = wrapText(pdf, paragraph, PDF_CONFIG.contentWidth);
+        contentLines.forEach(line => {
+          if (y > PDF_CONFIG.height - 60) {
+            addPageNumber(pdf, tracker.currentPage);
+            pdf.addPage();
+            tracker.currentPage++;
+            y = PDF_CONFIG.margin;
+            pdf.setFontSize(TYPOGRAPHY.bodySize);
+            pdf.setFont(TYPOGRAPHY.bodyFont, 'normal');
+            pdf.setTextColor(TYPOGRAPHY.bodyColor.r, TYPOGRAPHY.bodyColor.g, TYPOGRAPHY.bodyColor.b);
+          }
+          pdf.text(line, PDF_CONFIG.margin, y);
+          y += TYPOGRAPHY.bodySize * TYPOGRAPHY.bodyLineHeight;
+        });
         y += TYPOGRAPHY.bodySize * TYPOGRAPHY.bodyLineHeight;
       });
     }
