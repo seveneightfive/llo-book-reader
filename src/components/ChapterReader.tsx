@@ -182,9 +182,9 @@ export default function ChapterReader({
         </AnimatePresence>
       </div>
 
-      <div className="w-1/2 h-screen overflow-y-auto">
-        <div className="min-h-full flex flex-col justify-center">
-          <div className="flex-1 p-12 max-w-3xl">
+      <div className="w-1/2 h-screen flex flex-col">
+        <div className="flex-1 overflow-y-auto flex items-center">
+          <div className="w-full p-12 max-w-3xl mx-auto">
             <div className="mb-8">
               <p className="text-slate-500 text-sm font-avenir">
                 Chapter {chapter.number}: {chapter.title}
@@ -222,27 +222,27 @@ export default function ChapterReader({
               />
             )}
           </div>
+        </div>
 
-          <div className="sticky bottom-0 bg-white border-t border-slate-200 p-8">
-            <div className="flex justify-between items-center max-w-3xl">
-              <button
-                onClick={handlePreviousClick}
-                className="px-6 py-2 font-avenir text-slate-600 hover:text-slate-800 transition-colors"
-              >
-                ← Previous
-              </button>
+        <div className="border-t border-slate-200 bg-white p-8">
+          <div className="flex justify-between items-center max-w-3xl mx-auto">
+            <button
+              onClick={handlePreviousClick}
+              className="px-6 py-2 font-avenir text-slate-600 hover:text-slate-800 transition-colors"
+            >
+              ← Previous
+            </button>
 
-              <span className="text-slate-500 text-sm font-avenir">
-                Page {pageNumber} of {totalPages}
-              </span>
+            <span className="text-slate-500 text-sm font-avenir">
+              Page {pageNumber} of {totalPages}
+            </span>
 
-              <button
-                onClick={handleNextClick}
-                className="px-6 py-2 bg-slate-800 text-white rounded-full font-avenir hover:bg-slate-900 transition-colors"
-              >
-                Next →
-              </button>
-            </div>
+            <button
+              onClick={handleNextClick}
+              className="px-6 py-2 bg-slate-800 text-white rounded-full font-avenir hover:bg-slate-900 transition-colors"
+            >
+              Next →
+            </button>
           </div>
         </div>
       </div>
