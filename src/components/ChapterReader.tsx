@@ -130,66 +130,73 @@ export default function ChapterReader({
 
   return (
     <div className="fixed inset-0 flex bg-white">
-      <div className="w-1/2 h-screen flex items-center justify-center bg-slate-50 overflow-hidden relative">
-        <AnimatePresence mode="wait" initial={false}>
-          {page.image_url ? (
-            <motion.div
-              key={`image-${pageNumber}`}
-              initial={{ x: slideDirection === 'left' ? 300 : -300, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: slideDirection === 'left' ? -300 : 300, opacity: 0 }}
-              transition={{ duration: 0.6, ease: 'easeInOut' }}
-              className="w-full h-full flex flex-col items-center justify-center p-12"
-            >
-              <div className="max-w-2xl w-full">
-                <img
-                  src={page.image_url}
-                  alt={page.image_caption || 'Chapter image'}
-                  className="w-full rounded-lg shadow-lg object-contain max-h-[70vh]"
-                />
-                {page.image_caption && (
-                  <p className="text-sm text-slate-600 mt-4 italic font-lora text-center">
-                    {page.image_caption}
-                  </p>
-                )}
-              </div>
-            </motion.div>
-          ) : page.subtitle ? (
-            <motion.div
-              key={`subtitle-${pageNumber}`}
-              initial={{ x: slideDirection === 'left' ? 300 : -300, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: slideDirection === 'left' ? -300 : 300, opacity: 0 }}
-              transition={{ duration: 0.6, ease: 'easeInOut' }}
-              className="w-full h-full flex items-center justify-center bg-slate-800 p-12"
-            >
-              <h2 className="text-5xl font-avenir text-white text-center leading-tight">
-                {page.subtitle}
-              </h2>
-            </motion.div>
-          ) : (
-            <motion.div
-              key={`empty-${pageNumber}`}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="w-full h-full flex items-center justify-center"
-            >
-              <div className="text-slate-400 text-lg font-avenir">No visual content</div>
-            </motion.div>
+      <div className="w-1/2 h-screen flex flex-col bg-slate-50 overflow-hidden relative">
+        <div className="px-12 pt-12 pb-6">
+          <p className="text-slate-500 text-sm font-avenir mb-2">
+            Chapter {chapter.number}: {chapter.title}
+          </p>
+          {chapter.lede && (
+            <p className="text-slate-600 text-base font-lora italic leading-relaxed">
+              {chapter.lede}
+            </p>
           )}
-        </AnimatePresence>
+        </div>
+
+        <div className="flex-1 flex items-center justify-center overflow-hidden">
+          <AnimatePresence mode="wait" initial={false}>
+            {page.image_url ? (
+              <motion.div
+                key={`image-${pageNumber}`}
+                initial={{ x: slideDirection === 'left' ? 300 : -300, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: slideDirection === 'left' ? -300 : 300, opacity: 0 }}
+                transition={{ duration: 0.6, ease: 'easeInOut' }}
+                className="w-full h-full flex flex-col items-center justify-center px-12"
+              >
+                <div className="max-w-2xl w-full">
+                  <img
+                    src={page.image_url}
+                    alt={page.image_caption || 'Chapter image'}
+                    className="w-full rounded-lg shadow-lg object-contain max-h-[60vh]"
+                  />
+                  {page.image_caption && (
+                    <p className="text-sm text-slate-600 mt-4 italic font-lora text-center">
+                      {page.image_caption}
+                    </p>
+                  )}
+                </div>
+              </motion.div>
+            ) : page.subtitle ? (
+              <motion.div
+                key={`subtitle-${pageNumber}`}
+                initial={{ x: slideDirection === 'left' ? 300 : -300, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: slideDirection === 'left' ? -300 : 300, opacity: 0 }}
+                transition={{ duration: 0.6, ease: 'easeInOut' }}
+                className="w-full h-full flex items-center justify-center bg-slate-800 p-12"
+              >
+                <h2 className="text-5xl font-avenir text-white text-center leading-tight">
+                  {page.subtitle}
+                </h2>
+              </motion.div>
+            ) : (
+              <motion.div
+                key={`empty-${pageNumber}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="w-full h-full flex items-center justify-center"
+              >
+                <div className="text-slate-400 text-lg font-avenir">No visual content</div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
       <div className="w-1/2 h-screen flex flex-col items-center justify-center relative">
         <div className="w-full max-w-3xl mx-auto overflow-y-auto px-12" style={{ maxHeight: 'calc(100vh - 120px)' }}>
-          <div className="mb-8">
-            <p className="text-slate-500 text-sm font-avenir">
-              Chapter {chapter.number}: {chapter.title}
-            </p>
-          </div>
-
           {page.subtitle && (
             <h3 className="text-2xl font-avenir text-slate-800 mb-6 heading-tracking">
               {page.subtitle}
