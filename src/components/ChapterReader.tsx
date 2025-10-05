@@ -49,9 +49,9 @@ export default function ChapterReader({
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: -50 }}
         transition={{ duration: 0.5 }}
-        className="min-h-screen bg-white p-8"
+        className="min-h-screen bg-white p-8 flex items-center"
       >
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-3xl mx-auto w-full">
           <div className="mb-8">
             <p className="text-slate-500 text-sm font-avenir">
               Chapter {chapter.number}: {chapter.title}
@@ -183,7 +183,7 @@ export default function ChapterReader({
       </div>
 
       <div className="w-1/2 h-screen overflow-y-auto">
-        <div className="min-h-screen flex flex-col">
+        <div className="min-h-full flex flex-col justify-center">
           <div className="flex-1 p-12 max-w-3xl">
             <div className="mb-8">
               <p className="text-slate-500 text-sm font-avenir">
