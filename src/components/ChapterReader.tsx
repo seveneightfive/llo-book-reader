@@ -183,7 +183,7 @@ export default function ChapterReader({
       </div>
 
       <div className="w-1/2 h-screen flex flex-col">
-        <div className="flex-1 overflow-y-auto flex items-center">
+        <div className="flex-1 overflow-y-auto">
           <div className="w-full p-12 max-w-3xl mx-auto">
             <div className="mb-8">
               <p className="text-slate-500 text-sm font-avenir">
