@@ -62,7 +62,7 @@ export default function NavigationMenu({
               className="fixed left-0 top-0 bottom-0 w-80 bg-white shadow-2xl z-50 flex flex-col"
             >
               <div className="flex items-center justify-between p-6 border-b border-slate-200">
-                <h2 className="text-xl font-avenir font-semibold text-slate-800">Menu</h2>
+                <h2 className="text-xl font-avenir font-semibold text-slate-800">Table of Contents</h2>
                 <button
                   onClick={() => setIsOpen(false)}
                   className="p-2 hover:bg-slate-100 rounded-full transition-colors"
@@ -98,6 +98,9 @@ export default function NavigationMenu({
                         <div className="font-avenir">
                           <div className="text-xs opacity-75 mb-1">Chapter {chapter.number}</div>
                           <div className="font-medium">{chapter.title}</div>
+                          {chapter.lede && (
+                            <div className="text-xs opacity-75 mt-1">{chapter.lede}</div>
+                          )}
                         </div>
                       </button>
                     ))}
@@ -128,11 +131,18 @@ export default function NavigationMenu({
                     Sign My Guestbook
                   </button>
                 )}
-                <img
-                  src="https://ompmvmjamqekwmnjwnzt.supabase.co/storage/v1/object/public/LLO%20Branding/logo.png"
-                  alt="Site Logo"
-                  className="w-full max-w-[200px] mx-auto"
-                />
+                <a
+                  href="https://lastinglegacyonline.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full max-w-[200px] mx-auto hover:opacity-80 transition-opacity"
+                >
+                  <img
+                    src="https://ompmvmjamqekwmnjwnzt.supabase.co/storage/v1/object/public/LLO%20Branding/logo.png"
+                    alt="Site Logo"
+                    className="w-full"
+                  />
+                </a>
               </div>
             </motion.div>
           </>
