@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, SquarePen as PenSquare } from 'lucide-react';
+import { Menu, X, SquarePen as PenSquare, Download, Loader2 } from 'lucide-react';
 import { Book, Chapter } from '../lib/supabase';
+import { fetchCompleteBookData } from '../utils/bookDataFetcher';
+import { generateBookPDF } from '../utils/pdfBookGenerator';
 
 interface NavigationMenuProps {
   book: Book;
@@ -20,7 +22,10 @@ export default function NavigationMenu({
   onNavigateToChapter,
   onNavigateToGallery
 }: NavigationMenuProps) {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [pdfProgress, setPdfProgress] = useState(0);
+  const [pdfError, setPdfError] = useState<string | null>(null);
 
   const handleChapterClick = (index: number) => {
     onNavigateToChapter(index);
@@ -30,6 +35,32 @@ export default function NavigationMenu({
   const handleGalleryClick = () => {
     onNavigateToGallery();
     setIsOpen(false);
+  };
+
+  const handleDownloadPDF = async () => {
+    try {
+      setIsGeneratingPDF(true);
+      setPdfProgress(0);
+      setPdfError(null);
+
+      const bookData = await fetchCompleteBookData(book.id);
+
+      if (!bookData) {
+        throw new Error('Failed to fetch book data');
+      }
+
+      await generateBookPDF(bookData, (progress) => {
+        setPdfProgress(progress);
+      });
+
+      setIsGeneratingPDF(false);
+      setPdfProgress(0);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      setPdfError('Failed to generate PDF. Please try again.');
+      setIsGeneratingPDF(false);
+      setPdfProgress(0);
+    }
   };
 
   return (
@@ -122,6 +153,28 @@ export default function NavigationMenu({
               </div>
 
               <div className="p-6 border-t border-slate-200 space-y-4">
+                <button
+                  onClick={handleDownloadPDF}
+                  disabled={isGeneratingPDF}
+                  className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors font-avenir font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isGeneratingPDF ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Generating PDF {pdfProgress}%
+                    </>
+                  ) : (
+                    <>
+                      <Download className="w-5 h-5" />
+                      Download PDF
+                    </>
+                  )}
+                </button>
+
+                {pdfError && (
+                  <p className="text-red-600 text-sm text-center font-avenir">{pdfError}</p>
+                )}
+
                 {book.filloutform_link && (
                   <button
                     onClick={() => window.open(book.filloutform_link!, '_blank', 'noopener,noreferrer')}
