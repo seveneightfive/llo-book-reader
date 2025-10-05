@@ -56,7 +56,25 @@ function BookPage() {
       }
 
       console.log('Chapters data:', chaptersData);
-      setChapters(chaptersData || []);
+
+      // Filter chapters to only include those with at least one page
+      const chaptersWithPages = await Promise.all(
+        (chaptersData || []).map(async (chapter) => {
+          const { count } = await supabase
+            .from('pages')
+            .select('*', { count: 'exact', head: true })
+            .eq('chapter_id', chapter.id);
+
+          return { chapter, hasPages: (count || 0) > 0 };
+        })
+      );
+
+      const filteredChapters = chaptersWithPages
+        .filter(({ hasPages }) => hasPages)
+        .map(({ chapter }) => chapter);
+
+      console.log('Filtered chapters with pages:', filteredChapters);
+      setChapters(filteredChapters);
 
     } catch (err) {
       console.error('Error fetching book:', err);
