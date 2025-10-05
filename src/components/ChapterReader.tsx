@@ -182,49 +182,47 @@ export default function ChapterReader({
         </AnimatePresence>
       </div>
 
-      <div className="w-1/2 h-screen flex flex-col">
-        <div className="flex-1 overflow-y-auto">
-          <div className="w-full p-12 max-w-3xl mx-auto">
-            <div className="mb-8">
-              <p className="text-slate-500 text-sm font-avenir">
-                Chapter {chapter.number}: {chapter.title}
-              </p>
-            </div>
+      <div className="w-1/2 h-screen flex flex-col items-center justify-center relative">
+        <div className="w-full max-w-3xl mx-auto overflow-y-auto px-12" style={{ maxHeight: 'calc(100vh - 120px)' }}>
+          <div className="mb-8">
+            <p className="text-slate-500 text-sm font-avenir">
+              Chapter {chapter.number}: {chapter.title}
+            </p>
+          </div>
 
-            {page.subtitle && (
-              <h3 className="text-2xl font-avenir text-slate-800 mb-6 heading-tracking">
-                {page.subtitle}
-              </h3>
-            )}
+          {page.subtitle && (
+            <h3 className="text-2xl font-avenir text-slate-800 mb-6 heading-tracking">
+              {page.subtitle}
+            </h3>
+          )}
 
-            {page.quote && (
-              <blockquote className="text-xl font-lora italic text-slate-700 mb-8 pl-6 border-l-4 border-slate-300 leading-body-relaxed quote-tracking">
-                <div
-                  className="markdown-body"
-                  dangerouslySetInnerHTML={{
-                    __html: marked.parse(page.quote)
-                  }}
-                />
-                {page.quote_attribute && (
-                  <footer className="text-base text-slate-600 mt-4 not-italic">
-                    — {page.quote_attribute}
-                  </footer>
-                )}
-              </blockquote>
-            )}
-
-            {page.content && (
+          {page.quote && (
+            <blockquote className="text-xl font-lora italic text-slate-700 mb-8 pl-6 border-l-4 border-slate-300 leading-body-relaxed quote-tracking">
               <div
-                className="markdown-body font-lora text-slate-800 mb-12 leading-body-relaxed body-tracking"
+                className="markdown-body"
                 dangerouslySetInnerHTML={{
-                  __html: marked.parse(page.content)
+                  __html: marked.parse(page.quote)
                 }}
               />
-            )}
-          </div>
+              {page.quote_attribute && (
+                <footer className="text-base text-slate-600 mt-4 not-italic">
+                  — {page.quote_attribute}
+                </footer>
+              )}
+            </blockquote>
+          )}
+
+          {page.content && (
+            <div
+              className="markdown-body font-lora text-slate-800 mb-12 leading-body-relaxed body-tracking"
+              dangerouslySetInnerHTML={{
+                __html: marked.parse(page.content)
+              }}
+            />
+          )}
         </div>
 
-        <div className="border-t border-slate-200 bg-white p-8">
+        <div className="absolute bottom-0 left-0 right-0 border-t border-slate-200 bg-white p-8">
           <div className="flex justify-between items-center max-w-3xl mx-auto">
             <button
               onClick={handlePreviousClick}
