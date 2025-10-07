@@ -113,7 +113,7 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
         .from('guestbook')
         .select('*')
         .eq('user', book.user)
-        .eq('private', false)
+        .is('private', null)
         .order('created_at', { ascending: false });
 
       if (error) throw error;

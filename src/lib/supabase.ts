@@ -63,7 +63,7 @@ export type GuestbookEntry = {
   user: string;
   guest: string;
   message: string;
-  private: boolean;
+  private: boolean | null;
 };
 
 // Helper types for queries

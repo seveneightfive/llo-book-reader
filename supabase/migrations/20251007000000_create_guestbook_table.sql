@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS guestbook (
   user text NOT NULL,
   guest text NOT NULL,
   message text NOT NULL,
-  private boolean DEFAULT false
+  private boolean DEFAULT NULL
 );
 
 ALTER TABLE guestbook ENABLE ROW LEVEL SECURITY;
@@ -33,7 +33,7 @@ ALTER TABLE guestbook ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public guestbook entries are readable"
   ON guestbook FOR SELECT
   TO anon, authenticated
-  USING (private = false);
+  USING (private IS NULL OR private = false);
 
 CREATE INDEX IF NOT EXISTS idx_guestbook_user ON guestbook(user);
 CREATE INDEX IF NOT EXISTS idx_guestbook_created_at ON guestbook(created_at DESC);
