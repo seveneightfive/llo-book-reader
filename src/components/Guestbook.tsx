@@ -1,15 +1,16 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, BookOpen } from 'lucide-react';
-import { GuestbookEntry } from '../lib/supabase';
+import { GuestbookEntry, Book } from '../lib/supabase';
 
 interface GuestbookProps {
+  book: Book;
   entries: GuestbookEntry[];
   onPrevious: () => void;
   onNext: () => void;
 }
 
-export default function Guestbook({ entries, onPrevious, onNext }: GuestbookProps) {
+export default function Guestbook({ book, entries, onPrevious, onNext }: GuestbookProps) {
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
     const month = date.toLocaleDateString('en-US', { month: 'long' });
@@ -57,7 +58,19 @@ export default function Guestbook({ entries, onPrevious, onNext }: GuestbookProp
           >
             <BookOpen className="w-16 h-16 text-slate-300 mx-auto mb-6" />
             <p className="text-slate-500 text-xl font-avenir">
-              No guestbook entries yet. Be the first to sign!
+              No guestbook entries yet.{' '}
+              {book.filloutform_link ? (
+                <a
+                  href={book.filloutform_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-slate-700 hover:text-slate-900 underline transition-colors"
+                >
+                  Be the first to sign!
+                </a>
+              ) : (
+                'Be the first to sign!'
+              )}
             </p>
           </motion.div>
         ) : (

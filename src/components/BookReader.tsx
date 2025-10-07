@@ -381,6 +381,7 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
 
       {currentState === 'guestbook' && (
         <Guestbook
+          book={book}
           entries={guestbookEntries}
           onPrevious={handlePrevious}
           onNext={handleNext}
