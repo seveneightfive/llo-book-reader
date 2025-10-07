@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase, Book, Chapter, Page, GalleryItem } from '../lib/supabase';
+import { supabase, Book, Chapter, Page, GalleryItem, GuestbookEntry } from '../lib/supabase';
 import { ChapterWithPages } from '../lib/pdfUtils';
 import BookCover from './BookCover';
 import BookDedication from './BookDedication';
@@ -9,6 +9,7 @@ import ChapterReader from './ChapterReader';
 import ChapterGallery from './ChapterGallery';
 import ChapterSpecificGallery from './ChapterSpecificGallery';
 import NavigationMenu from './NavigationMenu';
+import Guestbook from './Guestbook';
 import ThankYouPage from './ThankYouPage';
 
 interface BookReaderProps {
@@ -16,7 +17,7 @@ interface BookReaderProps {
   chapters: Chapter[];
 }
 
-type ReadingState = 'cover' | 'dedication' | 'intro' | 'chapter-title' | 'chapter-content' | 'chapter-gallery' | 'gallery' | 'thank-you';
+type ReadingState = 'cover' | 'dedication' | 'intro' | 'chapter-title' | 'chapter-content' | 'chapter-gallery' | 'gallery' | 'guestbook' | 'thank-you';
 
 export default function BookReader({ book, chapters }: BookReaderProps) {
   const [currentState, setCurrentState] = useState<ReadingState>('cover');
@@ -25,6 +26,7 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
   const [pages, setPages] = useState<Page[]>([]);
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const [chapterGalleryItems, setChapterGalleryItems] = useState<GalleryItem[]>([]);
+  const [guestbookEntries, setGuestbookEntries] = useState<GuestbookEntry[]>([]);
   const [loading, setLoading] = useState(false);
 
   const currentChapter = chapters[currentChapterIndex];
@@ -40,6 +42,12 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
       fetchGalleryItems();
     }
   }, [currentState, chapters]);
+
+  useEffect(() => {
+    if (currentState === 'guestbook' && book.user) {
+      fetchGuestbookEntries();
+    }
+  }, [currentState, book.user]);
 
   const fetchPages = async (chapterId: number) => {
     setLoading(true);
@@ -93,6 +101,25 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
       setChapterGalleryItems(data || []);
     } catch (error) {
       console.error('Error fetching chapter gallery items:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchGuestbookEntries = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('guestbook')
+        .select('*')
+        .eq('user', book.user)
+        .eq('private', false)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setGuestbookEntries(data || []);
+    } catch (error) {
+      console.error('Error fetching guestbook entries:', error);
     } finally {
       setLoading(false);
     }
@@ -172,6 +199,10 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
         break;
 
       case 'gallery':
+        setCurrentState('guestbook');
+        break;
+
+      case 'guestbook':
         setCurrentState('thank-you');
         break;
 
@@ -249,6 +280,10 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
         break;
 
       case 'thank-you':
+        setCurrentState('guestbook');
+        break;
+
+      case 'guestbook':
         setCurrentState('gallery');
         break;
     }
@@ -261,6 +296,10 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
 
   const handleNavigateToGallery = () => {
     setCurrentState('gallery');
+  };
+
+  const handleNavigateToGuestbook = () => {
+    setCurrentState('guestbook');
   };
 
   if (loading) {
@@ -280,6 +319,7 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
         currentState={currentState}
         onNavigateToChapter={handleNavigateToChapter}
         onNavigateToGallery={handleNavigateToGallery}
+        onNavigateToGuestbook={handleNavigateToGuestbook}
       />
 
       {currentState === 'cover' && (
@@ -334,6 +374,14 @@ export default function BookReader({ book, chapters }: BookReaderProps) {
       {currentState === 'gallery' && (
         <ChapterGallery
           galleryItems={galleryItems}
+          onPrevious={handlePrevious}
+          onNext={handleNext}
+        />
+      )}
+
+      {currentState === 'guestbook' && (
+        <Guestbook
+          entries={guestbookEntries}
           onPrevious={handlePrevious}
           onNext={handleNext}
         />

@@ -12,6 +12,7 @@ interface NavigationMenuProps {
   currentState: string;
   onNavigateToChapter: (index: number) => void;
   onNavigateToGallery: () => void;
+  onNavigateToGuestbook: () => void;
 }
 
 export default function NavigationMenu({
@@ -20,7 +21,8 @@ export default function NavigationMenu({
   currentChapterIndex,
   currentState,
   onNavigateToChapter,
-  onNavigateToGallery
+  onNavigateToGallery,
+  onNavigateToGuestbook
 }: NavigationMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
@@ -34,6 +36,11 @@ export default function NavigationMenu({
 
   const handleGalleryClick = () => {
     onNavigateToGallery();
+    setIsOpen(false);
+  };
+
+  const handleGuestbookClick = () => {
+    onNavigateToGuestbook();
     setIsOpen(false);
   };
 
@@ -137,16 +144,28 @@ export default function NavigationMenu({
                     ))}
 
                     {chapters.length > 0 && (
-                      <button
-                        onClick={handleGalleryClick}
-                        className={`w-full text-left p-3 rounded-lg transition-colors ${
-                          currentState === 'gallery'
-                            ? 'bg-slate-800 text-white'
-                            : 'hover:bg-slate-100 text-slate-700'
-                        }`}
-                      >
-                        <div className="font-avenir font-medium">Gallery</div>
-                      </button>
+                      <>
+                        <button
+                          onClick={handleGalleryClick}
+                          className={`w-full text-left p-3 rounded-lg transition-colors ${
+                            currentState === 'gallery'
+                              ? 'bg-slate-800 text-white'
+                              : 'hover:bg-slate-100 text-slate-700'
+                          }`}
+                        >
+                          <div className="font-avenir font-medium">Gallery</div>
+                        </button>
+                        <button
+                          onClick={handleGuestbookClick}
+                          className={`w-full text-left p-3 rounded-lg transition-colors ${
+                            currentState === 'guestbook'
+                              ? 'bg-slate-800 text-white'
+                              : 'hover:bg-slate-100 text-slate-700'
+                          }`}
+                        >
+                          <div className="font-avenir font-medium">Guestbook</div>
+                        </button>
+                      </>
                     )}
                   </nav>
                 </div>

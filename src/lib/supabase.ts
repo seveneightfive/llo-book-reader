@@ -19,6 +19,7 @@ export type Book = {
   date_published: string;
   view_count: number;
   filloutform_link: string | null;
+  user: string;
 };
 
 export type Chapter = {
@@ -54,6 +55,15 @@ export type GalleryItem = {
   sort_order: number;      // smallint
   chapter_id: number;      // bigint
   page_id: number | null;  // bigint (nullable)
+};
+
+export type GuestbookEntry = {
+  id: number;              // bigint
+  created_at: string;
+  user: string;
+  guest: string;
+  message: string;
+  private: boolean;
 };
 
 // Helper types for queries
