@@ -86,7 +86,7 @@ export default function ChapterGallery({ galleryItems, onPrevious, onNext }: Cha
                 <img
                   src={item.image_url}
                   alt={item.image_title || 'Gallery image'}
-                  className="w-full h-64 object-cover"
+                  className="w-full h-64 object-contain bg-slate-100"
                 />
                 {(item.image_title || item.image_caption) && (
                   <div className="p-4">

@@ -119,9 +119,6 @@ export default function NavigationMenu({
                 </div>
 
                 <div>
-                  <h4 className="text-sm font-avenir font-semibold text-slate-500 uppercase tracking-wide mb-4">
-                    Table of Contents
-                  </h4>
                   <nav className="space-y-2">
                     {chapters.map((chapter, index) => (
                       <button
