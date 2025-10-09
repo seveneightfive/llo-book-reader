@@ -210,7 +210,7 @@ export default function NavigationMenu({
                   className="block w-full max-w-[200px] mx-auto hover:opacity-80 transition-opacity"
                 >
                   <img
-                    src="https://ompmvmjamqekwmnjwnzt.supabase.co/storage/v1/object/public/LLO%20Branding/logo.png"
+                    src="https://uhzncrsbytxwdlmldwqf.supabase.co/storage/v1/object/public/site-images/LLO-SiteLogo.png"
                     alt="Site Logo"
                     className="w-full"
                   />
