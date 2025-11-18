@@ -54,9 +54,9 @@ export default function ChapterSpecificGallery({
       >
         <div className="mb-8">
           <p className="text-sm text-slate-500 mb-2 font-avenir">Chapter {chapter.number}</p>
-          <h1 className="text-3xl font-bold text-slate-800 font-avenir mb-4">{chapter.title} - Gallery</h1>
+          <h1 className="text-3xl font-bold text-slate-800 font-avenir mb-4">Gallery - {galleryItems.length} {galleryItems.length === 1 ? 'Image' : 'Images'}</h1>
           <p className="text-slate-600 font-avenir">
-            {galleryItems.length} {galleryItems.length === 1 ? 'image' : 'images'} from this chapter
+            Click on any photo to view full size photo gallery
           </p>
         </div>
 
